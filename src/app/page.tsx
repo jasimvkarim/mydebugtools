@@ -7,8 +7,7 @@ import {
   ArrowRightIcon,
   SparklesIcon,
   DocumentCheckIcon,
-  KeyIcon,
-  BeakerIcon
+  KeyIcon
 } from '@heroicons/react/24/outline';
 import AdSlot from './components/AdSlot';
 import { Terminal, CurlyBraces } from 'lucide-react';
@@ -27,6 +26,12 @@ export default function Home() {
               </span>
             </Link>
             <div className="flex items-center gap-3">
+              <Link
+                href="/tools/html"
+                className="hidden md:flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-[#FF6C37] font-medium transition-colors"
+              >
+                HTML Editor
+              </Link>
               <a
                 href="https://github.com/jasimvk/mydebugtools"
                 target="_blank"
@@ -161,16 +166,16 @@ export default function Home() {
               </div>
             </Link>
             
-            {/* API Tester */}
-            <Link href="/tools/api" className="group bg-white rounded-xl border-2 border-gray-200 hover:border-[#FF6C37] transition-all duration-200 p-6 hover:shadow-lg hover:scale-105">
+            {/* HTML Editor */}
+            <Link href="/tools/html" className="group bg-white rounded-xl border-2 border-gray-200 hover:border-[#FF6C37] transition-all duration-200 p-6 hover:shadow-lg hover:scale-105">
               <div className="inline-flex p-3 rounded-lg bg-gray-100 group-hover:bg-[#FF6C37] transition-all duration-200 mb-4">
-                <BeakerIcon className="h-6 w-6 text-gray-900 group-hover:text-white transition-colors" />
+                <CodeBracketIcon className="h-6 w-6 text-gray-900 group-hover:text-white transition-colors" />
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-2">
-                API Tester
+                HTML Editor
               </h3>
               <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                Test REST APIs with custom headers and authentication
+                WYSIWYG editor with templates, preview & email-safe export
               </p>
               <div className="flex items-center text-[#FF6C37] font-bold text-sm group-hover:gap-2 transition-all">
                 Try it now

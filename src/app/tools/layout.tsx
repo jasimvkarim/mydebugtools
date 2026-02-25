@@ -23,6 +23,12 @@ const tools = [
     icon: CurlyBracesIcon
   },
   {
+    name: 'HTML Editor',
+    description: 'Visual HTML editor with live preview and code sync',
+    path: '/tools/html',
+    icon: DocumentTextIcon
+  },
+  {
     name: 'JWT Decoder',
     description: 'Decode and verify JWT tokens instantly',
     path: '/tools/jwt',

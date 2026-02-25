@@ -875,69 +875,82 @@ export default function JSONTools() {
       </div>
 
       {/* Content Area - Postman Style */}
+      <div className="bg-[#f7f7f7] border-x border-gray-300 px-3 py-2 flex flex-wrap gap-1 items-center justify-between">
+        <div className="flex flex-wrap gap-1">
+          <div className="flex gap-1">
+            <button 
+              onClick={handlePasteFromClipboard} 
+              className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
+              title="Paste from clipboard"
+            >
+              <ClipboardDocumentListIcon className="h-4 w-4" />
+              Paste
+            </button>
+            <button 
+              onClick={() => handleCopy(jsonInput)} 
+              className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
+              title="Copy to clipboard"
+            >
+              <ClipboardIcon className="h-4 w-4" />
+              {copied ? 'Copied!' : 'Copy'}
+            </button>
+          </div>
+          
+          <div className="border-l border-gray-400 mx-2"></div>
+          
+          <div className="flex gap-1">
+            <button 
+              onClick={handleFormat} 
+              className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
+              title="Format JSON"
+            >
+              <DocumentTextIcon className="h-4 w-4" />
+              Format
+            </button>
+            <button 
+              onClick={handleRemoveWhiteSpace} 
+              className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
+              title="Minify JSON"
+            >
+              <ArrowsPointingInIcon className="h-4 w-4" />
+              Minify
+            </button>
+          </div>
+          
+          <div className="border-l border-gray-400 mx-2"></div>
+          
+          <div className="flex gap-1">
+            <button 
+              onClick={handleReset} 
+              className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
+              title="Clear all"
+            >
+              <XMarkIcon className="h-4 w-4" />
+              Clear
+            </button>
+            <label className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5 cursor-pointer" title="Load JSON file">
+              <ArrowUpTrayIcon className="h-4 w-4" />
+              Load
+              <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept=".json,.txt" onChange={handleFileLoad} />
+            </label>
+          </div>
+        </div>
+
+        {activeTab === 'tree' && (
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={toggleExpandCollapse}
+              className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
+            >
+              {expandAll ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
+              {expandAll ? 'Collapse All' : 'Expand All'}
+            </button>
+          </div>
+        )}
+      </div>
+
       {activeTab === 'text' && (
         <div className="space-y-0">
-          {/* Toolbar - Postman Style */}
-          <div className="bg-[#f7f7f7] border border-gray-300 border-b-0 px-3 py-2 flex flex-wrap gap-1">
-            <div className="flex gap-1">
-              <button 
-                onClick={handlePasteFromClipboard} 
-                className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
-                title="Paste from clipboard"
-              >
-                <ClipboardDocumentListIcon className="h-4 w-4" />
-                Paste
-              </button>
-              <button 
-                onClick={() => handleCopy(jsonInput)} 
-                className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
-                title="Copy to clipboard"
-              >
-                <ClipboardIcon className="h-4 w-4" />
-                {copied ? 'Copied!' : 'Copy'}
-              </button>
-            </div>
-            
-            <div className="border-l border-gray-400 mx-2"></div>
-            
-            <div className="flex gap-1">
-              <button 
-                onClick={handleFormat} 
-                className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
-                title="Format JSON"
-              >
-                <DocumentTextIcon className="h-4 w-4" />
-                Format
-              </button>
-              <button 
-                onClick={handleRemoveWhiteSpace} 
-                className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
-                title="Minify JSON"
-              >
-                <ArrowsPointingInIcon className="h-4 w-4" />
-                Minify
-              </button>
-            </div>
-            
-            <div className="border-l border-gray-400 mx-2"></div>
-            
-            <div className="flex gap-1">
-              <button 
-                onClick={handleReset} 
-                className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
-                title="Clear all"
-              >
-                <XMarkIcon className="h-4 w-4" />
-                Clear
-              </button>
-              <label className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5 cursor-pointer" title="Load JSON file">
-                <ArrowUpTrayIcon className="h-4 w-4" />
-                Load
-                <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept=".json,.txt" onChange={handleFileLoad} />
-              </label>
-            </div>
-          </div>
-
           {/* Text Editor */}
           <textarea
             value={jsonInput}
