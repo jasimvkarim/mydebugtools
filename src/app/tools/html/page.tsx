@@ -266,6 +266,7 @@ export default function HTMLEditorPage() {
   const codeRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const updatingFromCode = useRef(false);
+  const savedSelection = useRef<{ from: number; to: number } | null>(null);
 
   const notify = useCallback((msg: string, type: "success" | "error" | "info" = "success") => {
     setNotification({ msg, type });
@@ -312,6 +313,22 @@ export default function HTMLEditorPage() {
       editor.commands.setContent(html, { emitUpdate: false });
       updatingFromCode.current = false;
     }
+  }, [editor]);
+
+  const saveSelection = useCallback(() => {
+    if (editor) {
+      const { from, to } = editor.state.selection;
+      savedSelection.current = { from, to };
+    }
+  }, [editor]);
+
+  const restoreSelectionAndRun = useCallback((fn: () => void) => {
+    if (!editor) return;
+    if (savedSelection.current) {
+      editor.commands.setTextSelection(savedSelection.current);
+    }
+    fn();
+    setTimeout(() => editor.commands.focus(), 0);
   }, [editor]);
 
   const wordCount = editor
@@ -569,15 +586,15 @@ export default function HTMLEditorPage() {
 
                 {/* Block Format */}
                 <select 
-                  onMouseDown={(e) => { e.stopPropagation(); }}
+                  onMouseDown={() => saveSelection()}
                   onChange={(e) => {
                     const v = e.target.value;
-                    if (v === "p") editor.chain().focus().setParagraph().run();
-                    else if (v.startsWith("h")) editor.chain().focus().setHeading({ level: parseInt(v[1]) as 1|2|3|4|5|6 }).run();
-                    else if (v === "code") editor.chain().focus().toggleCodeBlock().run();
-                    else if (v === "blockquote") editor.chain().focus().toggleBlockquote().run();
-                    // Re-focus the editor after applying format
-                    setTimeout(() => editor.commands.focus(), 0);
+                    restoreSelectionAndRun(() => {
+                      if (v === "p") editor.chain().focus().setParagraph().run();
+                      else if (v.startsWith("h")) editor.chain().focus().setHeading({ level: parseInt(v[1]) as 1|2|3|4|5|6 }).run();
+                      else if (v === "code") editor.chain().focus().toggleCodeBlock().run();
+                      else if (v === "blockquote") editor.chain().focus().toggleBlockquote().run();
+                    });
                   }} 
                   value={
                     editor.isActive("heading", { level: 1 }) ? "h1" :
@@ -606,11 +623,13 @@ export default function HTMLEditorPage() {
 
                 {/* Font Family */}
                 <select 
-                  onMouseDown={(e) => { e.stopPropagation(); }}
+                  onMouseDown={() => saveSelection()}
                   onChange={(e) => {
-                    if (e.target.value) editor.chain().focus().setFontFamily(e.target.value).run();
-                    else editor.chain().focus().unsetFontFamily().run();
-                    setTimeout(() => editor.commands.focus(), 0);
+                    const v = e.target.value;
+                    restoreSelectionAndRun(() => {
+                      if (v) editor.chain().focus().setFontFamily(v).run();
+                      else editor.chain().focus().unsetFontFamily().run();
+                    });
                   }} 
                   value={editor.getAttributes("textStyle").fontFamily || ""}
                   className="h-8 px-2 text-xs bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6C37]/30 focus:border-[#FF6C37] cursor-pointer hover:border-gray-300 transition-colors shrink-0" 
