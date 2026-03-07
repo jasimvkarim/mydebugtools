@@ -239,6 +239,56 @@ function ToolbarDivider() {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
+   HTML DOCUMENT HELPERS
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/** Build a full <!DOCTYPE html> document from body HTML + optional CSS string */
+function buildFullHtml(bodyHtml: string, css: string): string {
+  const styleBlock = css.trim()
+    ? css.trim()
+    : `body { font-family: system-ui, -apple-system, sans-serif; padding: 24px; color: #1a1a2e; line-height: 1.6; }
+    img { max-width: 100%; height: auto; }
+    table { border-collapse: collapse; width: 100%; }`;
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+${styleBlock}
+  </style>
+</head>
+<body>
+${bodyHtml}
+</body>
+</html>`;
+}
+
+/** Extract body content and <style> blocks from a full or partial HTML string */
+function parseFullHtml(html: string): { body: string; css: string } {
+  // Extract all <style> blocks from <head> or anywhere
+  const styleMatches = html.match(/<style[\s\S]*?<\/style>/gi) || [];
+  const css = styleMatches.join("\n");
+
+  // Extract body content
+  const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+  if (bodyMatch) {
+    return { body: bodyMatch[1].trim(), css };
+  }
+
+  // If no <body> tag, strip any <style> / <head> blocks and return remainder
+  const stripped = html
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<head[\s\S]*?<\/head>/gi, "")
+    .replace(/<!DOCTYPE[^>]*>/gi, "")
+    .replace(/<\/?html[^>]*>/gi, "")
+    .replace(/<\/?body[^>]*>/gi, "")
+    .trim();
+  return { body: stripped, css };
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
    MAIN COMPONENT
    ══════════════════════════════════════════════════════════════════════════ */
 
@@ -262,6 +312,7 @@ export default function HTMLEditorPage() {
   const [showReference, setShowReference] = useState(false);
   const [refTab, setRefTab] = useState<"elements" | "css">("elements");
   const [refSearch, setRefSearch] = useState("");
+  const [cssSource, setCssSource] = useState(""); // preserved <style> blocks
 
   const codeRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -297,7 +348,9 @@ export default function HTMLEditorPage() {
     immediatelyRender: false,
     onUpdate: ({ editor: ed }) => {
       if (!updatingFromCode.current) {
-        setHtmlSource(ed.getHTML());
+        const bodyHtml = ed.getHTML();
+        // Store only the body content; CSS is kept separately in cssSource
+        setHtmlSource(bodyHtml);
       }
     },
     editorProps: {
@@ -309,8 +362,11 @@ export default function HTMLEditorPage() {
 
   const syncCodeToVisual = useCallback((html: string) => {
     if (editor) {
+      const { body, css } = parseFullHtml(html);
+      if (css) setCssSource(css);
+      setHtmlSource(body);
       updatingFromCode.current = true;
-      editor.commands.setContent(html, { emitUpdate: false });
+      editor.commands.setContent(body, { emitUpdate: false });
       updatingFromCode.current = false;
     }
   }, [editor]);
@@ -337,7 +393,7 @@ export default function HTMLEditorPage() {
 
   /* ─── File Operations ──────────────────────────────────────────────── */
   const handleSave = useCallback(() => {
-    const full = '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Document</title>\n  <style>\n    body { font-family: system-ui, -apple-system, sans-serif; padding: 24px; color: #1a1a2e; line-height: 1.6; }\n    img { max-width: 100%; height: auto; }\n    table { border-collapse: collapse; width: 100%; }\n  </style>\n</head>\n<body>\n' + htmlSource + "\n</body>\n</html>";
+    const full = buildFullHtml(htmlSource, cssSource);
     const blob = new Blob([full], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -346,7 +402,7 @@ export default function HTMLEditorPage() {
     a.click();
     URL.revokeObjectURL(url);
     notify("Saved as document.html");
-  }, [htmlSource, notify]);
+  }, [htmlSource, cssSource, notify]);
 
   const handleOpen = () => {
     const input = document.createElement("input");
@@ -358,10 +414,14 @@ export default function HTMLEditorPage() {
       const reader = new FileReader();
       reader.onload = (ev) => {
         const content = ev.target?.result as string;
-        const bodyMatch = content.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-        const html = bodyMatch ? bodyMatch[1].trim() : content;
-        setHtmlSource(html);
-        syncCodeToVisual(html);
+        const { body, css } = parseFullHtml(content);
+        if (css) setCssSource(css);
+        setHtmlSource(body);
+        if (editor) {
+          updatingFromCode.current = true;
+          editor.commands.setContent(body, { emitUpdate: false });
+          updatingFromCode.current = false;
+        }
         notify("Opened " + file.name);
       };
       reader.readAsText(file);
@@ -370,7 +430,7 @@ export default function HTMLEditorPage() {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(htmlSource);
+    navigator.clipboard.writeText(buildFullHtml(htmlSource, cssSource));
     notify("HTML copied to clipboard");
   };
 
@@ -383,7 +443,7 @@ export default function HTMLEditorPage() {
   const handlePrint = () => {
     const printWindow = window.open("", "_blank");
     if (printWindow) {
-      printWindow.document.write('<!DOCTYPE html><html><head><title>Print</title><style>body{font-family:system-ui;padding:40px;color:#1a1a2e;line-height:1.6}img{max-width:100%}table{border-collapse:collapse;width:100%}@media print{body{padding:0}}</style></head><body>' + htmlSource + "</body></html>");
+      printWindow.document.write(buildFullHtml(htmlSource, cssSource));
       printWindow.document.close();
       printWindow.print();
     }
@@ -391,11 +451,15 @@ export default function HTMLEditorPage() {
 
   const handleBeautify = useCallback(() => {
     try {
-      const result = beautify.html(htmlSource, { indent_size: 2, wrap_line_length: 120 });
-      setHtmlSource(result);
+      // Beautify the full document
+      const full = buildFullHtml(htmlSource, cssSource);
+      const result = beautify.html(full, { indent_size: 2, wrap_line_length: 120 });
+      const { body, css } = parseFullHtml(result);
+      setHtmlSource(body);
+      setCssSource(css);
       if (editor) {
         updatingFromCode.current = true;
-        editor.commands.setContent(result, { emitUpdate: false });
+        editor.commands.setContent(body, { emitUpdate: false });
         updatingFromCode.current = false;
       }
       notify("HTML beautified");
@@ -403,7 +467,7 @@ export default function HTMLEditorPage() {
       console.error("Beautify error:", err);
       notify("Beautify failed", "error");
     }
-  }, [htmlSource, editor, notify]);
+  }, [htmlSource, cssSource, editor, notify]);
 
   const insertSnippet = useCallback((code: string) => {
     if (mode === "code") {
@@ -959,8 +1023,18 @@ export default function HTMLEditorPage() {
             <div className="flex-1 overflow-hidden">
               <textarea
                 ref={codeRef}
-                value={htmlSource}
-                onChange={(e) => { setHtmlSource(e.target.value); if (mode === "split") syncCodeToVisual(e.target.value); }}
+                value={buildFullHtml(htmlSource, cssSource)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const { body, css } = parseFullHtml(val);
+                  setHtmlSource(body);
+                  setCssSource(css);
+                  if (mode === "split" && editor) {
+                    updatingFromCode.current = true;
+                    editor.commands.setContent(body, { emitUpdate: false });
+                    updatingFromCode.current = false;
+                  }
+                }}
                 spellCheck={false}
                 className="w-full h-full bg-[#1e1e2e] text-[#cdd6f4] caret-[#FF6C37] resize-none outline-none p-4 selection:bg-[#FF6C37]/30"
                 style={{ fontSize: "13px", lineHeight: "1.6", fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace", tabSize: 2 }}
