@@ -64,10 +64,23 @@ const Navigation = () => {
               })}
             </div>
           </div>
-          <div className="flex items-center sm:hidden">
+          <div className="flex items-center gap-3">
+            {/* Report Issue button — desktop */}
+            <a
+              href="https://github.com/jasimvk/mydebugtools/issues/new"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-gray-300 text-gray-600 hover:border-red-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+              title="Report a bug or request a feature"
+            >
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+              </svg>
+              Report Issue
+            </a>
             <button
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:hidden"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               title={isMenuOpen ? 'Close main menu' : 'Open main menu'}
               aria-label={isMenuOpen ? 'Close main menu' : 'Open main menu'}
@@ -105,6 +118,19 @@ const Navigation = () => {
                 </Link>
               );
             })}
+            {/* Report Issue — mobile */}
+            <a
+              href="https://github.com/jasimvk/mydebugtools/issues/new"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-3 py-2 text-base font-medium border-l-4 border-transparent text-red-500 hover:bg-red-50 hover:border-red-400"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+              </svg>
+              Report Issue
+            </a>
           </div>
         </div>
       )}
