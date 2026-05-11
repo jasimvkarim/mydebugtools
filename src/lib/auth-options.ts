@@ -11,11 +11,29 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async redirect({ url, baseUrl }) {
-      return url.startsWith('https://mydebugtools.com')
-        ? url
-        : url.startsWith('https://www.mydebugtools.com')
-        ? url.replace('www.', '')
-        : baseUrl;
+      if (url.startsWith('/')) {
+        return `${baseUrl}${url}`;
+      }
+
+      const allowedHosts = new Set([
+        new URL(baseUrl).host,
+        'mydebugtools.com',
+        'www.mydebugtools.com',
+        'mydebugtools-one.vercel.app',
+      ]);
+
+      try {
+        const nextUrl = new URL(url);
+
+        if (nextUrl.host === 'www.mydebugtools.com') {
+          nextUrl.host = 'mydebugtools.com';
+          return nextUrl.toString();
+        }
+
+        return allowedHosts.has(nextUrl.host) ? url : baseUrl;
+      } catch {
+        return baseUrl;
+      }
     },
     async jwt({ token, user, account }) {
       if (user) {
