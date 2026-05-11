@@ -3,52 +3,53 @@
 import Link from 'next/link';
 import { Terminal, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
+import StructuredData from '@/components/StructuredData';
+
+const faqs = [
+  {
+    question: "Is MyDebugTools really free?",
+    answer: "Yes. MyDebugTools is free and open-source. All tools are available without any subscription, registration, or hidden fees."
+  },
+  {
+    question: "Do I need to create an account?",
+    answer: "No account is required. The tools work instantly in your browser without a sign-up process."
+  },
+  {
+    question: "Is my data secure?",
+    answer: "Most processing happens locally in your browser. MyDebugTools is designed so common formatting, decoding, and inspection workflows do not need to send your input to a server."
+  },
+  {
+    question: "Can I use these tools offline?",
+    answer: "Most tools work in the browser once the page loads, although features that depend on external resources may need an internet connection."
+  },
+  {
+    question: "What tools are available?",
+    answer: "MyDebugTools includes API testing, JSON formatting, JWT decoding, Base64 conversion, code diffing, regex testing, color picking, icon search, HTTP status lookup, and more."
+  },
+  {
+    question: "Can I contribute to the project?",
+    answer: "Yes. MyDebugTools is open-source on GitHub and welcomes bug reports, feature requests, and contributions."
+  },
+  {
+    question: "Which browsers are supported?",
+    answer: "MyDebugTools works on modern browsers including Chrome, Firefox, Safari, Edge, and Opera."
+  },
+  {
+    question: "How can I report a bug or request a feature?",
+    answer: "Open an issue on the MyDebugTools GitHub repository with the bug, expected behavior, or proposed feature."
+  },
+  {
+    question: "Can I use these tools for commercial projects?",
+    answer: "Yes. MyDebugTools is MIT licensed, so you can use it for personal and commercial projects."
+  },
+  {
+    question: "Are there any usage limits?",
+    answer: "There are no account-based usage limits. Browser-based tools can be used as much as your local environment allows."
+  }
+];
 
 export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  const faqs = [
-    {
-      question: "Is MyDebugTools really free?",
-      answer: "Yes! MyDebugTools is 100% free and open-source. All tools are available without any subscription, registration, or hidden fees. We believe developer tools should be accessible to everyone."
-    },
-    {
-      question: "Do I need to create an account?",
-      answer: "No account required! All tools work instantly in your browser without any sign-up process. Your data stays private and is never sent to our servers."
-    },
-    {
-      question: "Is my data secure?",
-      answer: "Absolutely. All processing happens locally in your browser. We don't store, transmit, or have access to any data you input into our tools. Your privacy is our top priority."
-    },
-    {
-      question: "Can I use these tools offline?",
-      answer: "Most tools work entirely in your browser, so once the page loads, many features will continue to work offline. However, some tools that require external resources may need an internet connection."
-    },
-    {
-      question: "What tools are available?",
-      answer: "We offer 30+ developer tools including JSON formatter, JWT decoder, Base64 encoder/decoder, API tester, code diff, regex tester, color picker, hash generators, and many more. New tools are added regularly."
-    },
-    {
-      question: "Can I contribute to the project?",
-      answer: "Yes! MyDebugTools is open-source on GitHub. We welcome contributions, bug reports, and feature requests. Check our GitHub repository for contribution guidelines."
-    },
-    {
-      question: "Which browsers are supported?",
-      answer: "MyDebugTools works on all modern browsers including Chrome, Firefox, Safari, Edge, and Opera. We recommend using the latest version for the best experience."
-    },
-    {
-      question: "How can I report a bug or request a feature?",
-      answer: "You can report bugs or request features by opening an issue on our GitHub repository. We actively monitor and respond to all issues."
-    },
-    {
-      question: "Can I use these tools for commercial projects?",
-      answer: "Yes! MyDebugTools is licensed under MIT, which means you can use it freely for personal or commercial projects without any restrictions."
-    },
-    {
-      question: "Are there any usage limits?",
-      answer: "No usage limits! Use the tools as much as you need. Since everything runs in your browser, there are no server-side restrictions or rate limits."
-    }
-  ];
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -56,6 +57,21 @@ export default function FAQPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      <StructuredData
+        id="faq-structured-data"
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: faqs.map((faq) => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: faq.answer,
+            },
+          })),
+        }}
+      />
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">

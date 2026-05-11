@@ -1,286 +1,293 @@
 'use client';
 
 import Link from 'next/link';
-import { 
-  CodeBracketIcon, 
-  WrenchIcon, 
+import {
   ArrowRightIcon,
-  SparklesIcon,
+  BeakerIcon,
+  CodeBracketIcon,
+  CommandLineIcon,
   DocumentCheckIcon,
-  KeyIcon
+  KeyIcon,
+  WrenchIcon,
 } from '@heroicons/react/24/outline';
-import AdSlot from './components/AdSlot';
-import { Terminal, CurlyBraces } from 'lucide-react';
+import { CurlyBracesIcon, GitFork, Github, Star, Terminal } from 'lucide-react';
+
+const repoLinks = [
+  { label: 'Repository', href: 'https://github.com/jasimvk/mydebugtools' },
+  { label: 'Issues', href: 'https://github.com/jasimvk/mydebugtools/issues' },
+  { label: 'Sponsor', href: 'https://buymeacoffee.com/jasimvk' },
+  { label: 'License', href: 'https://github.com/jasimvk/mydebugtools/blob/main/LICENSE' },
+  { label: 'Releases', href: '/releases' },
+  { label: 'Contribute', href: 'https://github.com/jasimvk/mydebugtools/blob/main/CONTRIBUTING.md' },
+];
+
+const featuredTools = [
+  {
+    name: 'API Tester',
+    slug: 'tools/api',
+    description: 'REST workbench with collections, auth, environments, import/export, and response inspection.',
+    href: '/tools/api',
+    icon: BeakerIcon,
+  },
+  {
+    name: 'JSON Tools',
+    slug: 'tools/json',
+    description: 'Format, validate, repair, and inspect JSON without sending data to a server.',
+    href: '/tools/json',
+    icon: CurlyBracesIcon,
+  },
+  {
+    name: 'JWT Decoder',
+    slug: 'tools/jwt',
+    description: 'Decode token payloads and inspect claims quickly during auth debugging.',
+    href: '/tools/jwt',
+    icon: KeyIcon,
+  },
+  {
+    name: 'HTML Editor',
+    slug: 'tools/html',
+    description: 'Edit, preview, and export HTML snippets from a focused browser workspace.',
+    href: '/tools/html',
+    icon: CodeBracketIcon,
+  },
+  {
+    name: 'Code Diff',
+    slug: 'tools/code-diff',
+    description: 'Compare snippets with readable highlighting for reviews and debugging sessions.',
+    href: '/tools/code-diff',
+    icon: CommandLineIcon,
+  },
+  {
+    name: 'Base64',
+    slug: 'tools/base64',
+    description: 'Encode and decode strings or files with a small, predictable utility surface.',
+    href: '/tools/base64',
+    icon: DocumentCheckIcon,
+  },
+];
+
+const principles = [
+  'MIT licensed and built in public',
+  'Local-first utilities where possible',
+  'Small tools that do one job clearly',
+  'Issue-driven roadmap and contribution flow',
+];
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Modern Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-3 group">
-              <Terminal className="h-8 w-8 text-gray-900" />
-              <span className="text-2xl font-bold text-gray-900">
-                MyDebugTools
-              </span>
-            </Link>
-            <div className="flex items-center gap-3">
-              <Link
-                href="/tools/html"
-                className="hidden md:flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-[#FF6C37] font-medium transition-colors"
-              >
-                HTML Editor
-              </Link>
-              <a
-                href="https://github.com/jasimvk/mydebugtools"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-lg transition-colors"
-                title="⭐ Star on GitHub if you like it"
-              >
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-                </svg>
-                <span>Star</span>
-              </a>
-              <Link 
-                href="/tools"
-                className="px-6 py-2.5 bg-[#FF6C37] hover:bg-[#ff5722] text-white font-semibold rounded-lg transition-colors shadow-lg"
-              >
-                Browse Tools
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div className="container mx-auto px-6 relative z-10">
-        {/* Hero Section - Modern & Engaging */}
-        <div className="text-center max-w-6xl mx-auto py-12 md:py-16">
-          {/* Animated Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-50 to-white border border-[#FF6C37]/20 rounded-full text-xs text-gray-700 font-semibold mb-6 shadow-sm">
-            <SparklesIcon className="h-4 w-4 text-[#FF6C37]" />
-            <span>✨ Free • Open Source • Privacy First</span>
-          </div>
-
-          {/* Powerful Title with Better Hierarchy */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight tracking-tight">
-            <span className="text-gray-900 block">
-              Developer Tools
+    <main className="min-h-screen bg-[#f6f8fa] text-[#24292f]">
+      <header className="border-b border-[#d0d7de] bg-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
+          <Link href="/" className="flex items-center gap-2 text-[#24292f] hover:text-[#24292f]">
+            <Terminal className="h-5 w-5" />
+            <span className="font-semibold">MyDebugTools</span>
+            <span className="hidden rounded-full border border-[#d0d7de] px-2 py-0.5 text-xs font-medium text-[#57606a] sm:inline">
+              open source
             </span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6C37] to-[#ff5722]">
-              You Need
-            </span>
-          </h1>
-          
-          <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto font-medium">
-            30+ professional utilities for formatting, validating, converting, and debugging code.
-            <span className="block text-gray-900 font-bold mt-1">Fast. Reliable. Privacy-focused. 100% free.</span>
-          </p>
-
-          {/* CTA Buttons - Clean */}
-          {/* <div className="flex items-center justify-center gap-3 mb-6">
-            <Link 
-              href="/tools"
-              className="inline-flex items-center bg-[#FF6C37] hover:bg-[#ff5722] text-white px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors shadow-lg"
-            >
-              <Terminal className="h-4 w-4 mr-2" />
-              Explore Tools
-              <ArrowRightIcon className="h-4 w-4 ml-2" />
-            </Link>
-            <a 
+          </Link>
+          <nav className="flex items-center gap-2 text-sm">
+              <Link href="/tools/all" className="rounded-md px-3 py-2 font-medium text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]">
+                Tools
+              </Link>
+              <Link href="/cli" className="hidden rounded-md px-3 py-2 font-medium text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f] sm:inline-flex">
+                CLI
+              </Link>
+              <Link href="/roadmap" className="hidden rounded-md px-3 py-2 font-medium text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f] sm:inline-flex">
+                Roadmap
+              </Link>
+            <a
               href="https://github.com/jasimvk/mydebugtools"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center bg-white hover:bg-gray-900 text-gray-900 hover:text-white px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors border-2 border-gray-900 shadow"
+              className="inline-flex items-center gap-2 rounded-md border border-[#d0d7de] bg-[#24292f] px-3 py-2 font-semibold text-white hover:bg-[#32383f] hover:text-white"
             >
-              <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-              </svg>
+              <Github className="h-4 w-4" />
               GitHub
             </a>
-          </div> */}
+          </nav>
+        </div>
+      </header>
 
-          {/* Stats Pills - Black & Orange Only
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
-            <div className="px-3 py-1 bg-gray-100 border border-gray-300 rounded-full shadow-sm">
-              <span className="text-xs font-bold text-gray-900">🚀 30+ Tools</span>
+      <section className="border-b border-[#d0d7de] bg-white">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_380px] lg:py-16">
+          <div>
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#d0d7de] bg-[#f6f8fa] px-3 py-1 text-xs font-semibold text-[#57606a]">
+              <GitFork className="h-3.5 w-3.5" />
+              jasimvk / mydebugtools
             </div>
-            <div className="px-3 py-1 bg-[#FF6C37] border border-[#FF6C37] rounded-full shadow-sm">
-              <span className="text-xs font-bold text-white">⚡ Instant Results</span>
+            <h1 className="max-w-4xl text-4xl font-semibold tracking-normal text-[#24292f] sm:text-5xl lg:text-6xl">
+              Open-source debugging tools for everyday developer work.
+            </h1>
+            <p className="mt-5 max-w-3xl text-lg leading-8 text-[#57606a]">
+              A practical toolkit for testing APIs, formatting data, comparing code, decoding tokens, and inspecting web assets. Built like an OSS project: transparent, useful, and easy to contribute to.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                href="/tools/all"
+                className="inline-flex items-center gap-2 rounded-md bg-[#1f883d] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1a7f37] hover:text-white"
+              >
+                Browse tools
+                <ArrowRightIcon className="h-4 w-4" />
+              </Link>
+              <a
+                href="https://github.com/jasimvk/mydebugtools/issues/new"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-md border border-[#d0d7de] bg-white px-4 py-2.5 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f]"
+              >
+                Open an issue
+              </a>
+              <a
+                href="https://buymeacoffee.com/jasimvk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-md border border-[#d0d7de] bg-white px-4 py-2.5 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f]"
+              >
+                Sponsor
+              </a>
             </div>
-            <div className="px-3 py-1 bg-gray-100 border border-gray-300 rounded-full shadow-sm">
-              <span className="text-xs font-bold text-gray-900">🔒 Privacy First</span>
+          </div>
+
+          <aside className="rounded-md border border-[#d0d7de] bg-[#f6f8fa]">
+            <div className="border-b border-[#d0d7de] px-4 py-3">
+              <h2 className="text-sm font-semibold text-[#24292f]">Project status</h2>
             </div>
-            <div className="px-3 py-1 bg-[#FF6C37] border border-[#FF6C37] rounded-full shadow-sm">
-              <span className="text-xs font-bold text-white">💯 Free Forever</span>
+            <div className="divide-y divide-[#d0d7de]">
+              <div className="grid grid-cols-2 gap-3 p-4">
+                <div>
+                  <p className="text-2xl font-semibold text-[#24292f]">30+</p>
+                  <p className="text-xs text-[#57606a]">developer tools</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-semibold text-[#24292f]">MIT</p>
+                  <p className="text-xs text-[#57606a]">license</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-semibold text-[#24292f]">Next.js</p>
+                  <p className="text-xs text-[#57606a]">application</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-semibold text-[#24292f]">OSS</p>
+                  <p className="text-xs text-[#57606a]">workflow</p>
+                </div>
+              </div>
+              <div className="p-4">
+                <div className="flex flex-wrap gap-2">
+                  <a
+                    href="https://github.com/jasimvk/mydebugtools"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-[#d0d7de] bg-white px-3 py-1.5 text-xs font-semibold text-[#24292f] hover:bg-[#f6f8fa]"
+                  >
+                    <Star className="h-3.5 w-3.5" />
+                    Star
+                  </a>
+                  {repoLinks.slice(1).map((link) => (
+                    link.href.startsWith('/') ? (
+                      <Link
+                        key={link.label}
+                        href={link.href}
+                        className="rounded-md border border-[#d0d7de] bg-white px-3 py-1.5 text-xs font-semibold text-[#24292f] hover:bg-[#f6f8fa]"
+                      >
+                        {link.label}
+                      </Link>
+                    ) : (
+                      <a
+                        key={link.label}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-md border border-[#d0d7de] bg-white px-3 py-1.5 text-xs font-semibold text-[#24292f] hover:bg-[#f6f8fa]"
+                      >
+                        {link.label}
+                      </a>
+                    )
+                  ))}
+                </div>
+              </div>
             </div>
-          </div> */}
+          </aside>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+        <div className="mb-5 flex flex-col justify-between gap-3 border-b border-[#d0d7de] pb-4 sm:flex-row sm:items-end">
+          <div>
+            <p className="font-mono text-xs text-[#57606a]">/packages/tools</p>
+            <h2 className="mt-1 text-2xl font-semibold text-[#24292f]">Featured modules</h2>
+          </div>
+          <Link href="/tools/all" className="inline-flex items-center gap-1 text-sm font-semibold text-[#0969da] hover:text-[#0969da]">
+            View all tools
+            <ArrowRightIcon className="h-4 w-4" />
+          </Link>
         </div>
 
-        {/* Featured Tools - Improved Cards with Better Spacing */}
-        <div className="max-w-7xl mx-auto py-12 md:py-16">
-          {/* Section Header */}
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-3">
-              Popular Tools
-            </h2>
-            <p className="text-base text-gray-600 max-w-2xl mx-auto">
-              Start with these widely-used utilities, or explore 30+ tools
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+          {featuredTools.map((tool) => {
+            const Icon = tool.icon;
+            return (
+              <Link
+                key={tool.href}
+                href={tool.href}
+                className="group rounded-md border border-[#d0d7de] bg-white p-4 text-[#24292f] hover:border-[#0969da] hover:bg-[#f6f8fa] hover:text-[#24292f]"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="rounded-md border border-[#d0d7de] bg-[#f6f8fa] p-2">
+                    <Icon className="h-5 w-5 text-[#57606a]" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-base font-semibold text-[#0969da]">{tool.name}</h3>
+                    <p className="mt-1 font-mono text-xs text-[#57606a]">{tool.slug}</p>
+                    <p className="mt-3 text-sm leading-6 text-[#57606a]">{tool.description}</p>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="border-y border-[#d0d7de] bg-white">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-2">
+          <div>
+            <p className="font-mono text-xs text-[#57606a]">README.md</p>
+            <h2 className="mt-2 text-2xl font-semibold text-[#24292f]">Why this project exists</h2>
+            <p className="mt-3 text-sm leading-7 text-[#57606a]">
+              Developers reach for quick web utilities all day, but many of them are noisy, opaque, or too narrow. MyDebugTools keeps the workflows simple and keeps the project inspectable.
             </p>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-            {/* JSON Tool */}
-            <Link href="/tools/json" className="group bg-white rounded-xl border-2 border-gray-200 hover:border-[#FF6C37] transition-all duration-200 p-6 hover:shadow-lg hover:scale-105">
-              <div className="inline-flex p-3 rounded-lg bg-gray-100 group-hover:bg-[#FF6C37] transition-all duration-200 mb-4">
-                <CurlyBraces className="h-6 w-6 text-gray-900 group-hover:text-white transition-colors" />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">
-                JSON Formatter
-              </h3>
-              <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                Format, validate, and visualize JSON data instantly
-              </p>
-              <div className="flex items-center text-[#FF6C37] font-bold text-sm group-hover:gap-2 transition-all">
-                Try it now
-                <ArrowRightIcon className="h-4 w-4 ml-1" />
-              </div>
-            </Link>
-            
-            {/* JWT Tool */}
-            <Link href="/tools/jwt" className="group bg-white rounded-xl border-2 border-gray-200 hover:border-[#FF6C37] transition-all duration-200 p-6 hover:shadow-lg hover:scale-105">
-              <div className="inline-flex p-3 rounded-lg bg-gray-100 group-hover:bg-[#FF6C37] transition-all duration-200 mb-4">
-                <KeyIcon className="h-6 w-6 text-gray-900 group-hover:text-white transition-colors" />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">
-                JWT Decoder
-              </h3>
-              <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                Decode and verify JSON Web Tokens with ease
-              </p>
-              <div className="flex items-center text-[#FF6C37] font-bold text-sm group-hover:gap-2 transition-all">
-                Try it now
-                <ArrowRightIcon className="h-4 w-4 ml-1" />
-              </div>
-            </Link>
-            
-            {/* HTML Editor */}
-            <Link href="/tools/html" className="group bg-white rounded-xl border-2 border-gray-200 hover:border-[#FF6C37] transition-all duration-200 p-6 hover:shadow-lg hover:scale-105">
-              <div className="inline-flex p-3 rounded-lg bg-gray-100 group-hover:bg-[#FF6C37] transition-all duration-200 mb-4">
-                <CodeBracketIcon className="h-6 w-6 text-gray-900 group-hover:text-white transition-colors" />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">
-                HTML Editor
-              </h3>
-              <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                WYSIWYG editor with templates, preview & email-safe export
-              </p>
-              <div className="flex items-center text-[#FF6C37] font-bold text-sm group-hover:gap-2 transition-all">
-                Try it now
-                <ArrowRightIcon className="h-4 w-4 ml-1" />
-              </div>
-            </Link>
-            
-            {/* Base64 */}
-            <Link href="/tools/base64" className="group bg-white rounded-xl border-2 border-gray-200 hover:border-[#FF6C37] transition-all duration-200 p-6 hover:shadow-lg hover:scale-105">
-              <div className="inline-flex p-3 rounded-lg bg-gray-100 group-hover:bg-[#FF6C37] transition-all duration-200 mb-4">
-                <DocumentCheckIcon className="h-6 w-6 text-gray-900 group-hover:text-white transition-colors" />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">
-                Base64 Encoder
-              </h3>
-              <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                Encode and decode Base64 strings and files
-              </p>
-              <div className="flex items-center text-[#FF6C37] font-bold text-sm group-hover:gap-2 transition-all">
-                Try it now
-                <ArrowRightIcon className="h-4 w-4 ml-1" />
-              </div>
-            </Link>
-            
-            {/* Code Diff */}
-            <Link href="/tools/code-diff" className="group bg-white rounded-xl border-2 border-gray-200 hover:border-[#FF6C37] transition-all duration-200 p-6 hover:shadow-lg hover:scale-105">
-              <div className="inline-flex p-3 rounded-lg bg-gray-100 group-hover:bg-[#FF6C37] transition-all duration-200 mb-4">
-                <CodeBracketIcon className="h-6 w-6 text-gray-900 group-hover:text-white transition-colors" />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">
-                Code Diff
-              </h3>
-              <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                Compare code with syntax highlighting
-              </p>
-              <div className="flex items-center text-[#FF6C37] font-bold text-sm group-hover:gap-2 transition-all">
-                Try it now
-                <ArrowRightIcon className="h-4 w-4 ml-1" />
-              </div>
-            </Link>
-            
-            {/* View All Tools */}
-            <Link href="/tools" className="group bg-gradient-to-br from-gray-900 to-gray-800 hover:from-[#FF6C37] hover:to-[#ff5722] rounded-xl border-2 border-gray-900 hover:border-[#FF6C37] transition-all duration-200 p-6 hover:shadow-lg hover:scale-105">
-              <div className="inline-flex p-3 rounded-lg bg-white/10 group-hover:bg-white/20 transition-all duration-200 mb-4">
-                <WrenchIcon className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">
-                View All Tools
-              </h3>
-              <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                Explore our complete collection of 30+ utilities
-              </p>
-              <div className="flex items-center text-white font-bold text-sm group-hover:gap-2 transition-all">
-                Browse all
-                <ArrowRightIcon className="h-4 w-4 ml-1" />
-              </div>
-            </Link>
+          <div className="rounded-md border border-[#d0d7de] bg-[#f6f8fa] p-4">
+            <ul className="space-y-3">
+              {principles.map((principle) => (
+                <li key={principle} className="flex items-center gap-3 text-sm text-[#24292f]">
+                  <span className="h-2 w-2 rounded-full bg-[#1f883d]" />
+                  {principle}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
+      </section>
 
-        {/* Footer - Modern Design */}
-        <footer className="max-w-7xl mx-auto py-12 md:py-16">
-          <div className="bg-gradient-to-b from-gray-900 to-gray-800 rounded-2xl border border-gray-700 p-8 md:p-10 shadow-xl">
-            <div className="flex flex-col gap-8">
-              {/* Footer Links Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-center md:text-left">
-                <a href="https://buymeacoffee.com/jasimvk" target="_blank" rel="noopener noreferrer" className="text-[#FFDD00] hover:text-[#FFED4E] transition-colors font-semibold text-sm flex items-center justify-center md:justify-start gap-1">
-                  ☕ Support Us
-                </a>
-                <a href="https://github.com/jasimvk/mydebugtools" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#FF6C37] transition-colors font-medium text-sm">
-                  ⭐ Star on GitHub
-                </a>
-                <a href="https://github.com/jasimvk/mydebugtools/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#FF6C37] transition-colors font-medium text-sm">
-                  MIT License
-                </a>
-                <a href="https://github.com/jasimvk/mydebugtools/issues" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#FF6C37] transition-colors font-medium text-sm">
-                  Report Issue
-                </a>
-                <a href="https://github.com/jasimvk/mydebugtools/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#FF6C37] transition-colors font-medium text-sm">
-                  Contribute
-                </a>
-                <Link href="/contact" className="text-gray-300 hover:text-[#FF6C37] transition-colors font-medium text-sm">
-                  Contact
-                </Link>
-              </div>
-
-              {/* Divider */}
-              <div className="w-full h-px bg-gray-700"></div>
-
-              {/* Footer Bottom */}
-              <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <Terminal className="h-5 w-5 text-[#FF6C37]" />
-                  <span className="text-gray-300">
-                    MyDebugTools © 2024. Built for developers.
-                  </span>
-                </div>
-                <Link href="/privacy-policy" className="text-gray-300 hover:text-[#FF6C37] transition-colors underline">
-                  Privacy & Terms
-                </Link>
-              </div>
-            </div>
-          </div>
-        </footer>
-      </div>
-    </div>
+      <footer className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-[#57606a] sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="flex items-center gap-2">
+          <Terminal className="h-4 w-4" />
+          <span>MyDebugTools is open source developer infrastructure.</span>
+        </div>
+        <div className="flex flex-wrap gap-4">
+          {repoLinks.map((link) => (
+            link.href.startsWith('/') ? (
+              <Link key={link.label} href={link.href} className="font-medium text-[#57606a] hover:text-[#0969da]">
+                {link.label}
+              </Link>
+            ) : (
+              <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" className="font-medium text-[#57606a] hover:text-[#0969da]">
+                {link.label}
+              </a>
+            )
+          ))}
+        </div>
+      </footer>
+    </main>
   );
 }

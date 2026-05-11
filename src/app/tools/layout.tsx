@@ -2,62 +2,45 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  KeyIcon,
+import {
   ArrowsRightLeftIcon,
-  DocumentTextIcon,
-  DocumentCheckIcon,
-  GlobeAltIcon,
   BeakerIcon,
+  CommandLineIcon,
+  DocumentCheckIcon,
+  DocumentTextIcon,
+  GlobeAltIcon,
+  KeyIcon,
+  ClockIcon,
+  ShieldCheckIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/outline';
-import { CurlyBracesIcon, Terminal, Github } from 'lucide-react';
+import { CurlyBracesIcon, Github, Menu, Terminal, X } from 'lucide-react';
 import { useState } from 'react';
 import AdSlot from '@/app/components/AdSlot';
 
-// Tools organized by category
 const tools = [
-  {
-    name: 'JSON Tools',
-    description: 'Format, validate, and beautify your JSON data with syntax highlighting',
-    path: '/tools/json',
-    icon: CurlyBracesIcon
-  },
-  {
-    name: 'HTML Editor',
-    description: 'Visual HTML editor with live preview and code sync',
-    path: '/tools/html',
-    icon: DocumentTextIcon
-  },
-  {
-    name: 'JWT Decoder',
-    description: 'Decode and verify JWT tokens instantly',
-    path: '/tools/jwt',
-    icon: KeyIcon
-  },
-  {
-    name: 'API Tester',
-    description: 'Test and debug REST APIs',
-    path: '/tools/api',
-    icon: BeakerIcon
-  },
-  {
-    name: 'HTTP Status',
-    description: 'HTTP status codes reference',
-    path: '/tools/http-status',
-    icon: GlobeAltIcon
-  },
-  {
-    name: 'Code Diff',
-    description: 'Compare code differences',
-    path: '/tools/code-diff',
-    icon: ArrowsRightLeftIcon
-  },
-  {
-    name: 'Base64',
-    description: 'Encode and decode Base64',
-    path: '/tools/base64',
-    icon: DocumentCheckIcon
-  }
+  { name: 'All Tools', path: '/tools/all', icon: CommandLineIcon },
+  { name: 'API Tester', path: '/tools/api', icon: BeakerIcon },
+  { name: 'JSON', path: '/tools/json', icon: CurlyBracesIcon },
+  { name: 'JWT', path: '/tools/jwt', icon: KeyIcon },
+  { name: 'Hash', path: '/tools/hash', icon: ShieldCheckIcon },
+  { name: 'HTML', path: '/tools/html', icon: DocumentTextIcon },
+  { name: 'HTTP', path: '/tools/http-status', icon: GlobeAltIcon },
+  { name: 'Diff', path: '/tools/code-diff', icon: ArrowsRightLeftIcon },
+  { name: 'Base64', path: '/tools/base64', icon: DocumentCheckIcon },
+  { name: 'UUID', path: '/tools/uuid', icon: SparklesIcon },
+  { name: 'URL', path: '/tools/url', icon: GlobeAltIcon },
+  { name: 'Time', path: '/tools/timestamp', icon: ClockIcon },
+];
+
+const repoLinks = [
+  { label: 'Repository', href: 'https://github.com/jasimvk/mydebugtools' },
+  { label: 'Issues', href: 'https://github.com/jasimvk/mydebugtools/issues' },
+  { label: 'Sponsor', href: 'https://buymeacoffee.com/jasimvk' },
+  { label: 'Roadmap', href: '/roadmap' },
+  { label: 'CLI', href: '/cli' },
+  { label: 'Releases', href: '/releases' },
+  { label: 'License', href: 'https://github.com/jasimvk/mydebugtools/blob/main/LICENSE' },
 ];
 
 export default function ToolsLayout({
@@ -68,112 +51,88 @@ export default function ToolsLayout({
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const isActive = (path: string) => pathname === path;
-
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}>
-      {/* Clean Professional Navbar */}
-      <nav className="bg-white border-b border-gray-200">
-        <div className="w-full px-6 py-6">
-          <div className="flex items-center justify-between max-w-[1600px] mx-auto">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2">
-              <Terminal className="h-5 w-5 text-[#FF6C37]" strokeWidth={2.5} />
-              <span className="text-xl font-semibold text-gray-900">MyDebugTools</span>
-            </Link>
+    <div className="flex min-h-screen flex-col bg-[#f6f8fa] text-[#24292f]">
+      <nav className="border-b border-[#d0d7de] bg-white">
+        <div className="mx-auto flex max-w-[1600px] items-center justify-between px-4 py-3 sm:px-6">
+          <Link href="/" className="flex items-center gap-2 text-[#24292f] hover:text-[#24292f]">
+            <Terminal className="h-5 w-5" />
+            <span className="font-semibold">MyDebugTools</span>
+            <span className="hidden rounded-full border border-[#d0d7de] px-2 py-0.5 text-xs font-medium text-[#57606a] md:inline">
+              tools
+            </span>
+          </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-1">
-              <Link
-                href="/tools/all"
-                className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded transition-colors ${
-                  pathname === '/tools/all'
-                    ? 'bg-[#FF6C37] text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <span>All Tools</span>
-              </Link>
-              {tools.map((tool) => {
-                const Icon = tool.icon;
-                const active = isActive(tool.path);
-                return (
-                  <Link
-                    key={tool.name}
-                    href={tool.path}
-                    className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded transition-colors ${
-                      active
-                        ? 'bg-[#FF6C37] text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" strokeWidth={2} />
-                    <span>{tool.name}</span>
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* Right side */}
-            <div className="hidden md:flex items-center gap-3">
-              <a
-                href="https://github.com/jasimvk/mydebugtools"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900"
-              >
-                <Github className="h-4 w-4" strokeWidth={2} />
-                <span>GitHub</span>
-              </a>
-            </div>
-
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 text-gray-700 hover:bg-gray-100 rounded"
-            >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                {mobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
+          <div className="hidden items-center gap-1 lg:flex">
+            {tools.map((tool) => {
+              const Icon = tool.icon;
+              const active = pathname === tool.path;
+              return (
+                <Link
+                  key={tool.path}
+                  href={tool.path}
+                  className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${
+                    active
+                      ? 'bg-[#eaeef2] text-[#24292f]'
+                      : 'text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {tool.name}
+                </Link>
+              );
+            })}
           </div>
+
+          <div className="hidden items-center gap-2 md:flex">
+            <a
+              href="https://github.com/jasimvk/mydebugtools/issues/new"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f]"
+            >
+              New issue
+            </a>
+            <a
+              href="https://github.com/jasimvk/mydebugtools"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-md bg-[#24292f] px-3 py-2 text-sm font-semibold text-white hover:bg-[#32383f] hover:text-white"
+            >
+              <Github className="h-4 w-4" />
+              GitHub
+            </a>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="rounded-md border border-[#d0d7de] p-2 text-[#57606a] hover:bg-[#f6f8fa] lg:hidden"
+            aria-label={mobileMenuOpen ? 'Close tools navigation' : 'Open tools navigation'}
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
 
-        {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-gray-200 bg-white">
-            <div className="px-4 py-3 space-y-1">
-              <Link
-                href="/tools/all"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded ${
-                  pathname === '/tools/all'
-                    ? 'bg-[#FF6C37] text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <span>All Tools</span>
-              </Link>
+          <div className="border-t border-[#d0d7de] bg-white lg:hidden">
+            <div className="grid gap-1 px-4 py-3">
               {tools.map((tool) => {
                 const Icon = tool.icon;
-                const active = isActive(tool.path);
+                const active = pathname === tool.path;
                 return (
                   <Link
-                    key={tool.name}
+                    key={tool.path}
                     href={tool.path}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded ${
+                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium ${
                       active
-                        ? 'bg-[#FF6C37] text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
+                        ? 'bg-[#eaeef2] text-[#24292f]'
+                        : 'text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]'
                     }`}
                   >
-                    <Icon className="h-4 w-4" strokeWidth={2} />
-                    <span>{tool.name}</span>
+                    <Icon className="h-4 w-4" />
+                    {tool.name}
                   </Link>
                 );
               })}
@@ -181,55 +140,45 @@ export default function ToolsLayout({
                 href="https://github.com/jasimvk/mydebugtools"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded transition-colors"
+                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]"
               >
-                <Github className="h-4 w-4" strokeWidth={2} />
-                <span>GitHub</span>
+                <Github className="h-4 w-4" />
+                GitHub
               </a>
             </div>
           </div>
         )}
       </nav>
 
-      {/* Main content */}
       <main className="flex-1">
-        <div className="w-full px-6 py-6">
+        <div className="oss-tools-surface w-full px-4 py-5 sm:px-6">
           {children}
         </div>
-        
-        {/* Ad placement above footer */}
-        <div className="w-full px-6 py-4">
-          <div className="max-w-[1600px] mx-auto">
+
+        <div className="w-full px-4 py-4 sm:px-6">
+          <div className="mx-auto max-w-[1600px]">
             <AdSlot adSlot="8212501976" />
           </div>
         </div>
-        
-        <footer className="border-t border-gray-200 bg-white mt-12">
-          <div className="w-full px-6 py-8">
-            <div className="max-w-[1600px] mx-auto">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <a
-                  href="https://github.com/jasimvk/mydebugtools"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium rounded"
-                >
-                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-                  </svg>
-                  Star on GitHub
-                </a>
-              </div>
-              <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
-                <Link href="/privacy-policy" className="hover:text-gray-900">Privacy</Link>
-                <Link href="/terms-of-service" className="hover:text-gray-900">Terms</Link>
-                <Link href="/contact" className="hover:text-gray-900">Contact</Link>
-              </div>
-              <div className="text-sm text-gray-600">
-                Developed & Maintained by <a href="https://x.com/jasimvk" target="_blank" rel="noopener noreferrer" className="text-gray-900 hover:text-[#FF6C37] font-medium">Jasim</a>
-              </div>
+
+        <footer className="mt-10 border-t border-[#d0d7de] bg-white">
+          <div className="mx-auto flex max-w-[1600px] flex-col gap-4 px-4 py-6 text-sm text-[#57606a] sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-2">
+              <Terminal className="h-4 w-4" />
+              <span>Open-source tools for debugging, formatting, and inspecting code.</span>
             </div>
+            <div className="flex flex-wrap gap-4">
+              {repoLinks.map((link) => (
+                link.href.startsWith('/') ? (
+                  <Link key={link.label} href={link.href} className="font-medium text-[#57606a] hover:text-[#0969da]">
+                    {link.label}
+                  </Link>
+                ) : (
+                  <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" className="font-medium text-[#57606a] hover:text-[#0969da]">
+                    {link.label}
+                  </a>
+                )
+              ))}
             </div>
           </div>
         </footer>

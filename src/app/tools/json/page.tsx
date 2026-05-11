@@ -281,18 +281,18 @@ export default function JSONTools() {
   const treeContainerRef = useRef<HTMLDivElement>(null);
 
   // Parse JSON input text to object
-  const parseJsonInput = useCallback(() => {
+  const parseJsonInput = useCallback((input = jsonInput) => {
     try {
-      const parsed = JSON.parse(jsonInput);
+      const parsed = JSON.parse(input);
       setParsedJson(parsed);
       setError('');
       setIsValid(true);
       setTreeCollapsed(2);
       
       // Update stats
-      const lines = jsonInput.split('\n').length;
-      const chars = jsonInput.length;
-      const size = new Blob([jsonInput]).size;
+      const lines = input.split('\n').length;
+      const chars = input.length;
+      const size = new Blob([input]).size;
       const sizeStr = size < 1024 ? `${size} B` : 
                      size < 1024 * 1024 ? `${(size / 1024).toFixed(2)} KB` :
                      `${(size / (1024 * 1024)).toFixed(2)} MB`;
@@ -361,7 +361,7 @@ export default function JSONTools() {
       const text = ev.target?.result as string;
       setJsonInput(text);
       setActiveTab('text');
-      setTimeout(() => parseJsonInput(), 0);
+      parseJsonInput(text);
     };
     reader.readAsText(file);
     e.target.value = '';
@@ -378,7 +378,7 @@ export default function JSONTools() {
       const text = await res.text();
       setJsonInput(text);
       setActiveTab('text');
-      setTimeout(() => parseJsonInput(), 0);
+      parseJsonInput(text);
       urlInputRef.current!.value = '';
       setError('');
     } catch (e) {
@@ -456,17 +456,16 @@ export default function JSONTools() {
       const text = await navigator.clipboard.readText();
       setJsonInput(text);
       setActiveTab('text');
-      setTimeout(() => {
-        parseJsonInput();
-        // Auto-format on paste if JSON is valid
-        try {
-          const obj = JSON.parse(text);
-          setJsonInput(JSON.stringify(obj, null, 2));
-          setIsPretty(true);
-        } catch {
-          // If invalid, just show the pasted text
-        }
-      }, 0);
+      parseJsonInput(text);
+      try {
+        const obj = JSON.parse(text);
+        const formatted = JSON.stringify(obj, null, 2);
+        setJsonInput(formatted);
+        setIsPretty(true);
+        parseJsonInput(formatted);
+      } catch {
+        // If invalid, just show the pasted text
+      }
     } catch (e) {
       setError('Failed to paste from clipboard. Please paste manually.');
     }
@@ -622,9 +621,10 @@ export default function JSONTools() {
       ],
       metadata: { created: "2024-01-01T00:00:00Z", lastModified: new Date().toISOString(), environment: "production" }
     };
-    setJsonInput(JSON.stringify(sample, null, 2));
+    const text = JSON.stringify(sample, null, 2);
+    setJsonInput(text);
     setActiveTab('text');
-    setTimeout(() => parseJsonInput(), 0);
+    parseJsonInput(text);
   };
 
   // Reset all
@@ -643,9 +643,7 @@ export default function JSONTools() {
     const text = e.clipboardData.getData('text');
     if (text) {
       setJsonInput(text);
-      setTimeout(() => {
-        parseJsonInput();
-      }, 0);
+      parseJsonInput(text);
     }
   };
 

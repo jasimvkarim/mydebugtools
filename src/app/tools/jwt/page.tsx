@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { KeyIcon, ClipboardIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { decodeJwtSegment } from '@/app/tools/lib/tool-utils';
 
 interface JWTPayload {
   [key: string]: any;
@@ -28,8 +29,8 @@ export default function JWTDecoder() {
         throw new Error('Invalid JWT format');
       }
 
-      const decodedHeader = JSON.parse(atob(parts[0]));
-      const decodedPayload = JSON.parse(atob(parts[1]));
+      const decodedHeader = decodeJwtSegment(parts[0]) as JWTPayload;
+      const decodedPayload = decodeJwtSegment(parts[1]) as JWTPayload;
 
       setHeader(decodedHeader);
       setPayload(decodedPayload);
@@ -257,4 +258,4 @@ export default function JWTDecoder() {
       </div>
     </div>
   );
-} 
+}

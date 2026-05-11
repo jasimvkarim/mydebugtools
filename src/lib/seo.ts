@@ -9,13 +9,26 @@ export function buildMetadata({
   title: string
   description: string
   path: string
-  keywords?: string[]
+  keywords?: readonly string[]
 }): Metadata {
   const url = `https://mydebugtools.com${path}`
+  const image = 'https://mydebugtools.com/og-image.svg'
   return {
     title,
     description,
+    metadataBase: new URL('https://mydebugtools.com'),
     alternates: { canonical: url },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-snippet': -1,
+        'max-image-preview': 'large',
+        'max-video-preview': -1,
+      },
+    },
     openGraph: {
       title,
       description,
@@ -24,10 +37,11 @@ export function buildMetadata({
       siteName: 'MyDebugTools',
       images: [
         {
-          url: 'https://mydebugtools.com/og-image.png',
+          url: image,
           width: 1200,
           height: 630,
           alt: title,
+          type: 'image/svg+xml',
         },
       ],
     },
@@ -35,10 +49,8 @@ export function buildMetadata({
       card: 'summary_large_image',
       title,
       description,
-      images: ['https://mydebugtools.com/og-image.png'],
+      images: [image],
     },
     keywords: keywords?.join(', '),
   }
 }
-
-

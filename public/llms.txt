@@ -1,0 +1,53 @@
+# MyDebugTools
+
+> Free, open-source, privacy-focused browser tools for developers. MyDebugTools helps debug APIs, format data, decode tokens, compare code, inspect bundles, and document releases.
+
+## Core Pages
+
+- [Homepage](https://mydebugtools.com/): Project overview and featured tools.
+- [All tools](https://mydebugtools.com/tools/all/): Complete tool registry.
+- [Developer answers](https://mydebugtools.com/answers/): Concise answer pages for common debugging workflows.
+- [CLI roadmap](https://mydebugtools.com/cli/): Command-line plans and scope.
+- [Roadmap](https://mydebugtools.com/roadmap/): Shipped work, active foundation work, and future modules.
+- [Releases](https://mydebugtools.com/releases/): Release notes and changelog context.
+- [FAQ](https://mydebugtools.com/faq/): Product, privacy, contribution, licensing, and usage answers.
+- [GitHub repository](https://github.com/jasimvk/mydebugtools): Source code, issues, license, and contribution workflow.
+
+## Shipped Tools
+
+- [API Tester](https://mydebugtools.com/tools/api/): REST client with collections, auth, environments, imports, and response inspection.
+- [JSON Formatter](https://mydebugtools.com/tools/json/): Format, validate, repair, and inspect JSON payloads.
+- [JWT Decoder](https://mydebugtools.com/tools/jwt/): Decode JWT headers and payload claims locally in the browser.
+- [HTTP Status Codes](https://mydebugtools.com/tools/http-status/): Reference HTTP status codes and response meanings.
+- [Code Diff](https://mydebugtools.com/tools/code-diff/): Compare snippets during code review and debugging.
+- [Base64 Encoder and Decoder](https://mydebugtools.com/tools/base64/): Encode and decode Base64 strings and files.
+- [Regex Tester](https://mydebugtools.com/tools/regex/): Test regular expressions with live matches.
+- [Color Picker](https://mydebugtools.com/tools/color/): Pick, convert, and inspect color values.
+- [CSS Tools](https://mydebugtools.com/tools/css/): Minify, beautify, and validate CSS.
+- [HTML Tools](https://mydebugtools.com/tools/html/): Format, preview, and inspect HTML.
+- [Markdown Preview](https://mydebugtools.com/tools/markdown/): Write and preview Markdown content.
+- [Icon Finder](https://mydebugtools.com/tools/icons/): Search icon libraries for UI assets.
+- [Crash Beautifier](https://mydebugtools.com/tools/crash-beautifier/): Clean up and inspect stack traces.
+- [Build Diff](https://mydebugtools.com/tools/build-diff/): Compare build outputs and artifact changes.
+- [Bundle Analyzer](https://mydebugtools.com/tools/bundle-analyzer/): Inspect bundle size and composition.
+- [Database Query](https://mydebugtools.com/tools/database/): Run SQLite queries in a focused workspace.
+- [Startup Profiling](https://mydebugtools.com/tools/startup-profiling/): Visualize React Native startup timelines.
+- [Hash Generator](https://mydebugtools.com/tools/hash/): Generate SHA hashes locally in the browser.
+- [UUID Generator](https://mydebugtools.com/tools/uuid/): Generate UUID v4 values in bulk for fixtures and local development.
+- [URL Encoder and Decoder](https://mydebugtools.com/tools/url/): Encode, decode, and inspect URLs and query strings.
+- [Timestamp Converter](https://mydebugtools.com/tools/timestamp/): Convert Unix timestamps, ISO strings, UTC, and local date-time values.
+
+## Answer Pages
+
+- [Best free JSON formatter](https://mydebugtools.com/answers/best-free-json-formatter/)
+- [How to decode a JWT safely](https://mydebugtools.com/answers/how-to-decode-jwt-safely/)
+- [Base64 encode vs decode](https://mydebugtools.com/answers/base64-encode-vs-decode/)
+- [Test an API request online](https://mydebugtools.com/answers/test-api-request-online/)
+- [Compare two code snippets](https://mydebugtools.com/answers/compare-two-code-snippets/)
+
+## Optional
+
+- [Privacy Policy](https://mydebugtools.com/privacy-policy/)
+- [Terms of Service](https://mydebugtools.com/terms-of-service/)
+- [Cookie Policy](https://mydebugtools.com/cookie-policy/)
+- [Sponsor](https://buymeacoffee.com/jasimvk)

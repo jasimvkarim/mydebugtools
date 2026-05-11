@@ -4,17 +4,21 @@ import { usePathname } from 'next/navigation';
 import Script from 'next/script';
 
 interface StructuredDataProps {
+  id?: string;
   title?: string;
   description?: string;
-  type?: 'WebApplication' | 'WebSite' | 'WebPage';
+  type?: 'WebApplication' | 'WebSite' | 'WebPage' | 'SoftwareApplication' | 'FAQPage' | 'ItemList' | 'Organization';
   toolType?: string;
+  schema?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 export default function StructuredData({
+  id = 'structured-data',
   title = 'MyDebugTools - All-in-one Developer Debugging Toolkit',
   description = 'A powerful collection of development tools including JSON Formatter, JWT Decoder, Base64 Tools, API Tester, and Icon Finder - all in one place.',
   type = 'WebApplication',
   toolType,
+  schema: explicitSchema,
 }: StructuredDataProps) {
   const pathname = usePathname();
   const url = `https://mydebugtools.com${pathname}`;
@@ -53,7 +57,7 @@ export default function StructuredData({
   };
   
   // Tool-specific schema
-  let schema = baseSchema;
+  let schema: Record<string, unknown> = baseSchema;
   
   if (toolType) {
     const toolSchemaAdditions = {
@@ -67,12 +71,18 @@ export default function StructuredData({
     schema = { ...baseSchema, ...toolSchemaAdditions };
   }
   
+  const outputSchema = explicitSchema
+    ? Array.isArray(explicitSchema)
+      ? { '@context': 'https://schema.org', '@graph': explicitSchema }
+      : explicitSchema
+    : schema;
+
   return (
     <Script
-      id="structured-data"
+      id={id}
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(outputSchema) }}
       strategy="afterInteractive"
     />
   );
-} 
+}

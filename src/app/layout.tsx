@@ -1,18 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import GoogleAnalytics from "./components/GoogleAnalytics";
 import AnalyticsProvider from "./components/AnalyticsProvider";
 import AuthProvider from "./components/AuthProvider";
 import Providers from "./providers";
-import StructuredData from "@/components/StructuredData";
 import Script from "next/script";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: 'swap',
-  variable: '--font-inter',
-});
 
 export const viewport: Viewport = {
   themeColor: '#FF6C37',
@@ -77,9 +69,49 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const siteJsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        '@id': 'https://mydebugtools.com/#website',
+        name: 'MyDebugTools',
+        url: 'https://mydebugtools.com/',
+        description: metadata.description,
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: 'https://mydebugtools.com/tools/all/?q={search_term_string}',
+          'query-input': 'required name=search_term_string',
+        },
+      },
+      {
+        '@type': 'SoftwareApplication',
+        '@id': 'https://mydebugtools.com/#app',
+        name: 'MyDebugTools',
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'Any',
+        url: 'https://mydebugtools.com/',
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'USD',
+        },
+        author: {
+          '@type': 'Person',
+          name: 'Jasim VK',
+          url: 'https://x.com/jasimvk',
+        },
+      },
+    ],
+  };
+
   return (
-    <html lang="en" className={inter.variable}>
-      <body className={`${inter.className} antialiased bg-white text-gray-900 min-h-screen flex flex-col`}>
+    <html lang="en">
+      <body className="antialiased bg-white text-gray-900 min-h-screen flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
+        />
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT && (
           <Script
             id="adsbygoogle-init"
@@ -91,7 +123,6 @@ export default function RootLayout({
         {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
           <GoogleAnalytics measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
         )}
-        <StructuredData /> 
         <AuthProvider>
           <AnalyticsProvider>
             <Providers>

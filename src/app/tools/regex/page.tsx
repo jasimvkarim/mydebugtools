@@ -12,6 +12,7 @@ import {
   InformationCircleIcon,
   FlagIcon
 } from '@heroicons/react/24/outline';
+import { runRegexTest } from '@/app/tools/lib/tool-utils';
 
 // Regex flags
 const regexFlags = [
@@ -81,31 +82,13 @@ export default function RegexTesterPage() {
 
     try {
       setError(null);
-      const flags = selectedFlags.join('');
-      const regex = new RegExp(pattern, flags);
-      
-      // Test if there's a match
-      const match = regex.test(testString);
-      
-      // Find all matches
-      const matches: string[] = [];
-      const groups: string[][] = [];
-      
-      if (match) {
-        let result;
-        const regexWithGlobal = new RegExp(pattern, flags + 'g');
-        
-        while ((result = regexWithGlobal.exec(testString)) !== null) {
-          matches.push(result[0]);
-          groups.push(result.slice(1));
-        }
-      }
-      
-      setResults({ match, matches, groups });
+      const flags = Array.from(new Set(selectedFlags)).join('');
+      const nextResults = runRegexTest(pattern, testString, selectedFlags);
+      setResults(nextResults);
       
       // Apply replacement if there's a replacement string
       if (replacement) {
-        const replaced = testString.replace(regex, replacement);
+        const replaced = testString.replace(new RegExp(pattern, flags), replacement);
         setReplacedText(replaced);
       } else {
         setReplacedText('');
@@ -416,4 +399,4 @@ export default function RegexTesterPage() {
       </Card>
     </div>
   );
-} 
+}

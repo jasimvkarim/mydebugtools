@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { authOptions } from '@/lib/auth-options';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
 // GET /api/collections - Get all collections for the current user
 export async function GET() {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
     const session = await getServerSession(authOptions);
     
     if (!session?.user) {
@@ -38,6 +39,7 @@ export async function GET() {
 // POST /api/collections - Create a new collection
 export async function POST(request: Request) {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
     const session = await getServerSession(authOptions);
     
     if (!session?.user) {
@@ -78,6 +80,7 @@ export async function POST(request: Request) {
 // DELETE /api/collections?id=xxx - Delete a collection
 export async function DELETE(request: Request) {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
     const session = await getServerSession(authOptions);
     
     if (!session?.user) {

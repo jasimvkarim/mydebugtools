@@ -1,3 +1,6 @@
+const isGitHubPages = process.env.GITHUB_PAGES === 'true';
+const githubPagesBasePath = '/mydebugtools';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -18,6 +21,9 @@ const nextConfig = {
   // Skip static generation and use client-side rendering instead
   // This avoids the useSearchParams Suspense boundary errors during build
   trailingSlash: true,
+  output: isGitHubPages ? 'export' : undefined,
+  basePath: isGitHubPages ? githubPagesBasePath : undefined,
+  assetPrefix: isGitHubPages ? `${githubPagesBasePath}/` : undefined,
   images: {
     unoptimized: true,
   },
@@ -25,30 +31,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  async rewrites() {
-    return [
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'test.mydebugtools.com',
-          },
-        ],
-        destination: '/new/:path*',
-      },
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'mydebugtools.com',
-          },
-        ],
-        destination: '/stable/:path*',
-      },
-    ];
-  },
 }
 
-module.exports = nextConfig 
+module.exports = nextConfig

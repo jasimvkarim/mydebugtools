@@ -5,7 +5,7 @@
 :root {
   --background: #fafafa;
   --foreground: #171717;
-  --font-sans: var(--font-inter);
+  --font-sans: Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", Consolas, "Liberation Mono", "Courier New", monospace;
   --primary: #FF6C37;
   --primary-hover: #ff5722;
   --border: #e5e7eb;
@@ -22,9 +22,16 @@
   
   body {
     @apply transition-colors duration-200;
-    font-family: var(--font-sans);
+    font-family: var(--font-sans) !important;
     background: var(--background);
     color: var(--foreground);
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font-family: var(--font-sans) !important;
   }
 
   /* Consistent button styles */
@@ -153,4 +160,66 @@ body {
 .animate-gradient-x {
   background-size: 200% 200%;
   animation: gradient-x 3s ease infinite;
+}
+
+/* OSS tool surface normalization
+   Keeps older individual tools visually aligned with the repo/docs shell. */
+.oss-tools-surface [class*="bg-gradient-to"] {
+  background-image: none !important;
+  background-color: #f6f8fa !important;
+  color: #24292f !important;
+}
+
+.oss-tools-surface [class*="rounded-xl"],
+.oss-tools-surface [class*="rounded-2xl"] {
+  border-radius: 6px !important;
+}
+
+.oss-tools-surface [class*="shadow-lg"],
+.oss-tools-surface [class*="shadow-xl"],
+.oss-tools-surface [class*="shadow-2xl"] {
+  box-shadow: none !important;
+}
+
+.oss-tools-surface [class*="bg-[#FF6C37]"],
+.oss-tools-surface [class*="bg-orange-600"],
+.oss-tools-surface [class*="bg-blue-600"],
+.oss-tools-surface [class*="bg-purple-600"] {
+  background-color: #1f883d !important;
+  color: #ffffff !important;
+}
+
+.oss-tools-surface [class*="hover:bg-[#ff5722]"]:hover,
+.oss-tools-surface [class*="hover:bg-orange-700"]:hover,
+.oss-tools-surface [class*="hover:bg-blue-700"]:hover,
+.oss-tools-surface [class*="hover:bg-purple-700"]:hover {
+  background-color: #1a7f37 !important;
+  color: #ffffff !important;
+}
+
+.oss-tools-surface [class*="text-[#FF6C37]"],
+.oss-tools-surface [class*="text-orange-600"],
+.oss-tools-surface [class*="text-blue-600"],
+.oss-tools-surface [class*="text-purple-600"],
+.oss-tools-surface [class*="text-blue-500"],
+.oss-tools-surface [class*="text-purple-500"] {
+  color: #0969da !important;
+}
+
+.oss-tools-surface [class*="border-[#FF6C37]"],
+.oss-tools-surface [class*="border-orange"],
+.oss-tools-surface [class*="border-blue"],
+.oss-tools-surface [class*="border-purple"] {
+  border-color: #d0d7de !important;
+}
+
+.oss-tools-surface [class*="bg-orange-50"],
+.oss-tools-surface [class*="bg-blue-50"],
+.oss-tools-surface [class*="bg-purple-50"],
+.oss-tools-surface [class*="bg-pink-50"] {
+  background-color: #f6f8fa !important;
+}
+
+.oss-tools-surface [class*="hover:scale"] {
+  transform: none !important;
 }

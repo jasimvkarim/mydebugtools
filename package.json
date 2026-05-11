@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "NEXT_TELEMETRY_DISABLED=1 npm run generate-sitemap && next build --no-lint",
+    "build:github-pages": "node scripts/build-github-pages.js",
     "start": "next start",
     "lint": "next lint",
     "clean": "rm -rf dist",

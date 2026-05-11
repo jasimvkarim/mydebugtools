@@ -3,133 +3,149 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  HomeIcon, 
-  WrenchIcon, 
+import {
+  Bars3Icon,
+  HomeIcon,
   InformationCircleIcon,
   MapIcon,
+  RocketLaunchIcon,
   ShieldCheckIcon,
-  Bars3Icon,
-  XMarkIcon
+  CommandLineIcon,
+  WrenchIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
+import { Github, Terminal } from 'lucide-react';
+
+const navItems = [
+  { name: 'Home', href: '/', icon: HomeIcon },
+  { name: 'Tools', href: '/tools', icon: WrenchIcon },
+  { name: 'CLI', href: '/cli', icon: CommandLineIcon },
+  { name: 'About', href: '/about', icon: InformationCircleIcon },
+  { name: 'Roadmap', href: '/roadmap', icon: MapIcon },
+  { name: 'Releases', href: '/releases', icon: RocketLaunchIcon },
+  { name: 'Privacy', href: '/privacy-policy', icon: ShieldCheckIcon },
+];
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname() || '';
 
-  const navItems = [
-    { name: 'Home', href: '/', icon: HomeIcon },
-    { name: 'Tools', href: '/tools', icon: WrenchIcon },
-    { name: 'About', href: '/about', icon: InformationCircleIcon },
-    { name: 'Roadmap', href: '/roadmap', icon: MapIcon },
-    { name: 'Privacy', href: '/privacy-policy', icon: ShieldCheckIcon },
-  ];
-
   const isActive = (path: string) => {
-    if (path === '/') {
-      return pathname === path;
-    }
+    if (path === '/') return pathname === path;
     return pathname.startsWith(path);
   };
 
   return (
-    <nav className="bg-white shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="text-xl font-bold text-blue-600">
-                MyDebugTools
-              </Link>
-            </div>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+    <nav className="border-b border-[#d0d7de] bg-white">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="flex h-14 items-center justify-between">
+          <div className="flex items-center gap-6">
+            <Link href="/" className="flex items-center gap-2 text-[#24292f] hover:text-[#24292f]">
+              <Terminal className="h-5 w-5" />
+              <span className="font-semibold">MyDebugTools</span>
+            </Link>
+            <div className="hidden items-center gap-1 sm:flex">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                    className={`inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium ${
                       isActive(item.href)
-                        ? 'border-blue-500 text-gray-900'
-                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                        ? 'bg-[#eaeef2] text-[#24292f]'
+                        : 'text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]'
                     }`}
-                    title={item.name}
-                    aria-label={item.name}
                   >
-                    <Icon className="h-4 w-4 mr-1" />
+                    <Icon className="h-4 w-4" />
                     {item.name}
                   </Link>
                 );
               })}
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            {/* Report Issue button — desktop */}
+
+          <div className="flex items-center gap-2">
             <a
               href="https://github.com/jasimvk/mydebugtools/issues/new"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-gray-300 text-gray-600 hover:border-red-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-              title="Report a bug or request a feature"
+              className="hidden rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-xs font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f] sm:inline-flex"
             >
-              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-              </svg>
-              Report Issue
+              New issue
+            </a>
+            <a
+              href="https://buymeacoffee.com/jasimvk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-xs font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f] md:inline-flex"
+            >
+              Sponsor
+            </a>
+            <a
+              href="https://github.com/jasimvk/mydebugtools"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden items-center gap-2 rounded-md bg-[#24292f] px-3 py-2 text-xs font-semibold text-white hover:bg-[#32383f] hover:text-white sm:inline-flex"
+            >
+              <Github className="h-4 w-4" />
+              GitHub
             </a>
             <button
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:hidden"
+              className="rounded-md border border-[#d0d7de] p-2 text-[#57606a] hover:bg-[#f6f8fa] sm:hidden"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              title={isMenuOpen ? 'Close main menu' : 'Open main menu'}
               aria-label={isMenuOpen ? 'Close main menu' : 'Open main menu'}
             >
-              <span className="sr-only">Open main menu</span>
               {isMenuOpen ? (
-                <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+                <XMarkIcon className="block h-5 w-5" aria-hidden="true" />
               ) : (
-                <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+                <Bars3Icon className="block h-5 w-5" aria-hidden="true" />
               )}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="sm:hidden">
-          <div className="pt-2 pb-3 space-y-1">
+        <div className="border-t border-[#d0d7de] bg-white sm:hidden">
+          <div className="grid gap-1 px-4 py-3">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center px-3 py-2 text-base font-medium ${
+                  className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium ${
                     isActive(item.href)
-                      ? 'bg-blue-50 border-l-4 border-blue-500 text-blue-700'
-                      : 'border-l-4 border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'
+                      ? 'bg-[#eaeef2] text-[#24292f]'
+                      : 'text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <Icon className="h-5 w-5 mr-2" />
+                  <Icon className="h-4 w-4" />
                   {item.name}
                 </Link>
               );
             })}
-            {/* Report Issue — mobile */}
             <a
-              href="https://github.com/jasimvk/mydebugtools/issues/new"
+              href="https://github.com/jasimvk/mydebugtools"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 text-base font-medium border-l-4 border-transparent text-red-500 hover:bg-red-50 hover:border-red-400"
+              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]"
               onClick={() => setIsMenuOpen(false)}
             >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-              </svg>
-              Report Issue
+              <Github className="h-4 w-4" />
+              GitHub
+            </a>
+            <a
+              href="https://buymeacoffee.com/jasimvk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Sponsor
             </a>
           </div>
         </div>
@@ -138,4 +154,4 @@ const Navigation = () => {
   );
 };
 
-export default Navigation; 
+export default Navigation;

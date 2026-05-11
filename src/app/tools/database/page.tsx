@@ -14,6 +14,8 @@ const SAMPLE_QUERIES = [
 
 const LOCAL_HISTORY_KEY = 'sqlite_query_history';
 
+const quoteIdentifier = (identifier: string) => `"${identifier.replace(/"/g, '""')}"`;
+
 function saveHistory(history: string[]) {
   localStorage.setItem(LOCAL_HISTORY_KEY, JSON.stringify(history));
 }
@@ -60,8 +62,9 @@ const DatabaseQueryTool = () => {
     try {
       const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table';")[0]?.values.map((v: any) => v[0]) || [];
       const structure = tables.map((table: string) => {
-        const columns = db.exec(`PRAGMA table_info(${table});`)[0]?.values.map((col: any) => col[1]) || [];
-        const rowCount = db.exec(`SELECT COUNT(*) FROM ${table};`)[0]?.values[0][0] || 0;
+        const quotedTable = quoteIdentifier(table);
+        const columns = db.exec(`PRAGMA table_info(${quotedTable});`)[0]?.values.map((col: any) => col[1]) || [];
+        const rowCount = db.exec(`SELECT COUNT(*) FROM ${quotedTable};`)[0]?.values[0][0] || 0;
         return { name: table, columns, rowCount };
       });
       setDbStructure(structure);
@@ -147,7 +150,7 @@ const DatabaseQueryTool = () => {
   const handleTablePreview = (table: string) => {
     if (!db) return;
     try {
-      const res = db.exec(`SELECT * FROM ${table} LIMIT 10;`);
+      const res = db.exec(`SELECT * FROM ${quoteIdentifier(table)} LIMIT 10;`);
       if (res.length > 0) {
         setTablePreview({ name: table, columns: res[0].columns, rows: res[0].values });
       } else {
@@ -216,13 +219,13 @@ const DatabaseQueryTool = () => {
                       <span className="ml-2 text-xs text-gray-500">({table.rowCount} rows)</span>
                       <button
                         className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded hover:bg-blue-200"
-                        onClick={() => setQuery(`SELECT * FROM ${table.name};`)}
+                        onClick={() => setQuery(`SELECT * FROM ${quoteIdentifier(table.name)};`)}
                       >
                         Generate SELECT
                       </button>
                       <button
                         className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded hover:bg-green-200"
-                        onClick={() => setQuery(`SELECT COUNT(*) FROM ${table.name};`)}
+                        onClick={() => setQuery(`SELECT COUNT(*) FROM ${quoteIdentifier(table.name)};`)}
                       >
                         Generate COUNT
                       </button>
@@ -351,4 +354,4 @@ const DatabaseQueryTool = () => {
   );
 };
 
-export default DatabaseQueryTool; 
+export default DatabaseQueryTool;

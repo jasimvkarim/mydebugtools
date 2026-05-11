@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { authOptions } from '@/lib/auth-options';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
 // POST /api/requests - Create a new request in a collection
 export async function POST(request: Request) {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
     const session = await getServerSession(authOptions);
     
     if (!session?.user) {
@@ -54,6 +55,7 @@ export async function POST(request: Request) {
 // DELETE /api/requests?id=xxx - Delete a request
 export async function DELETE(request: Request) {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
     const session = await getServerSession(authOptions);
     
     if (!session?.user) {

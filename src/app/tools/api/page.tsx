@@ -6,6 +6,8 @@ import { useState, useEffect, useCallback } from 'react';
 import ProtectedRoute from '@/app/components/ProtectedRoute';
 import { useSession, signOut, signIn } from 'next-auth/react';
 import { useCollections } from './hooks/useCollections';
+import { parseImportedCollection } from './lib/collectionImport';
+import { decodeJwtSegment } from '@/app/tools/lib/tool-utils';
 import { 
   WrenchIcon, 
   ClipboardIcon,
@@ -604,7 +606,10 @@ function APITesterContent() {
     const reader = new FileReader();
     reader.onload = async (e) => {
       try {
-        const importedCollection = JSON.parse(e.target?.result as string);
+        const importedCollection = parseImportedCollection(
+          JSON.parse(e.target?.result as string),
+          file.name
+        );
         
         // Create the collection via API
         const newCollection = await createCollectionAPI(
@@ -619,8 +624,9 @@ function APITesterContent() {
         }
         
         // Import all requests
+        let importedRequestCount = 0;
         for (const request of importedCollection.requests || []) {
-          await saveRequestAPI(newCollection.id, {
+          const savedRequest = await saveRequestAPI(newCollection.id, {
             name: request.name,
             method: request.method,
             url: request.url,
@@ -630,12 +636,16 @@ function APITesterContent() {
             authConfig: request.authConfig || { type: 'none' },
             description: request.description || '',
           });
+
+          if (savedRequest) importedRequestCount += 1;
         }
         
-        alert(`Successfully imported collection "${importedCollection.name}" with ${importedCollection.requests?.length || 0} requests!`);
+        alert(`Successfully imported collection "${importedCollection.name}" with ${importedRequestCount} request${importedRequestCount === 1 ? '' : 's'}!`);
       } catch (error) {
-        alert('Failed to import collection. Please check the file format.');
+        alert(error instanceof Error ? error.message : 'Failed to import collection. Please check the file format.');
         console.error('Import error:', error);
+      } finally {
+        event.target.value = '';
       }
     };
     reader.readAsText(file);
@@ -946,8 +956,7 @@ function APITesterContent() {
     try {
       const parts = token.split('.');
       if (parts.length !== 3) return null;
-      const payload = JSON.parse(atob(parts[1]));
-      return payload;
+      return decodeJwtSegment(parts[1]) as { exp?: number; iat?: number };
     } catch {
       return null;
     }

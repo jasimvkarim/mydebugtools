@@ -65,7 +65,7 @@ export default function ToolsLayout({
   const isActive = (path: string) => pathname === path;
 
   return (
-    <div className="flex flex-col min-h-screen bg-white" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}>
+    <div className="flex flex-col min-h-screen bg-white">
       {/* Clean Professional Navbar */}
       <nav className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6">

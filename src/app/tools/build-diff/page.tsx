@@ -10,21 +10,7 @@ import {
 } from '@heroicons/react/24/outline';
 import PageWrapper from '@/components/PageWrapper';
 import StructuredData from '@/components/StructuredData';
-
-interface DiffChange {
-  type: 'added' | 'removed' | 'modified';
-  path: string;
-  oldSize?: number;
-  newSize?: number;
-  diff?: number;
-}
-
-interface DiffData {
-  changes: DiffChange[];
-  totalAdded: number;
-  totalRemoved: number;
-  totalModified: number;
-}
+import { buildDiffFromText, type DiffData } from '@/app/tools/lib/tool-utils';
 
 function BuildDiffViewer() {
   const [oldBuild, setOldBuild] = useState('');
@@ -32,80 +18,13 @@ function BuildDiffViewer() {
   const [diffData, setDiffData] = useState<DiffData | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const parseBuildData = (build: string): Map<string, number> => {
-    const files = new Map<string, number>();
-    const lines = build.split('\n');
-    
-    lines.forEach(line => {
-      const match = line.match(/(.+?)\s+(\d+\.?\d*)/);
-      if (match) {
-        const [_, path, size] = match;
-        files.set(path, parseFloat(size));
-      }
-    });
+  const calculateDiff = (oldBuildInput = oldBuild, newBuildInput = newBuild) => {
+    if (!oldBuildInput || !newBuildInput) {
+      setDiffData(null);
+      return;
+    }
 
-    return files;
-  };
-
-  const calculateDiff = () => {
-    if (!oldBuild || !newBuild) return;
-
-    const oldFiles = parseBuildData(oldBuild);
-    const newFiles = parseBuildData(newBuild);
-    const changes: DiffChange[] = [];
-    let totalAdded = 0;
-    let totalRemoved = 0;
-    let totalModified = 0;
-
-    // Find added and modified files
-    newFiles.forEach((newSize, path) => {
-      const oldSize = oldFiles.get(path);
-      if (!oldSize) {
-        changes.push({
-          type: 'added',
-          path,
-          newSize
-        });
-        totalAdded += newSize;
-      } else if (oldSize !== newSize) {
-        changes.push({
-          type: 'modified',
-          path,
-          oldSize,
-          newSize,
-          diff: newSize - oldSize
-        });
-        totalModified += Math.abs(newSize - oldSize);
-      }
-    });
-
-    // Find removed files
-    oldFiles.forEach((oldSize, path) => {
-      if (!newFiles.has(path)) {
-        changes.push({
-          type: 'removed',
-          path,
-          oldSize
-        });
-        totalRemoved += oldSize;
-      }
-    });
-
-    setDiffData({
-      changes: changes.sort((a, b) => {
-        // Sort by type (added, modified, removed) then by absolute size change
-        const typeOrder = { added: 0, modified: 1, removed: 2 };
-        const typeDiff = typeOrder[a.type] - typeOrder[b.type];
-        if (typeDiff !== 0) return typeDiff;
-        
-        const aSize = Math.abs(a.diff || a.newSize || a.oldSize || 0);
-        const bSize = Math.abs(b.diff || b.newSize || b.oldSize || 0);
-        return bSize - aSize;
-      }),
-      totalAdded,
-      totalRemoved,
-      totalModified
-    });
+    setDiffData(buildDiffFromText(oldBuildInput, newBuildInput));
   };
 
   const handleCopy = () => {
@@ -180,8 +99,9 @@ ${diffData.changes.map(c => {
             <textarea
               value={oldBuild}
               onChange={(e) => {
-                setOldBuild(e.target.value);
-                calculateDiff();
+                const nextOldBuild = e.target.value;
+                setOldBuild(nextOldBuild);
+                calculateDiff(nextOldBuild, newBuild);
               }}
               placeholder="src/index.js 123.45
 src/components/App.js 45.67
@@ -200,8 +120,9 @@ src/components/App.js 45.67
             <textarea
               value={newBuild}
               onChange={(e) => {
-                setNewBuild(e.target.value);
-                calculateDiff();
+                const nextNewBuild = e.target.value;
+                setNewBuild(nextNewBuild);
+                calculateDiff(oldBuild, nextNewBuild);
               }}
               placeholder="src/index.js 123.45
 src/components/App.js 45.67
@@ -332,4 +253,4 @@ export default function Page() {
       <BuildDiffViewer />
     </PageWrapper>
   );
-} 
+}

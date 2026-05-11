@@ -5,6 +5,9 @@ Allow: /
 # Allow all search engines to access ads.txt
 Allow: /ads.txt
 
+# AI and answer-engine discovery files
+Allow: /llms.txt
+
 # Disallow crawling of any private or admin areas (if any exist in the future)
 # Currently no restricted areas
 

@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+- **Project-wide OSS redesign and anomaly cleanup**:
+  - Reworked the homepage, navigation, tools registry, about page, and roadmap into a repository/docs-style open-source presentation.
+  - Added a proposed modules backlog to the tools registry for future incorporatable tools, including OpenAPI, GraphQL, webhooks, HAR, DNS, SSL, hash, UUID, YAML/TOML, SQL, cron, Dockerfile, Kubernetes, accessibility, and QR utilities.
+  - Normalized individual tool pages through the shared tools shell so older product-style gradients, oversized radii, heavy shadows, and off-brand primary actions align with the OSS interface.
+  - Removed the unused `src/app/tools/layout-old.tsx` file that was breaking full TypeScript validation.
+  - Moved NextAuth configuration into `src/lib/auth-options.ts` so the auth route exports only valid route handlers.
+  - Fixed Supabase admin and icon finder type anomalies so `npx tsc --noEmit --pretty false` passes.
+  - Added `RELEASES.md`, a `/releases` page, release navigation, and sitemap coverage for release notes.
+  - Added `CLI_ROADMAP.md`, a `/cli` page, navigation links, and sitemap coverage for future CLI work.
+  - Switched the site-wide typography stack to Menlo-style monospace and removed the remaining Inter override.
+  - Added Buy Me a Coffee sponsorship links for `jasimvk` across the OSS project shell.
+  - Updated the public roadmap to reflect shipped code, active foundation work, proposed modules, CLI plans, and extension/package status.
+  - Added SEO/GEO/PSEO/AEO cleanup with complete tool sitemap coverage, AI-readable `llms.txt`, fixed Open Graph image metadata, answer-engine structured data, and per-tool route metadata.
+  - Added a GitHub Pages static export workflow for the browser-only version of the app at the repository Pages URL.
+- **API Tester**:
+  - Fixed collection imports that previously created `undefined` collections with `0` requests.
+  - Added native MyDebugTools and nested Postman collection parsing with regression coverage.
 - Initial changelog setup.
 - **Color Picker Tool**:
   - Improved UI with better contrast and readability
@@ -66,4 +83,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.5.0] - 2025-04-25
 
-- **Database Query Tool (SQLite)**: added to tools page sidebar, supports running SQL queries on local databases. 
+- **Database Query Tool (SQLite)**: added to tools page sidebar, supports running SQL queries on local databases.
