@@ -54,6 +54,23 @@ export interface Collection {
   color?: string;
 }
 
+export function addRequestToCollections(
+  collections: Collection[],
+  collectionId: string,
+  newRequest: SavedRequest
+): Collection[] {
+  return collections.map(c => {
+    if (c.id === collectionId) {
+      return {
+        ...c,
+        requests: [...c.requests, newRequest],
+        updatedAt: Date.now()
+      };
+    }
+    return c;
+  });
+}
+
 export function useCollections() {
   const { data: session } = useSession();
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -270,9 +287,11 @@ export function useCollections() {
       }
     }
 
-    const updatedCollections = [...collections, newCollection];
-    setCollections(updatedCollections);
-    saveLocalCollections(updatedCollections);
+    setCollections(prevCollections => {
+      const updatedCollections = [...prevCollections, newCollection];
+      saveLocalCollections(updatedCollections);
+      return updatedCollections;
+    });
     return newCollection;
   };
 
@@ -295,9 +314,11 @@ export function useCollections() {
       }
     }
 
-    const updatedCollections = collections.filter(c => c.id !== collectionId);
-    setCollections(updatedCollections);
-    saveLocalCollections(updatedCollections);
+    setCollections(prevCollections => {
+      const updatedCollections = prevCollections.filter(c => c.id !== collectionId);
+      saveLocalCollections(updatedCollections);
+      return updatedCollections;
+    });
     return true;
   };
 
@@ -341,19 +362,11 @@ export function useCollections() {
       }
     }
 
-    const updatedCollections = collections.map(c => {
-      if (c.id === collectionId) {
-        return {
-          ...c,
-          requests: [...c.requests, newRequest],
-          updatedAt: Date.now()
-        };
-      }
-      return c;
+    setCollections(prevCollections => {
+      const updatedCollections = addRequestToCollections(prevCollections, collectionId, newRequest);
+      saveLocalCollections(updatedCollections);
+      return updatedCollections;
     });
-
-    setCollections(updatedCollections);
-    saveLocalCollections(updatedCollections);
     return newRequest;
   };
 
@@ -376,31 +389,35 @@ export function useCollections() {
       }
     }
 
-    const updatedCollections = collections.map(c => {
-      if (c.id === collectionId) {
-        return {
-          ...c,
-          requests: c.requests.filter(r => r.id !== requestId),
-          updatedAt: Date.now()
-        };
-      }
-      return c;
-    });
+    setCollections(prevCollections => {
+      const updatedCollections = prevCollections.map(c => {
+        if (c.id === collectionId) {
+          return {
+            ...c,
+            requests: c.requests.filter(r => r.id !== requestId),
+            updatedAt: Date.now()
+          };
+        }
+        return c;
+      });
 
-    setCollections(updatedCollections);
-    saveLocalCollections(updatedCollections);
+      saveLocalCollections(updatedCollections);
+      return updatedCollections;
+    });
     return true;
   };
 
   // Rename collection (optimistic update)
   const renameCollection = (collectionId: string, newName: string) => {
-    const updatedCollections = collections.map(c => 
-      c.id === collectionId 
-        ? { ...c, name: newName, updatedAt: Date.now() } 
-        : c
-    );
-    setCollections(updatedCollections);
-    saveLocalCollections(updatedCollections);
+    setCollections(prevCollections => {
+      const updatedCollections = prevCollections.map(c =>
+        c.id === collectionId
+          ? { ...c, name: newName, updatedAt: Date.now() }
+          : c
+      );
+      saveLocalCollections(updatedCollections);
+      return updatedCollections;
+    });
     
     // TODO: Add API endpoint for updating collection name if cloud collection
   };
