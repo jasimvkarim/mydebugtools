@@ -157,6 +157,48 @@ interface CachedResponse {
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 const RATE_LIMIT = 10; // requests per minute
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const PRIVATE_MODE_KEYS = [
+  'requestHistory',
+  'environments',
+  'presets',
+  'activeEnvironment',
+  'apiTesterTabs',
+  'apiTesterActiveTabIndex'
+];
+const SENSITIVE_KEY_PATTERN = /(authorization|cookie|token|secret|password|passwd|api[-_\s]?key|x-api-key|client[-_\s]?secret|access[-_\s]?key|private[-_\s]?key)/i;
+
+const isSensitiveKey = (key = '') => SENSITIVE_KEY_PATTERN.test(key);
+
+const sanitizeHeaders = (headersToSanitize: Header[]) =>
+  headersToSanitize.map((header) => ({
+    ...header,
+    value: isSensitiveKey(header.key) ? '' : header.value
+  }));
+
+const sanitizeAuthConfig = (config: AuthConfig): AuthConfig => {
+  if (config.type === 'none') return config;
+
+  return {
+    type: config.type,
+    apiKeyLocation: config.apiKeyLocation,
+    apiKeyName: config.apiKeyName,
+    autoRefresh: false,
+    autoLogin: false
+  };
+};
+
+const sanitizeSavedRequest = (request: Omit<SavedRequest, 'id' | 'createdAt' | 'updatedAt'>) => ({
+  ...request,
+  headers: sanitizeHeaders(request.headers),
+  authConfig: sanitizeAuthConfig(request.authConfig)
+});
+
+const clearPrivateModeStorage = () => {
+  PRIVATE_MODE_KEYS.forEach((key) => localStorage.removeItem(key));
+};
+
+const looksLikeBrowserNetworkBlock = (message: string) =>
+  /(failed to fetch|networkerror|load failed|cors|blocked|fetch failed)/i.test(message);
 
 function APITesterContent() {
   const { data: session } = useSession();
@@ -302,8 +344,12 @@ function APITesterContent() {
   const [requestFormat, setRequestFormat] = useState<'pretty' | 'raw'>('pretty');
   const [autoFormat, setAutoFormat] = useState(true);
   const [autoSave, setAutoSave] = useState(true);
+  const [privateMode, setPrivateMode] = useState(false);
   const [showVariables, setShowVariables] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showAdvancedAuth, setShowAdvancedAuth] = useState(false);
+  const [importNotice, setImportNotice] = useState<{ type: 'success' | 'error'; message: string; detail?: string } | null>(null);
+  const [networkHint, setNetworkHint] = useState<{ title: string; message: string; curl: string } | null>(null);
   const [showValidation, setShowValidation] = useState(false);
   const [showTesting, setShowTesting] = useState(false);
   const [tokenCountdownTrigger, setTokenCountdownTrigger] = useState(0); // Force re-render for countdown
@@ -345,9 +391,10 @@ function APITesterContent() {
     if (savedActiveEnv) setActiveEnvironment(savedActiveEnv);
     if (savedSettings) {
       const settings = JSON.parse(savedSettings);
-      setAutoFormat(settings.autoFormat);
-      setAutoSave(settings.autoSave);
-      setShowVariables(settings.showVariables);
+      setAutoFormat(settings.autoFormat ?? true);
+      setAutoSave(settings.autoSave ?? true);
+      setPrivateMode(Boolean(settings.privateMode));
+      setShowVariables(Boolean(settings.showVariables));
     }
     if (savedTabs) {
       try {
@@ -373,16 +420,29 @@ function APITesterContent() {
     loadSavedData();
   }, []);
 
+  useEffect(() => {
+    if (privateMode) {
+      clearPrivateModeStorage();
+    }
+  }, [privateMode]);
+
   const saveData = () => {
+    localStorage.setItem('settings', JSON.stringify({
+      autoFormat,
+      autoSave,
+      privateMode,
+      showVariables
+    }));
+
+    if (privateMode) {
+      clearPrivateModeStorage();
+      return;
+    }
+
     localStorage.setItem('requestHistory', JSON.stringify(requestHistory));
     localStorage.setItem('environments', JSON.stringify(environments));
     localStorage.setItem('presets', JSON.stringify(presets));
     localStorage.setItem('activeEnvironment', activeEnvironment);
-    localStorage.setItem('settings', JSON.stringify({
-      autoFormat,
-      autoSave,
-      showVariables
-    }));
     localStorage.setItem('apiTesterTabs', JSON.stringify(tabs));
     localStorage.setItem('apiTesterActiveTabIndex', activeTabIndex.toString());
     // Collections are now saved to Supabase automatically via API calls
@@ -502,17 +562,17 @@ function APITesterContent() {
 
   // Save tabs whenever they change
   useEffect(() => {
-    if (tabs.length > 0) {
+    if (autoSave && tabs.length > 0) {
       saveData();
     }
-  }, [tabs, activeTabIndex]);
+  }, [tabs, activeTabIndex, autoSave, privateMode]);
 
   // Save collections whenever they change
   useEffect(() => {
-    if (collections.length >= 0) {
+    if (!privateMode && collections.length >= 0) {
       localStorage.setItem('apiTesterCollections', JSON.stringify(collections));
     }
-  }, [collections]);
+  }, [collections, privateMode]);
 
   // Collection management functions
   const createCollection = async () => {
@@ -540,8 +600,8 @@ function APITesterContent() {
 
   const saveCurrentRequestToCollection = async () => {
     if (!selectedCollectionId || !saveRequestName.trim()) return;
-    
-    await saveRequestAPI(selectedCollectionId, {
+
+    const requestToSave = sanitizeSavedRequest({
       name: saveRequestName.trim(),
       method: currentTab.method,
       url: currentTab.url,
@@ -550,6 +610,12 @@ function APITesterContent() {
       contentType: currentTab.contentType,
       authConfig: currentTab.authConfig,
       description: saveRequestDescription.trim(),
+    });
+    
+    await saveRequestAPI(selectedCollectionId, privateMode ? requestToSave : {
+      ...requestToSave,
+      headers: currentTab.headers,
+      authConfig: currentTab.authConfig
     });
 
     // Clear form
@@ -619,14 +685,18 @@ function APITesterContent() {
         );
         
         if (!newCollection) {
-          alert('Failed to import collection.');
+          setImportNotice({
+            type: 'error',
+            message: 'Import failed',
+            detail: 'The collection could not be created. Try again or check your sync state.'
+          });
           return;
         }
         
         // Import all requests
         let importedRequestCount = 0;
         for (const request of importedCollection.requests || []) {
-          const savedRequest = await saveRequestAPI(newCollection.id, {
+          const requestToImport = {
             name: request.name,
             method: request.method,
             url: request.url,
@@ -635,14 +705,28 @@ function APITesterContent() {
             contentType: request.contentType || 'application/json',
             authConfig: request.authConfig || { type: 'none' },
             description: request.description || '',
-          });
+          };
+          const savedRequest = await saveRequestAPI(
+            newCollection.id,
+            privateMode ? sanitizeSavedRequest(requestToImport) : requestToImport
+          );
 
           if (savedRequest) importedRequestCount += 1;
         }
+        const totalRequests = importedCollection.requests?.length || 0;
+        const skippedRequests = Math.max(totalRequests - importedRequestCount, 0);
         
-        alert(`Successfully imported collection "${importedCollection.name}" with ${importedRequestCount} request${importedRequestCount === 1 ? '' : 's'}!`);
+        setImportNotice({
+          type: 'success',
+          message: `Imported "${importedCollection.name}"`,
+          detail: `${importedRequestCount} request${importedRequestCount === 1 ? '' : 's'} added${skippedRequests ? `, ${skippedRequests} skipped` : ''}.`
+        });
       } catch (error) {
-        alert(error instanceof Error ? error.message : 'Failed to import collection. Please check the file format.');
+        setImportNotice({
+          type: 'error',
+          message: 'Import failed',
+          detail: error instanceof Error ? error.message : 'Check that the file is a valid Postman, Insomnia, OpenAPI, or MyDebugTools JSON export.'
+        });
         console.error('Import error:', error);
       } finally {
         event.target.value = '';
@@ -1124,7 +1208,7 @@ function APITesterContent() {
     if (autoSave) {
       saveData();
     }
-  }, [requestHistory, environments, presets, activeEnvironment, autoSave]);
+  }, [requestHistory, environments, presets, activeEnvironment, autoSave, privateMode]);
 
   const handleHeaderChange = (index: number, field: 'key' | 'value' | 'enabled', value: string | boolean) => {
     const newHeaders = [...headers];
@@ -1180,6 +1264,7 @@ function APITesterContent() {
     try {
       setLoading(true);
       setError('');
+      setNetworkHint(null);
       setResponse(null);
 
       if (!url.trim()) {
@@ -1381,13 +1466,25 @@ function APITesterContent() {
         status: response.status,
         duration
       };
-      setRequestHistory([historyItem, ...requestHistory].slice(0, 50));
+      if (!privateMode) {
+        setRequestHistory([historyItem, ...requestHistory].slice(0, 50));
+      }
     } catch (err: any) {
-      setError(err.message || 'An error occurred');
+      const message = err.message || 'An error occurred';
+      if (looksLikeBrowserNetworkBlock(message)) {
+        setError('The browser could not complete this request.');
+        setNetworkHint({
+          title: 'Likely CORS or browser network block',
+          message: 'Browsers enforce CORS and mixed-content rules that CLI tools do not. If this API does not allow this origin, run the same request as cURL or through a server-side proxy.',
+          curl: generateCode('curl')
+        });
+      } else {
+        setError(message);
+      }
     } finally {
       setLoading(false);
     }
-  }, [url, method, headers, body, environments, activeEnvironment, contentType, authConfig, requestCache, requestTimestamps]);
+  }, [url, method, headers, body, environments, activeEnvironment, contentType, authConfig, requestCache, requestTimestamps, privateMode, requestHistory]);
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -1432,7 +1529,7 @@ function APITesterContent() {
   };
 
   const generateCode = (language: string) => {
-    const enabledHeaders = headers.filter(h => h.enabled);
+    const enabledHeaders = headers.filter(h => h.enabled && h.key.trim() && h.value.trim());
     const headersObj = enabledHeaders.reduce((acc, { key, value }) => ({ ...acc, [key]: value }), {});
     const headersStr = JSON.stringify(headersObj, null, 2);
     const bodyStr = method !== 'GET' ? body : '';
@@ -1562,6 +1659,77 @@ print(response.json())`,
             )}
           </div>
         </div>
+
+        <div className="border-b border-gray-200 bg-gray-50 px-4 py-3 space-y-2">
+          <div className="flex items-start gap-2 text-xs text-gray-700">
+            <CheckIcon className="h-4 w-4 text-emerald-800 flex-shrink-0 mt-0.5" />
+            <p>
+              Works without login. Use <span className="font-semibold">Cloud Sync</span> only when you want collections across devices.
+            </p>
+          </div>
+          {privateMode && (
+            <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+              Private mode is on: tabs, history, environments, auth tokens, and imported secrets stay out of localStorage.
+            </div>
+          )}
+          {importNotice && (
+            <div className={`rounded-md border px-3 py-2 text-xs ${
+              importNotice.type === 'success'
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-950'
+                : 'border-red-200 bg-red-50 text-red-800'
+            }`}>
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="font-semibold">{importNotice.message}</p>
+                  {importNotice.detail && <p className="mt-0.5">{importNotice.detail}</p>}
+                </div>
+                <button
+                  onClick={() => setImportNotice(null)}
+                  className="text-current opacity-70 hover:opacity-100"
+                  aria-label="Dismiss import message"
+                >
+                  <XMarkIcon className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {requestHistory.length > 0 && (
+          <div className="border-b border-gray-200 bg-white px-4 py-3">
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-600">Recent</h3>
+              <button
+                onClick={() => setRequestHistory([])}
+                className="text-[11px] font-medium text-gray-500 hover:text-gray-900"
+              >
+                Clear
+              </button>
+            </div>
+            <div className="space-y-1">
+              {requestHistory.slice(0, 5).map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setMethod(item.method);
+                    setUrl(item.url);
+                    setHeaders(item.headers);
+                    setBody(item.body);
+                  }}
+                  className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left hover:bg-gray-50"
+                >
+                  <span className="w-12 flex-shrink-0 text-[10px] font-bold text-gray-700">{item.method}</span>
+                  <span className="min-w-0 flex-1 truncate text-xs text-gray-700">{item.url}</span>
+                  <span className={`text-[10px] font-semibold ${
+                    item.status >= 200 && item.status < 300 ? 'text-emerald-800' : 'text-red-700'
+                  }`}>
+                    {item.status}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Collections List */}
         <div className="flex-1 overflow-y-auto">
@@ -1711,10 +1879,10 @@ print(response.json())`,
             {!session && (
               <button
                 onClick={() => setShowAuthModal(true)}
-                className="px-4 py-1.5 text-sm font-medium bg-white text-[#FF6C37] border-2 border-[#FF6C37] rounded hover:bg-[#FF6C37] hover:text-white transition-colors"
+                className="px-4 py-1.5 text-sm font-semibold bg-[#24292f] text-white border-2 border-[#24292f] rounded hover:bg-[#111827] hover:border-[#111827] transition-colors"
                 title="Sync collections across devices"
               >
-                Save My Workspace
+                Cloud Sync
               </button>
             )}
           </div>
@@ -2256,7 +2424,7 @@ print(response.json())`,
       <div className="bg-white rounded-lg shadow-sm">
         {/* URL Bar - Postman Style */}
         <div className="p-4 border-b border-gray-200">
-          <div className="flex gap-2 items-center">
+          <div className="flex flex-wrap gap-2 items-center">
             <select
               value={method}
               onChange={(e) => setMethod(e.target.value as HttpMethod)}
@@ -2273,7 +2441,7 @@ print(response.json())`,
                 <option key={m} value={m}>{m}</option>
               ))}
             </select>
-            <div className="flex-1 relative">
+            <div className="flex-1 min-w-[220px] relative">
               <input
                 type="text"
                 value={url}
@@ -2321,9 +2489,30 @@ print(response.json())`,
                 <div className="flex-1">
                   <p className="font-medium">Error</p>
                   <p className="mt-1">{error}</p>
+                  {networkHint && (
+                    <div className="mt-3 rounded-md border border-red-200 bg-white p-3 text-red-900">
+                      <p className="font-semibold">{networkHint.title}</p>
+                      <p className="mt-1 text-xs leading-5">{networkHint.message}</p>
+                      <div className="mt-3 flex items-center gap-2">
+                        <button
+                          onClick={() => copyToClipboard(networkHint.curl)}
+                          className="inline-flex items-center gap-1.5 rounded-md bg-red-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-800"
+                        >
+                          <ClipboardIcon className="h-3.5 w-3.5" />
+                          Copy cURL
+                        </button>
+                        <code className="truncate rounded bg-red-50 px-2 py-1 text-[11px] text-red-950 max-w-[520px]">
+                          {networkHint.curl}
+                        </code>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <button
-                  onClick={() => setError('')}
+                  onClick={() => {
+                    setError('');
+                    setNetworkHint(null);
+                  }}
                   className="text-red-600 hover:text-red-800"
                 >
                   <XMarkIcon className="h-4 w-4" />
@@ -2499,9 +2688,16 @@ print(response.json())`,
                                       </span>
                                     </div>
                                     
-                                    {/* Testing Tools */}
+                                    <button
+                                      type="button"
+                                      onClick={() => setShowAdvancedAuth(!showAdvancedAuth)}
+                                      className="mt-2 text-[11px] font-semibold text-[#FF6C37] hover:text-[#ff5722]"
+                                    >
+                                      {showAdvancedAuth ? 'Hide advanced token tools' : 'Show advanced token tools'}
+                                    </button>
+                                    {showAdvancedAuth && (
                                     <div className="border-t border-gray-200 pt-2 mt-2">
-                                      <p className="text-[10px] text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">🧪 Testing Tools</p>
+                                      <p className="text-[10px] text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Testing tools</p>
                                       <button
                                         onClick={() => {
                                           // Force expire the token by setting expiry to past
@@ -2532,6 +2728,7 @@ print(response.json())`,
                                         Expire in 30s
                                       </button>
                                     </div>
+                                    )}
                                   </div>
                                 );
                               }
@@ -3058,116 +3255,127 @@ print(response.json())`,
                   </div>
                 )}
 
-                <div className="border-t border-gray-200 pt-3">
-                  <label className="flex items-center gap-2 text-sm text-gray-700 mb-2">
-                    <input
-                      type="checkbox"
-                      checked={authConfig.autoRefresh || false}
-                      onChange={(e) => setAuthConfig({ ...authConfig, autoRefresh: e.target.checked })}
-                      className="rounded"
-                    />
-                    <span>Auto-refresh token when expired</span>
-                  </label>
-                  
-                  {authConfig.autoRefresh && (
-                    <div className="space-y-2 ml-6">
-                      <input
-                        type="text"
-                        placeholder="Refresh Token URL"
-                        value={authConfig.refreshTokenUrl || ''}
-                        onChange={(e) => setAuthConfig({ ...authConfig, refreshTokenUrl: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Refresh Token"
-                        value={authConfig.refreshToken || ''}
-                        onChange={(e) => setAuthConfig({ ...authConfig, refreshToken: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md font-mono text-sm"
-                      />
-                      <button
-                        onClick={refreshAccessToken}
-                        className="px-3 py-1.5 bg-[#FF6C37] hover:bg-[#ff5722] text-white text-sm rounded"
-                      >
-                        Refresh Token Now
-                      </button>
-                    </div>
-                  )}
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowAdvancedAuth(!showAdvancedAuth)}
+                  className="text-sm font-medium text-[#FF6C37] hover:text-[#ff5722]"
+                >
+                  {showAdvancedAuth ? 'Hide advanced token automation' : 'Show advanced token automation'}
+                </button>
 
-                {/* Auto-Login Configuration */}
-                <div className="border-t border-gray-200 pt-3 mt-3">
-                  <label className="flex items-center gap-2 text-sm text-gray-700 mb-2">
-                    <input
-                      type="checkbox"
-                      checked={authConfig.autoLogin || false}
-                      onChange={(e) => setAuthConfig({ ...authConfig, autoLogin: e.target.checked })}
-                      className="rounded"
-                    />
-                    <span className="font-medium">Auto-login when token expires</span>
-                  </label>
-                  
-                  <p className="text-xs text-gray-500 mb-3 ml-6">
-                    Automatically login and get a new token when API returns 401/403 error
-                  </p>
-                  
-                  {authConfig.autoLogin && (
-                    <div className="space-y-2 ml-6 bg-blue-50 p-3 rounded border border-blue-200">
-                      <div className="text-xs font-medium text-blue-900 mb-2">Login Configuration</div>
-                      <input
-                        type="text"
-                        placeholder="Login URL (e.g., https://api.example.com/auth/login)"
-                        value={authConfig.loginUrl || ''}
-                        onChange={(e) => setAuthConfig({ ...authConfig, loginUrl: e.target.value })}
-                        className="w-full px-3 py-2 border border-blue-300 rounded-md text-sm"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Username or Email"
-                        value={authConfig.loginUsername || ''}
-                        onChange={(e) => setAuthConfig({ ...authConfig, loginUsername: e.target.value })}
-                        className="w-full px-3 py-2 border border-blue-300 rounded-md text-sm"
-                      />
-                      <input
-                        type="password"
-                        placeholder="Password"
-                        value={authConfig.loginPassword || ''}
-                        onChange={(e) => setAuthConfig({ ...authConfig, loginPassword: e.target.value })}
-                        className="w-full px-3 py-2 border border-blue-300 rounded-md text-sm"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Token Path in Response (e.g., data.token or access_token)"
-                        value={authConfig.tokenPath || ''}
-                        onChange={(e) => setAuthConfig({ ...authConfig, tokenPath: e.target.value })}
-                        className="w-full px-3 py-2 border border-blue-300 rounded-md text-sm font-mono"
-                      />
-                      <div className="text-xs text-blue-700 mt-2">
-                        <p className="font-medium mb-1 flex items-center gap-1.5">
-                          <LightBulbIcon className="h-4 w-4" />
-                          Common token paths:
-                        </p>
-                        <ul className="list-disc ml-4 space-y-1">
-                          <li><code className="bg-blue-100 px-1 rounded">access_token</code> - Root level</li>
-                          <li><code className="bg-blue-100 px-1 rounded">token</code> - Root level</li>
-                          <li><code className="bg-blue-100 px-1 rounded">data.token</code> - Nested in data</li>
-                          <li><code className="bg-blue-100 px-1 rounded">data.access_token</code> - Nested in data</li>
-                        </ul>
-                      </div>
-                      <button
-                        onClick={async () => {
-                          const token = await performAutoLogin();
-                          if (token) {
-                            alert('Login successful! Token acquired.');
-                          }
-                        }}
-                        className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded"
-                      >
-                        Test Login Now
-                      </button>
+                {showAdvancedAuth && (
+                  <div className="space-y-3 border-t border-gray-200 pt-3">
+                    <div>
+                      <label className="flex items-center gap-2 text-sm text-gray-700 mb-2">
+                        <input
+                          type="checkbox"
+                          checked={authConfig.autoRefresh || false}
+                          onChange={(e) => setAuthConfig({ ...authConfig, autoRefresh: e.target.checked })}
+                          className="rounded"
+                        />
+                        <span>Auto-refresh token when expired</span>
+                      </label>
+                      
+                      {authConfig.autoRefresh && (
+                        <div className="space-y-2 ml-6">
+                          <input
+                            type="text"
+                            placeholder="Refresh Token URL"
+                            value={authConfig.refreshTokenUrl || ''}
+                            onChange={(e) => setAuthConfig({ ...authConfig, refreshTokenUrl: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Refresh Token"
+                            value={authConfig.refreshToken || ''}
+                            onChange={(e) => setAuthConfig({ ...authConfig, refreshToken: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md font-mono text-sm"
+                          />
+                          <button
+                            onClick={refreshAccessToken}
+                            className="px-3 py-1.5 bg-[#FF6C37] hover:bg-[#ff5722] text-white text-sm rounded"
+                          >
+                            Refresh Token Now
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+
+                    <div className="border-t border-gray-200 pt-3">
+                      <label className="flex items-center gap-2 text-sm text-gray-700 mb-2">
+                        <input
+                          type="checkbox"
+                          checked={authConfig.autoLogin || false}
+                          onChange={(e) => setAuthConfig({ ...authConfig, autoLogin: e.target.checked })}
+                          className="rounded"
+                        />
+                        <span className="font-medium">Auto-login when token expires</span>
+                      </label>
+                      
+                      <p className="text-xs text-gray-500 mb-3 ml-6">
+                        Automatically login and get a new token when API returns 401/403 error
+                      </p>
+                      
+                      {authConfig.autoLogin && (
+                        <div className="space-y-2 ml-6 bg-blue-50 p-3 rounded border border-blue-200">
+                          <div className="text-xs font-medium text-blue-900 mb-2">Login Configuration</div>
+                          <input
+                            type="text"
+                            placeholder="Login URL (e.g., https://api.example.com/auth/login)"
+                            value={authConfig.loginUrl || ''}
+                            onChange={(e) => setAuthConfig({ ...authConfig, loginUrl: e.target.value })}
+                            className="w-full px-3 py-2 border border-blue-300 rounded-md text-sm"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Username or Email"
+                            value={authConfig.loginUsername || ''}
+                            onChange={(e) => setAuthConfig({ ...authConfig, loginUsername: e.target.value })}
+                            className="w-full px-3 py-2 border border-blue-300 rounded-md text-sm"
+                          />
+                          <input
+                            type="password"
+                            placeholder="Password"
+                            value={authConfig.loginPassword || ''}
+                            onChange={(e) => setAuthConfig({ ...authConfig, loginPassword: e.target.value })}
+                            className="w-full px-3 py-2 border border-blue-300 rounded-md text-sm"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Token Path in Response (e.g., data.token or access_token)"
+                            value={authConfig.tokenPath || ''}
+                            onChange={(e) => setAuthConfig({ ...authConfig, tokenPath: e.target.value })}
+                            className="w-full px-3 py-2 border border-blue-300 rounded-md text-sm font-mono"
+                          />
+                          <div className="text-xs text-blue-700 mt-2">
+                            <p className="font-medium mb-1 flex items-center gap-1.5">
+                              <LightBulbIcon className="h-4 w-4" />
+                              Common token paths:
+                            </p>
+                            <ul className="list-disc ml-4 space-y-1">
+                              <li><code className="bg-blue-100 px-1 rounded">access_token</code> - Root level</li>
+                              <li><code className="bg-blue-100 px-1 rounded">token</code> - Root level</li>
+                              <li><code className="bg-blue-100 px-1 rounded">data.token</code> - Nested in data</li>
+                              <li><code className="bg-blue-100 px-1 rounded">data.access_token</code> - Nested in data</li>
+                            </ul>
+                          </div>
+                          <button
+                            onClick={async () => {
+                              const token = await performAutoLogin();
+                              if (token) {
+                                alert('Login successful! Token acquired.');
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded"
+                          >
+                            Test Login Now
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -3239,6 +3447,18 @@ print(response.json())`,
                 className="rounded border-gray-300 text-[#FF6C37] focus:ring-[#FF6C37] w-4 h-4"
               />
             </div>
+            <div className="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <div>
+                <label className="text-sm font-medium text-amber-950">Private mode</label>
+                <p className="text-xs text-amber-800 mt-0.5">Do not save tabs, history, auth tokens, passwords, or environment secrets locally.</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={privateMode}
+                onChange={(e) => setPrivateMode(e.target.checked)}
+                className="rounded border-amber-300 text-[#FF6C37] focus:ring-[#FF6C37] w-4 h-4"
+              />
+            </div>
           </div>
         </div>
       )}
@@ -3248,7 +3468,7 @@ print(response.json())`,
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-2xl">
             <div className="flex justify-between items-start mb-4">
-              <h3 className="text-xl font-bold text-gray-900">Save Your Workspace</h3>
+              <h3 className="text-xl font-bold text-gray-900">Cloud Sync</h3>
               <button
                 onClick={() => setShowAuthModal(false)}
                 className="text-gray-400 hover:text-gray-600"
@@ -3258,22 +3478,22 @@ print(response.json())`,
             </div>
             
             <p className="text-gray-600 mb-6 text-sm">
-              Connect with your Google account to sync your API collections across all devices
+              API Tester works fully without login. Connect Google only if you want collection sync across devices.
             </p>
 
             {/* Benefits */}
             <div className="mb-6 space-y-2.5">
               <div className="flex items-start gap-2.5">
                 <CheckIcon className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-gray-700">Save and organize API requests in collections</p>
+                <p className="text-sm text-gray-700">Keep using the local workspace with no account required</p>
               </div>
               <div className="flex items-start gap-2.5">
                 <CheckIcon className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-gray-700">Sync your data across all devices</p>
+                <p className="text-sm text-gray-700">Sync selected collections across all devices</p>
               </div>
               <div className="flex items-start gap-2.5">
                 <CheckIcon className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-gray-700">Access your collections from anywhere</p>
+                <p className="text-sm text-gray-700">Avoid vendor lock-in with JSON import and export</p>
               </div>
             </div>
 
@@ -3300,13 +3520,13 @@ print(response.json())`,
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              <span className="font-semibold text-gray-700">Continue with Google</span>
+                <span className="font-semibold text-gray-700">Enable Cloud Sync with Google</span>
             </button>
 
             {/* Info Note */}
             <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-lg">
               <p className="text-xs text-blue-800">
-                <span className="font-semibold">Note:</span> You can continue using the API Tester without connecting. Your collections will be saved locally in your browser.
+                <span className="font-semibold">Local-first:</span> Skip this and the tester still sends requests, imports collections, and saves locally in this browser.
               </p>
             </div>
 
