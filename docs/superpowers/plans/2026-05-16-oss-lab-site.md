@@ -122,14 +122,7 @@ with:
 const siteUrl = 'https://debugtools.org';
 ```
 
-Add these page entries before the CLI/Roadmap/Releases entries:
-
-```js
-{ url: '/architecture/', changefreq: 'monthly', priority: 0.7 },
-{ url: '/security/', changefreq: 'monthly', priority: 0.7 },
-{ url: '/contributing/', changefreq: 'monthly', priority: 0.7 },
-{ url: '/changelog/', changefreq: 'weekly', priority: 0.7 },
-```
+Do not add the new trust-page sitemap entries in this task. Those routes do not exist until Task 5, so the sitemap entries are added there.
 
 - [ ] **Step 5: Verify metadata text references**
 
@@ -199,7 +192,7 @@ https://buymeacoffee.com/jasimvk
 
 Ensure mobile menu includes all `navItems`, GitHub, and Sponsor. It can inherit from the current mapped list and existing external links.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add src/app/components/Navigation.tsx
@@ -536,10 +529,21 @@ export default function ChangelogPage() {
 }
 ```
 
+- [ ] **Step 5: Add trust pages to sitemap generator**
+
+In `scripts/generate-sitemap.js`, add these page entries before the CLI/Roadmap/Releases entries:
+
+```js
+{ url: '/architecture/', changefreq: 'monthly', priority: 0.7 },
+{ url: '/security/', changefreq: 'monthly', priority: 0.7 },
+{ url: '/contributing/', changefreq: 'monthly', priority: 0.7 },
+{ url: '/changelog/', changefreq: 'weekly', priority: 0.7 },
+```
+
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/app/architecture/page.tsx src/app/security/page.tsx src/app/contributing/page.tsx src/app/changelog/page.tsx
+git add src/app/architecture/page.tsx src/app/security/page.tsx src/app/contributing/page.tsx src/app/changelog/page.tsx scripts/generate-sitemap.js
 git commit -m "Add OSS trust pages"
 ```
 
