@@ -2,7 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import ProtectedRoute from '@/app/components/ProtectedRoute';
 import { useSession, signOut, signIn } from 'next-auth/react';
 import { useCollections } from './hooks/useCollections';
@@ -200,8 +200,26 @@ const clearPrivateModeStorage = () => {
 const looksLikeBrowserNetworkBlock = (message: string) =>
   /(failed to fetch|networkerror|load failed|cors|blocked|fetch failed)/i.test(message);
 
+const methodSupportsBody = (method: HttpMethod) => !['GET', 'HEAD'].includes(method);
+
+const normalizeRequestUrl = (rawUrl: string) => {
+  const trimmed = rawUrl.trim();
+  if (!trimmed || /^[a-z][a-z\d+\-.]*:/i.test(trimmed) || trimmed.startsWith('{{')) {
+    return trimmed;
+  }
+
+  if (/^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(?::\d+)?(\/|$)/i.test(trimmed)) {
+    return `http://${trimmed}`;
+  }
+
+  return `https://${trimmed}`;
+};
+
+const shellSingleQuote = (value: string) => `'${value.replace(/'/g, `'\\''`)}'`;
+
 function APITesterContent() {
   const { data: session } = useSession();
+  const importFileInputRef = useRef<HTMLInputElement>(null);
   
   // Tab management
   const [tabs, setTabs] = useState<RequestTab[]>([{
@@ -1301,7 +1319,7 @@ function APITesterContent() {
       }
 
       // Replace environment variables in URL and headers
-      let processedUrl = url;
+      let processedUrl = normalizeRequestUrl(url);
       const activeEnv = environments.find(env => env.name === activeEnvironment);
       if (activeEnv) {
         activeEnv.variables.forEach(({ key, value }) => {
@@ -1309,9 +1327,10 @@ function APITesterContent() {
         });
       }
 
-      const requestHeaders: Record<string, string> = {
-        'Content-Type': contentType
-      };
+      const requestHeaders: Record<string, string> = {};
+      if (methodSupportsBody(method)) {
+        requestHeaders['Content-Type'] = contentType;
+      }
 
       // Add authentication headers
       if (authConfig.type !== 'none') {
@@ -1349,7 +1368,7 @@ function APITesterContent() {
       let response = await fetch(processedUrl, {
         method,
         headers: requestHeaders,
-        body: method !== 'GET' ? body : undefined,
+        body: methodSupportsBody(method) ? body : undefined,
       });
 
       // Parse response data safely
@@ -1532,13 +1551,22 @@ function APITesterContent() {
     const enabledHeaders = headers.filter(h => h.enabled && h.key.trim() && h.value.trim());
     const headersObj = enabledHeaders.reduce((acc, { key, value }) => ({ ...acc, [key]: value }), {});
     const headersStr = JSON.stringify(headersObj, null, 2);
-    const bodyStr = method !== 'GET' ? body : '';
+    const bodyStr = methodSupportsBody(method) ? body : '';
+    const requestUrl = normalizeRequestUrl(url);
+    const curlParts = [
+      'curl',
+      '-X',
+      method,
+      shellSingleQuote(requestUrl),
+      ...enabledHeaders.flatMap((header) => ['-H', shellSingleQuote(`${header.key}: ${header.value}`)]),
+      ...(methodSupportsBody(method) && bodyStr ? ['--data-raw', shellSingleQuote(bodyStr)] : [])
+    ];
     
     const codeTemplates: Record<string, string> = {
-      javascript: `fetch('${url}', {
+      javascript: `fetch('${requestUrl}', {
   method: '${method}',
   headers: ${headersStr},
-  body: ${method !== 'GET' ? `JSON.stringify(${body})` : 'undefined'}
+  body: ${methodSupportsBody(method) && body ? JSON.stringify(body) : 'undefined'}
 })
   .then(response => response.json())
   .then(data => console.log(data))
@@ -1547,13 +1575,13 @@ function APITesterContent() {
 import json
 
 response = requests.${method.toLowerCase()}(
-    '${url}',
+    '${requestUrl}',
     headers=${headersStr},
-    ${method !== 'GET' ? `json=${body}` : ''}
+    ${methodSupportsBody(method) && body ? `data=${JSON.stringify(body)}` : ''}
 )
 
 print(response.json())`,
-      curl: `curl -X ${method} '${url}' ${enabledHeaders.map(h => `-H '${h.key}: ${h.value}'`).join(' ')} ${method !== 'GET' ? `-d '${bodyStr}'` : ''}`
+      curl: curlParts.join(' ')
     };
     return codeTemplates[language] || '';
   };
@@ -1631,16 +1659,22 @@ print(response.json())`,
               <PlusIcon className="h-4 w-4" />
               New
             </button>
-            <label className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-white/60 bg-white px-2.5 py-1.5 text-xs font-semibold text-[#24292f] shadow-sm transition-colors hover:bg-[#f6f8fa]" title="Import Collection">
+            <button
+              type="button"
+              onClick={() => importFileInputRef.current?.click()}
+              className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-white/60 bg-white px-2.5 py-1.5 text-xs font-semibold text-[#24292f] shadow-sm transition-colors hover:bg-[#f6f8fa]"
+              title="Import Collection"
+            >
               <ArrowDownOnSquareIcon className="h-4 w-4" />
               Import
-              <input
-                type="file"
-                accept=".json"
-                onChange={importCollection}
-                className="hidden"
-              />
-            </label>
+            </button>
+            <input
+              ref={importFileInputRef}
+              type="file"
+              accept=".json"
+              onChange={importCollection}
+              className="hidden"
+            />
             {session && (
               <button
                 onClick={async () => {
@@ -2556,19 +2590,19 @@ print(response.json())`,
               Headers
             </button>
             <button
-              onClick={() => method !== 'GET' && setActiveTab('body')}
+              onClick={() => methodSupportsBody(method) && setActiveTab('body')}
               className={`px-4 py-3 text-sm font-medium transition-colors relative ${
-                activeTab === 'body' && method !== 'GET'
+                activeTab === 'body' && methodSupportsBody(method)
                   ? 'text-gray-900 border-b-2 border-orange-500'
-                  : method === 'GET'
+                  : !methodSupportsBody(method)
                   ? 'text-gray-400 cursor-not-allowed'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
-              disabled={method === 'GET'}
-              title={method === 'GET' ? 'GET requests cannot have a request body' : 'Request body content'}
+              disabled={!methodSupportsBody(method)}
+              title={!methodSupportsBody(method) ? `${method} requests cannot have a request body` : 'Request body content'}
             >
               Body
-              {method === 'GET' && (
+              {!methodSupportsBody(method) && (
                 <XMarkIcon className="h-3 w-3 inline-block ml-1" />
               )}
             </button>
@@ -2822,14 +2856,14 @@ print(response.json())`,
           )}
 
           {/* Body Tab */}
-          {activeTab === 'body' && method === 'GET' && (
+          {activeTab === 'body' && !methodSupportsBody(method) && (
             <div className="flex flex-col items-center justify-center py-12 text-gray-500">
               <svg className="h-16 w-16 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
               </svg>
-              <p className="text-lg font-medium mb-2">Body Not Available for GET Requests</p>
+              <p className="text-lg font-medium mb-2">Body Not Available for {method} Requests</p>
               <p className="text-sm text-center max-w-md">
-                GET requests cannot have a request body according to HTTP standards. 
+                {method} requests cannot have a request body according to HTTP standards. 
                 Use POST, PUT, PATCH, or DELETE to send data in the request body.
               </p>
               <div className="mt-6 flex gap-2">
@@ -2849,7 +2883,7 @@ print(response.json())`,
             </div>
           )}
 
-          {activeTab === 'body' && method !== 'GET' && (
+          {activeTab === 'body' && methodSupportsBody(method) && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-gray-600">Request body content (JSON format)</p>
