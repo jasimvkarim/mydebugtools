@@ -18,7 +18,7 @@ const repoLinks = [
   { label: 'Sponsor', href: 'https://buymeacoffee.com/jasimvk' },
   { label: 'License', href: 'https://github.com/jasimvk/mydebugtools/blob/main/LICENSE' },
   { label: 'Releases', href: '/releases' },
-  { label: 'Contribute', href: 'https://github.com/jasimvk/mydebugtools/blob/main/CONTRIBUTING.md' },
+  { label: 'Contribute', href: '/contributing' },
 ];
 
 const featuredTools = [
@@ -80,9 +80,9 @@ export default function Home() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
           <Link href="/" className="flex items-center gap-2 text-[#24292f] hover:text-[#24292f]">
             <Terminal className="h-5 w-5" />
-            <span className="font-semibold">MyDebugTools</span>
+            <span className="font-semibold">DebugTools</span>
             <span className="hidden rounded-full border border-[#d0d7de] px-2 py-0.5 text-xs font-medium text-[#57606a] sm:inline">
-              open source
+              OSS lab
             </span>
           </Link>
           <nav className="flex items-center gap-2 text-sm">
@@ -116,10 +116,10 @@ export default function Home() {
               jasimvk / mydebugtools
             </div>
             <h1 className="max-w-4xl text-4xl font-semibold tracking-normal text-[#24292f] sm:text-5xl lg:text-6xl">
-              Open-source debugging tools for everyday developer work.
+              Local-first open-source tools for debugging real software.
             </h1>
             <p className="mt-5 max-w-3xl text-lg leading-8 text-[#57606a]">
-              A practical toolkit for testing APIs, formatting data, comparing code, decoding tokens, and inspecting web assets. Built like an OSS project: transparent, useful, and easy to contribute to.
+              DebugTools is a browser workbench for API testing, JSON and token inspection, code comparison, crash parsing, build analysis, and everyday developer operations. It is built in public, MIT licensed, and designed so sensitive workflows stay local where possible.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -129,21 +129,19 @@ export default function Home() {
                 Browse tools
                 <ArrowRightIcon className="h-4 w-4" />
               </Link>
+              <Link
+                href="/tools/api"
+                className="inline-flex items-center gap-2 rounded-md border border-[#d0d7de] bg-white px-4 py-2.5 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f]"
+              >
+                Open API Tester
+              </Link>
               <a
-                href="https://github.com/jasimvk/mydebugtools/issues/new"
+                href="https://github.com/jasimvk/mydebugtools"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-md border border-[#d0d7de] bg-white px-4 py-2.5 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f]"
               >
-                Open an issue
-              </a>
-              <a
-                href="https://buymeacoffee.com/jasimvk"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-md border border-[#d0d7de] bg-white px-4 py-2.5 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f]"
-              >
-                Sponsor
+                View GitHub
               </a>
             </div>
           </div>
@@ -156,19 +154,19 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-3 p-4">
                 <div>
                   <p className="text-2xl font-semibold text-[#24292f]">30+</p>
-                  <p className="text-xs text-[#57606a]">developer tools</p>
+                  <p className="text-xs text-[#57606a]">modules / browser workbench</p>
                 </div>
                 <div>
                   <p className="text-2xl font-semibold text-[#24292f]">MIT</p>
                   <p className="text-xs text-[#57606a]">license</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-semibold text-[#24292f]">Next.js</p>
-                  <p className="text-xs text-[#57606a]">application</p>
+                  <p className="text-2xl font-semibold text-[#24292f]">Local-first</p>
+                  <p className="text-xs text-[#57606a]">privacy model</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-semibold text-[#24292f]">OSS</p>
-                  <p className="text-xs text-[#57606a]">workflow</p>
+                  <p className="text-2xl font-semibold text-[#24292f]">CLI</p>
+                  <p className="text-xs text-[#57606a]">roadmap</p>
                 </div>
               </div>
               <div className="p-4">
@@ -210,7 +208,30 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pb-10 pt-10 sm:px-6">
+        <div className="rounded-md border border-[#d0d7de] bg-white p-5">
+          <p className="font-mono text-xs text-[#57606a]">flagship / tools/api</p>
+          <h2 className="mt-2 text-2xl font-semibold text-[#24292f]">API Tester is the flagship module</h2>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-[#57606a]">
+            A browser-native API workbench with collections, environments, import/export, private mode, CORS guidance, response inspection, and optional Cloud Sync.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {['Local workspace', 'Private mode', 'Import/export', 'Cloud Sync optional', 'CORS-aware'].map((item) => (
+              <span key={item} className="rounded-full border border-[#d0d7de] bg-[#f6f8fa] px-3 py-1 text-xs font-semibold text-[#57606a]">
+                {item}
+              </span>
+            ))}
+          </div>
+          <div className="mt-5">
+            <Link href="/tools/api" className="inline-flex items-center gap-2 rounded-md bg-[#24292f] px-4 py-2 text-sm font-semibold text-white hover:bg-[#32383f] hover:text-white">
+              Open API Tester
+              <ArrowRightIcon className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 pb-10 sm:px-6">
         <div className="mb-5 flex flex-col justify-between gap-3 border-b border-[#d0d7de] pb-4 sm:flex-row sm:items-end">
           <div>
             <p className="font-mono text-xs text-[#57606a]">/packages/tools</p>
@@ -253,7 +274,7 @@ export default function Home() {
             <p className="font-mono text-xs text-[#57606a]">README.md</p>
             <h2 className="mt-2 text-2xl font-semibold text-[#24292f]">Why this project exists</h2>
             <p className="mt-3 text-sm leading-7 text-[#57606a]">
-              Developers reach for quick web utilities all day, but many of them are noisy, opaque, or too narrow. MyDebugTools keeps the workflows simple and keeps the project inspectable.
+              Developers reach for quick web utilities all day, but many of them are noisy, opaque, or too narrow. DebugTools keeps the workflows simple and keeps the project inspectable.
             </p>
           </div>
           <div className="rounded-md border border-[#d0d7de] bg-[#f6f8fa] p-4">
@@ -269,10 +290,30 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+        <div className="mb-5 border-b border-[#d0d7de] pb-4">
+          <p className="font-mono text-xs text-[#57606a]">lab notebook</p>
+          <h2 className="mt-1 text-2xl font-semibold text-[#24292f]">Project notes</h2>
+        </div>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+          {[
+            { label: 'Architecture', href: '/architecture', copy: 'How the browser tools, API routes, auth, and local-first boundaries fit together.' },
+            { label: 'Security model', href: '/security', copy: 'What stays local, what touches network, and where Cloud Sync applies.' },
+            { label: 'Contributing', href: '/contributing', copy: 'Small module-focused contribution path for issues and tools.' },
+            { label: 'Changelog', href: '/changelog', copy: 'Release notes and implementation log.' },
+          ].map((item) => (
+            <Link key={item.href} href={item.href} className="rounded-md border border-[#d0d7de] bg-white p-4 hover:border-[#0969da] hover:bg-[#f6f8fa]">
+              <h3 className="text-sm font-semibold text-[#0969da]">{item.label}</h3>
+              <p className="mt-2 text-sm leading-6 text-[#57606a]">{item.copy}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <footer className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-[#57606a] sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div className="flex items-center gap-2">
           <Terminal className="h-4 w-4" />
-          <span>MyDebugTools is open source developer infrastructure.</span>
+          <span>DebugTools is open source developer infrastructure.</span>
         </div>
         <div className="flex flex-wrap gap-4">
           {repoLinks.map((link) => (
