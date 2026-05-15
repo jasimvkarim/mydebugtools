@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Define your website URL
-const siteUrl = 'https://mydebugtools.com';
+const siteUrl = 'https://debugtools.org';
 
 // Define the list of pages and tools
 const pages = [

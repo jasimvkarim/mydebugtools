@@ -6,6 +6,10 @@ import AuthProvider from "./components/AuthProvider";
 import Providers from "./providers";
 import Script from "next/script";
 
+const SITE_URL = 'https://debugtools.org';
+const SITE_NAME = 'DebugTools';
+const SITE_DESCRIPTION = 'A local-first open-source workbench for API testing, data inspection, build debugging, and everyday developer operations.';
+
 export const viewport: Viewport = {
   themeColor: '#FF6C37',
   width: 'device-width',
@@ -14,10 +18,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "MyDebugTools - All-in-one Developer Debugging Toolkit",
-  description: "A powerful collection of 30+ development tools including JSON Formatter, JWT Decoder, Base64 Tools, API Tester, Code Diff, and more - all free, open-source, and privacy-focused.",
-  metadataBase: new URL('https://mydebugtools.com'),
-  keywords: "developer tools, json formatter, jwt decoder, base64 encoder, api tester, code diff, regex tester, online tools, web developer tools, debugging, formatting",
+  title: "DebugTools - Local-first open-source developer workbench",
+  description: SITE_DESCRIPTION,
+  metadataBase: new URL(SITE_URL),
+  keywords: "debugtools, developer tools, api tester, json formatter, jwt decoder, code diff, local-first tools, open source developer tools, debugging, formatting",
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
@@ -35,21 +39,21 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: 'https://mydebugtools.com',
+    canonical: SITE_URL,
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://mydebugtools.com/',
-    siteName: 'MyDebugTools',
-    title: 'MyDebugTools - All-in-one Developer Debugging Toolkit',
-    description: 'A powerful collection of 30+ development tools including JSON Formatter, JWT Decoder, Base64 Tools, API Tester, Code Diff, and more - all free, open-source, and privacy-focused.',
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: 'DebugTools - Local-first open-source developer workbench',
+    description: SITE_DESCRIPTION,
     images: [
       {
-        url: 'https://mydebugtools.com/og-image.svg',
+        url: `${SITE_URL}/og-image.svg`,
         width: 1200,
         height: 630,
-        alt: 'MyDebugTools - All-in-one Developer Toolkit',
+        alt: `${SITE_NAME} - Local-first open-source developer workbench`,
         type: 'image/svg+xml',
       },
     ],
@@ -58,9 +62,9 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@jasimvk',
     creator: '@jasimvk',
-    title: 'MyDebugTools - All-in-one Developer Debugging Toolkit',
-    description: 'A powerful collection of 30+ development tools including JSON Formatter, JWT Decoder, Base64 Tools, API Tester, Code Diff, and more - all free, open-source, and privacy-focused.',
-    images: ['https://mydebugtools.com/og-image.svg'],
+    title: 'DebugTools - Local-first open-source developer workbench',
+    description: SITE_DESCRIPTION,
+    images: [`${SITE_URL}/og-image.svg`],
   },
 };
 
@@ -74,23 +78,24 @@ export default function RootLayout({
     '@graph': [
       {
         '@type': 'WebSite',
-        '@id': 'https://mydebugtools.com/#website',
-        name: 'MyDebugTools',
-        url: 'https://mydebugtools.com/',
-        description: metadata.description,
+        '@id': `${SITE_URL}/#website`,
+        name: SITE_NAME,
+        url: SITE_URL,
+        description: SITE_DESCRIPTION,
         potentialAction: {
           '@type': 'SearchAction',
-          target: 'https://mydebugtools.com/tools/all/?q={search_term_string}',
+          target: `${SITE_URL}/tools/all/?q={search_term_string}`,
           'query-input': 'required name=search_term_string',
         },
       },
       {
         '@type': 'SoftwareApplication',
-        '@id': 'https://mydebugtools.com/#app',
-        name: 'MyDebugTools',
+        '@id': `${SITE_URL}/#app`,
+        name: SITE_NAME,
+        description: SITE_DESCRIPTION,
         applicationCategory: 'DeveloperApplication',
         operatingSystem: 'Any',
-        url: 'https://mydebugtools.com/',
+        url: SITE_URL,
         offers: {
           '@type': 'Offer',
           price: '0',

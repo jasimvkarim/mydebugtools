@@ -12,10 +12,10 @@ Allow: /llms.txt
 # Currently no restricted areas
 
 # Host
-Host: https://mydebugtools.com
+Host: https://debugtools.org
 
 # Sitemaps
-Sitemap: https://mydebugtools.com/sitemap.xml
+Sitemap: https://debugtools.org/sitemap.xml
 
 # Additional sitemap paths (if you have category-specific sitemaps)
-# Sitemap: https://mydebugtools.com/tools-sitemap.xml
+# Sitemap: https://debugtools.org/tools-sitemap.xml
