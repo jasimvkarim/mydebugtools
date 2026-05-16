@@ -1990,7 +1990,7 @@ print(response.json())`,
       {/* Right Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Navigation Bar */}
-        <div className="bg-white/95 border-b border-[#d9dde3] px-4 py-2 flex flex-wrap items-center justify-between gap-3 backdrop-blur">
+        <div className="bg-white/95 border-b border-[#d9dde3] px-4 py-2 flex flex-wrap items-center justify-between gap-3 shadow-[0_1px_0_rgba(27,31,36,0.03)] backdrop-blur">
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setShowCollections(!showCollections)}
@@ -2023,15 +2023,16 @@ print(response.json())`,
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={createNewTab}
-              className="inline-flex items-center gap-2 rounded border border-[#d0d7de] bg-white px-3 py-1.5 text-[13px] font-semibold text-[#2b2f38] transition-colors hover:bg-[#f6f8fa]"
+              className="inline-flex items-center gap-2 rounded-md bg-[#24292f] px-3 py-1.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#32383f]"
             >
               <PlusIcon className="h-4 w-4" />
               New request
             </button>
-            <div className="flex items-center overflow-hidden rounded border border-[#d0d7de] bg-white">
+            <div className="flex items-center overflow-hidden rounded-md border border-[#d0d7de] bg-white shadow-sm">
               <button
                 onClick={() => setShowSaveDialog(true)}
-                className="inline-flex items-center gap-1.5 border-r border-[#d0d7de] px-3 py-1.5 text-[13px] font-semibold text-[#2b2f38] transition-colors hover:bg-[#f6f8fa]"
+                aria-label="Save request"
+                className="inline-flex items-center gap-1.5 border-r border-[#d0d7de] px-3 py-1.5 text-[13px] font-semibold text-[#57606a] transition-colors hover:bg-[#f6f8fa] hover:text-[#24292f]"
                 title="Save request"
               >
                 <DocumentDuplicateIcon className="h-4 w-4" />
@@ -2039,7 +2040,8 @@ print(response.json())`,
               </button>
               <button
                 onClick={() => setShowVariables(true)}
-                className="inline-flex items-center gap-1.5 border-r border-[#d0d7de] px-3 py-1.5 text-[13px] font-semibold text-[#2b2f38] transition-colors hover:bg-[#f6f8fa]"
+                aria-label="Environment variables"
+                className="inline-flex items-center gap-1.5 border-r border-[#d0d7de] px-3 py-1.5 text-[13px] font-semibold text-[#57606a] transition-colors hover:bg-[#f6f8fa] hover:text-[#24292f]"
                 title="Environment variables"
               >
                 <CodeBracketIcon className="h-4 w-4" />
@@ -2052,8 +2054,8 @@ print(response.json())`,
                 }}
                 className={`inline-flex items-center gap-1.5 border-r border-[#d0d7de] px-3 py-1.5 text-[13px] font-semibold transition-colors ${
                   showHistory
-                    ? 'bg-[#eaeef2] text-[#111827]'
-                    : 'text-[#2b2f38] hover:bg-[#f6f8fa]'
+                    ? 'bg-[#f6f8fa] text-[#111827]'
+                    : 'text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]'
                 }`}
                 title={showHistory ? 'Hide history' : 'Show history'}
               >
@@ -2064,8 +2066,8 @@ print(response.json())`,
                 onClick={() => setShowHelp(!showHelp)}
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-semibold transition-colors ${
                   showHelp
-                    ? 'bg-[#eaeef2] text-[#111827]'
-                    : 'text-[#2b2f38] hover:bg-[#f6f8fa]'
+                    ? 'bg-[#f6f8fa] text-[#111827]'
+                    : 'text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]'
                 }`}
                 title={showHelp ? 'Hide help' : 'Show help'}
               >
@@ -2076,7 +2078,7 @@ print(response.json())`,
             {!session && (
               <button
                 onClick={() => setShowAuthModal(true)}
-                className="inline-flex items-center gap-2 rounded border border-[#d0d7de] bg-white px-3 py-1.5 text-[13px] font-semibold text-[#2b2f38] transition-colors hover:bg-[#f6f8fa]"
+                className="inline-flex items-center gap-2 rounded-md border border-[#d0d7de] bg-white px-3 py-1.5 text-[13px] font-semibold text-[#57606a] transition-colors hover:bg-[#f6f8fa] hover:text-[#24292f]"
               >
                 <ArrowPathIcon className="h-4 w-4" />
                 Cloud Sync

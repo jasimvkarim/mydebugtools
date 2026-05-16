@@ -44,6 +44,7 @@ const projectLinks = [
   { name: 'Releases', href: '/releases' },
   { name: 'Changelog', href: '/changelog' },
   { name: 'Contribute', href: '/contributing' },
+  { name: 'New issue', href: 'https://github.com/jasimvkarim/mydebugtools/issues/new' },
 ];
 
 interface SiteHeaderProps {
@@ -79,17 +80,17 @@ export default function SiteHeader({
   const mobileItems = showToolRail ? toolNav : primaryNav;
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-[#d0d7de] bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+    <nav className="sticky top-0 z-40 border-b border-[#d0d7de] bg-white/95 shadow-[0_1px_0_rgba(27,31,36,0.04)] backdrop-blur supports-[backdrop-filter]:bg-white/85">
       <div className={`mx-auto ${maxWidth} px-4 sm:px-6`}>
-        <div className="flex h-16 items-center justify-between gap-4">
-          <div className="flex min-w-0 items-center gap-5">
+        <div className="flex h-14 items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-6">
             <Link href="/" className="group flex min-w-0 items-center gap-3 text-[#24292f] hover:text-[#24292f]">
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-[#d0d7de] bg-[#f6f8fa] text-[#24292f] shadow-sm transition-colors group-hover:border-[#8c959f]">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-[#d0d7de] bg-[#f6f8fa] text-[#24292f] transition-colors group-hover:border-[#8c959f]">
                 <Terminal className="h-4 w-4" />
               </span>
               <span className="min-w-0">
                 <span className="block truncate text-[15px] font-semibold leading-5 tracking-tight">debugtools</span>
-                <span className="hidden font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-[#6e7781] sm:block">
+                <span className="hidden font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-[#6e7781] xl:block">
                   local-first oss
                 </span>
               </span>
@@ -103,9 +104,9 @@ export default function SiteHeader({
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold ${
+                    className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold transition-colors ${
                       active
-                        ? 'bg-[#eaeef2] text-[#24292f]'
+                        ? 'bg-[#f6f8fa] text-[#24292f] shadow-[inset_0_0_0_1px_#d0d7de]'
                         : 'text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]'
                     }`}
                     aria-current={isActivePath(item.href) ? 'page' : undefined}
@@ -123,7 +124,7 @@ export default function SiteHeader({
               <button
                 type="button"
                 onClick={() => setIsProjectOpen(!isProjectOpen)}
-                className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]"
+                className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold text-[#57606a] transition-colors hover:bg-[#f6f8fa] hover:text-[#24292f]"
                 aria-expanded={isProjectOpen}
               >
                 Project
@@ -135,6 +136,8 @@ export default function SiteHeader({
                     <Link
                       key={link.href}
                       href={link.href}
+                      target={link.href.startsWith('http') ? '_blank' : undefined}
+                      rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                       onClick={() => setIsProjectOpen(false)}
                       className="block px-3 py-2 text-sm font-medium text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]"
                     >
@@ -145,18 +148,10 @@ export default function SiteHeader({
               )}
             </div>
             <a
-              href="https://github.com/jasimvkarim/mydebugtools/issues/new"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f] xl:inline-flex"
-            >
-              Issue
-            </a>
-            <a
               href="https://buymeacoffee.com/jasimvk"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden items-center gap-1.5 rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f] 2xl:inline-flex"
+              className="hidden items-center gap-1.5 rounded-md border border-[#d0d7de] bg-white px-3 py-1.5 text-sm font-semibold text-[#24292f] transition-colors hover:bg-[#f6f8fa] hover:text-[#24292f] 2xl:inline-flex"
             >
               <Coffee className="h-3.5 w-3.5" />
               Sponsor
@@ -165,7 +160,7 @@ export default function SiteHeader({
               href="https://github.com/jasimvkarim/mydebugtools"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden items-center gap-2 rounded-md bg-[#24292f] px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#32383f] hover:text-white lg:inline-flex"
+              className="hidden items-center gap-2 rounded-md bg-[#24292f] px-3.5 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-[#32383f] hover:text-white lg:inline-flex"
             >
               <Github className="h-4 w-4" />
               GitHub
@@ -189,11 +184,8 @@ export default function SiteHeader({
       </div>
 
       {showToolRail && (
-        <div className="hidden border-t border-[#d0d7de] bg-white/75 lg:block">
-          <div className={`mx-auto flex ${maxWidth} items-center gap-2 overflow-x-auto px-4 py-2 sm:px-6`}>
-            <span className="shrink-0 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6e7781]">
-              Tools
-            </span>
+        <div className="hidden border-t border-[#d8dee4] bg-[#f6f8fa]/70 lg:block">
+          <div className={`mx-auto flex ${maxWidth} items-center gap-1.5 overflow-x-auto px-4 py-1.5 sm:px-6`}>
             {toolNav.map((tool) => {
               const Icon = tool.icon;
               const active = isActivePath(tool.href);
@@ -201,10 +193,10 @@ export default function SiteHeader({
                 <Link
                   key={tool.href}
                   href={tool.href}
-                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold ${
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors ${
                     active
-                      ? 'bg-[#eaeef2] text-[#24292f]'
-                      : 'text-[#6e7781] hover:bg-[#f6f8fa] hover:text-[#24292f]'
+                      ? 'bg-white text-[#24292f] shadow-[inset_0_0_0_1px_#d0d7de]'
+                      : 'text-[#6e7781] hover:bg-white hover:text-[#24292f]'
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -243,21 +235,14 @@ export default function SiteHeader({
               <Link
                 key={link.href}
                 href={link.href}
+                target={link.href.startsWith('http') ? '_blank' : undefined}
+                rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                 className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {link.name}
               </Link>
             ))}
-            <a
-              href="https://github.com/jasimvkarim/mydebugtools/issues/new"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              New issue
-            </a>
             <a
               href="https://github.com/jasimvkarim/mydebugtools"
               target="_blank"
