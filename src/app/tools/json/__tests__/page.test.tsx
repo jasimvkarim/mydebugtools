@@ -2,19 +2,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Page from '../page';
 
-// Mock next/dynamic
-jest.mock('next/dynamic', () => () => {
-  const MockMonacoEditor = ({ value, onChange }: { value: string; onChange: (value: string) => void }) => (
-    <textarea
-      data-testid="monaco-editor"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="w-full h-64 font-mono text-sm border rounded p-3"
-    />
-  );
-  return MockMonacoEditor;
-});
-
 // Mock file-saver
 jest.mock('file-saver', () => ({
   saveAs: jest.fn(),
@@ -33,13 +20,15 @@ describe('JSON Tools Page', () => {
     jest.clearAllMocks();
   });
 
-  it('renders all tabs', () => {
+  it('renders the compact JSON workspace', () => {
     render(<Page />);
-    expect(screen.getByText('Format')).toBeInTheDocument();
-    expect(screen.getByText('Validate')).toBeInTheDocument();
-    expect(screen.getByText('Transform')).toBeInTheDocument();
-    expect(screen.getByText('Compare')).toBeInTheDocument();
-    expect(screen.getByText('Search')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'JSON Tools' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'text' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'tree' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Format' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Minify' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Download' })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Load from URL')).toBeInTheDocument();
   });
 
   it('loads sample JSON when clicking the sample button', async () => {
@@ -49,59 +38,62 @@ describe('JSON Tools Page', () => {
     
     const editor = screen.getByTestId('monaco-editor');
     await waitFor(() => {
-      expect(editor).toHaveValue(expect.stringContaining('"name"'));
+      expect((editor as HTMLTextAreaElement).value).toContain('"name"');
     });
   });
 
   it('validates JSON input', async () => {
     render(<Page />);
-    
-    // Switch to validate tab
-    fireEvent.click(screen.getByText('Validate'));
-    
+
     const editor = screen.getByTestId('monaco-editor');
     fireEvent.change(editor, { target: { value: sampleJSON } });
-    
-    const validateButton = screen.getByText('Validate');
-    fireEvent.click(validateButton);
+    fireEvent.click(screen.getByRole('button', { name: 'Format' }));
     
     await waitFor(() => {
-      expect(screen.getByText('Valid JSON')).toBeInTheDocument();
+      expect(editor).toHaveValue('{\n  "name": "John",\n  "age": 30\n}');
+      expect(screen.queryByText(/Invalid JSON/i)).not.toBeInTheDocument();
     });
   });
 
   it('shows error for invalid JSON', async () => {
     render(<Page />);
-    
-    // Switch to validate tab
-    fireEvent.click(screen.getByText('Validate'));
-    
+
     const editor = screen.getByTestId('monaco-editor');
     fireEvent.change(editor, { target: { value: invalidJSON } });
-    
-    const validateButton = screen.getByText('Validate');
-    fireEvent.click(validateButton);
+    fireEvent.click(screen.getByRole('button', { name: 'Format' }));
     
     await waitFor(() => {
       expect(screen.getByText(/Invalid JSON/i)).toBeInTheDocument();
     });
   });
 
-  it('allows exporting JSON in different formats', async () => {
+  it('minifies JSON input', async () => {
     render(<Page />);
     
     const editor = screen.getByTestId('monaco-editor');
+    fireEvent.change(editor, { target: { value: '{\n  "name": "John",\n  "age": 30\n}' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Minify' }));
+
+    await waitFor(() => {
+      expect(editor).toHaveValue('{"name":"John","age":30}');
+    });
+  });
+
+  it('shows parsed JSON in tree view with searchable details', async () => {
+    render(<Page />);
+
+    const editor = screen.getByTestId('monaco-editor');
     fireEvent.change(editor, { target: { value: sampleJSON } });
-    
-    const formatSelect = screen.getByRole('combobox');
-    fireEvent.change(formatSelect, { target: { value: 'yaml' } });
-    
-    const exportButton = screen.getByText('Export');
-    fireEvent.click(exportButton);
-    
-    // Verify that saveAs was called
-    const FileSaver = require('file-saver');
-    expect(FileSaver.saveAs).toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('tab', { name: 'tree' }));
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('Search keys and values')).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('Search keys and values'), { target: { value: 'John' } });
+    expect(screen.getByText(/matches/)).toBeInTheDocument();
+    expect(document.body.textContent).toContain('"John"');
+    expect(screen.getByText('Details')).toBeInTheDocument();
   });
 
   it('clears the editor when clicking clear button', async () => {
@@ -114,7 +106,8 @@ describe('JSON Tools Page', () => {
     fireEvent.click(clearButton);
     
     await waitFor(() => {
-      expect(editor).toHaveValue('');
+      expect(screen.getByText('Details')).toBeInTheDocument();
+      expect(screen.getByText('Select a node')).toBeInTheDocument();
     });
   });
 }); 

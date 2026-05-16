@@ -99,18 +99,18 @@ const JSONTreeNode: React.FC<JSONTreeNodeProps> = ({
     return checkValue(obj);
   };
 
-  const shouldShow = !searchTerm || matchesSearch(data, searchTerm) || (name && name.toLowerCase().includes(searchTerm.toLowerCase()));
-
-  if (!shouldShow) {
-    return null;
-  }
-
   // Expand automatically if searching
   useEffect(() => {
     if (searchTerm && isExpandable) {
       setIsExpanded(true);
     }
   }, [searchTerm, isExpandable]);
+
+  const shouldShow = !searchTerm || matchesSearch(data, searchTerm) || (name && name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  if (!shouldShow) {
+    return null;
+  }
 
   // Highlight search matches
   const highlightMatch = (text: string, term: string) => {
@@ -839,215 +839,140 @@ export default function JSONTools() {
   // Note: Custom click handler removed - using react-json-view's onSelect instead
 
   return (
-    <div className="bg-[#fafafa] text-gray-900 flex flex-col">
-      <h1 className="text-2xl font-semibold mb-6 text-gray-800 px-6 pt-6">JSON Viewer</h1>
-      
-      
-
-      {/* Tabs - Postman Style */}
-      <div className="mb-0 border-b border-gray-300 bg-white">
-        <div className="flex">
-          <button
-            onClick={() => setActiveTab('text')}
-            className={`px-6 py-3 font-medium transition-all relative ${
-              activeTab === 'text'
-                ? 'text-orange-600 bg-white border-b-2 border-orange-600'
-                : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-            }`}
-            role="tab"
-          >
-            Text
-          </button>
-          <button
-            onClick={() => setActiveTab('tree')}
-            className={`px-6 py-3 font-medium transition-all relative ${
-              activeTab === 'tree'
-                ? 'text-orange-600 bg-white border-b-2 border-orange-600'
-                : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-            }`}
-            role="tab"
-          >
-            Tree
-          </button>
+    <div className="mx-auto max-w-[1600px] text-[#24292f]">
+      <section className="rounded-md border border-[#d0d7de] bg-white">
+        <div className="flex flex-col justify-between gap-4 border-b border-[#d0d7de] px-5 py-4 lg:flex-row lg:items-end">
+          <div>
+            <p className="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-[#6e7781]">
+              tools/json
+            </p>
+            <h1 className="mt-2 text-2xl font-semibold text-[#24292f]">JSON Tools</h1>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button title="Load sample JSON" onClick={handleSample} className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa]">
+              Sample
+            </button>
+            <button onClick={() => setShowStatsModal(true)} className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa]">
+              Stats
+            </button>
+            <button onClick={handleDownload} className="inline-flex items-center gap-2 rounded-md bg-[#24292f] px-3 py-2 text-sm font-semibold text-white hover:bg-[#32383f]">
+              <ArrowDownTrayIcon className="h-4 w-4" />
+              Download
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Content Area - Postman Style */}
-      <div className="bg-[#f7f7f7] border-x border-gray-300 px-3 py-2 flex flex-wrap gap-1 items-center justify-between">
-        <div className="flex flex-wrap gap-1">
-          <div className="flex gap-1">
-            <button 
-              onClick={handlePasteFromClipboard} 
-              className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
-              title="Paste from clipboard"
-            >
+        <div className="grid gap-3 border-b border-[#d0d7de] bg-[#f6f8fa] px-4 py-3 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="inline-flex overflow-hidden rounded-md border border-[#d0d7de] bg-white">
+              {(['text', 'tree'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-3 py-1.5 text-sm font-semibold capitalize transition-colors ${
+                    activeTab === tab
+                      ? 'bg-[#24292f] text-white'
+                      : 'text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]'
+                  }`}
+                  role="tab"
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+            <button onClick={handlePasteFromClipboard} className="inline-flex items-center gap-1.5 rounded-md border border-[#d0d7de] bg-white px-3 py-1.5 text-sm font-semibold text-[#57606a] hover:bg-white hover:text-[#24292f]">
               <ClipboardDocumentListIcon className="h-4 w-4" />
               Paste
             </button>
-            <button 
-              onClick={() => handleCopy(jsonInput)} 
-              className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
-              title="Copy to clipboard"
-            >
+            <button onClick={() => handleCopy(jsonInput)} className="inline-flex items-center gap-1.5 rounded-md border border-[#d0d7de] bg-white px-3 py-1.5 text-sm font-semibold text-[#57606a] hover:bg-white hover:text-[#24292f]">
               <ClipboardIcon className="h-4 w-4" />
-              {copied ? 'Copied!' : 'Copy'}
+              {copied ? 'Copied' : 'Copy'}
             </button>
-          </div>
-          
-          <div className="border-l border-gray-400 mx-2"></div>
-          
-          <div className="flex gap-1">
-            <button 
-              onClick={handleFormat} 
-              className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
-              title="Format JSON"
-            >
+            <button onClick={handleFormat} className="inline-flex items-center gap-1.5 rounded-md border border-[#d0d7de] bg-white px-3 py-1.5 text-sm font-semibold text-[#57606a] hover:bg-white hover:text-[#24292f]">
               <DocumentTextIcon className="h-4 w-4" />
               Format
             </button>
-            <button 
-              onClick={handleRemoveWhiteSpace} 
-              className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
-              title="Minify JSON"
-            >
+            <button onClick={handleRemoveWhiteSpace} className="inline-flex items-center gap-1.5 rounded-md border border-[#d0d7de] bg-white px-3 py-1.5 text-sm font-semibold text-[#57606a] hover:bg-white hover:text-[#24292f]">
               <ArrowsPointingInIcon className="h-4 w-4" />
               Minify
             </button>
-          </div>
-          
-          <div className="border-l border-gray-400 mx-2"></div>
-          
-          <div className="flex gap-1">
-            <button 
-              onClick={handleReset} 
-              className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
-              title="Clear all"
-            >
+            <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-[#d0d7de] bg-white px-3 py-1.5 text-sm font-semibold text-[#57606a] hover:bg-white hover:text-[#24292f]">
+              <ArrowUpTrayIcon className="h-4 w-4" />
+              Load
+              <input type="file" ref={fileInputRef} className="hidden" accept=".json,.txt" onChange={handleFileLoad} />
+            </label>
+            <button title="Clear input" onClick={handleReset} className="inline-flex items-center gap-1.5 rounded-md border border-[#d0d7de] bg-white px-3 py-1.5 text-sm font-semibold text-[#57606a] hover:bg-white hover:text-[#24292f]">
               <XMarkIcon className="h-4 w-4" />
               Clear
             </button>
-            <label className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5 cursor-pointer" title="Load JSON file">
-              <ArrowUpTrayIcon className="h-4 w-4" />
-              Load
-              <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept=".json,.txt" onChange={handleFileLoad} />
-            </label>
           </div>
-        </div>
 
-        {activeTab === 'tree' && (
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={toggleExpandCollapse}
-              className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-300 rounded transition-colors flex items-center gap-1.5"
-            >
-              {expandAll ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
-              {expandAll ? 'Collapse All' : 'Expand All'}
+          <div className="flex gap-2">
+            <input
+              ref={urlInputRef}
+              type="url"
+              placeholder="Load from URL"
+              className="h-9 min-w-0 flex-1 rounded-md border border-[#d0d7de] bg-white px-3 text-sm text-[#24292f] outline-none focus:border-[#0969da] focus:ring-2 focus:ring-[#0969da]/15 lg:w-72"
+            />
+            <button onClick={handleLoadUrl} disabled={loadingUrl} className="inline-flex items-center gap-1.5 rounded-md border border-[#d0d7de] bg-white px-3 py-1.5 text-sm font-semibold text-[#57606a] hover:bg-white hover:text-[#24292f] disabled:opacity-60">
+              <LinkIcon className="h-4 w-4" />
+              {loadingUrl ? 'Loading' : 'Load'}
             </button>
           </div>
-        )}
-      </div>
+        </div>
 
-      {activeTab === 'text' && (
-        <div className="space-y-0">
-          {/* Text Editor */}
+        {activeTab === 'text' && (
           <textarea
+            data-testid="monaco-editor"
             value={jsonInput}
             onChange={(e) => setJsonInput(e.target.value)}
-            className="w-full h-[600px] p-4 border border-gray-300 rounded-b-md font-mono text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white text-gray-900"
-            placeholder="Paste your JSON here..."
+            className="h-[640px] w-full resize-y border-0 bg-white p-4 font-mono text-sm leading-6 text-[#24292f] outline-none focus:ring-2 focus:ring-[#0969da]/15"
+            placeholder="Paste JSON..."
             spellCheck={false}
-            style={{ 
-              lineHeight: '1.5',
-              tabSize: 2
-            }}
+            style={{ tabSize: 2 }}
           />
-        </div>
-      )}
+        )}
 
-      {/* Tree View - Postman Style */}
-      {activeTab === 'tree' && parsedJson && (
-        <div className="space-y-0">
-          {/* Search and Controls Bar */}
-          <div className="flex flex-col gap-2 p-3 bg-white border-x border-t border-gray-300">
-            <div className="flex gap-2">
-              <div className="flex-1 relative">
+        {activeTab === 'tree' && parsedJson && (
+          <div>
+            <div className="grid gap-2 border-b border-[#d0d7de] bg-white px-4 py-3 lg:grid-cols-[1fr_auto]">
+              <div className="relative">
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search keys and values (strings, numbers, booleans, null)..."
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                  placeholder="Search keys and values"
+                  className="h-9 w-full rounded-md border border-[#d0d7de] bg-white pl-9 pr-9 text-sm outline-none focus:border-[#0969da] focus:ring-2 focus:ring-[#0969da]/15"
                 />
-                {/* Search Icon */}
-                <svg 
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
+                <svg className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6e7781]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                {/* Clear Search Button */}
                 {searchTerm && (
-                  <button
-                    onClick={() => setSearchTerm('')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    title="Clear search"
-                  >
+                  <button onClick={() => setSearchTerm('')} className="absolute right-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded text-[#6e7781] hover:bg-[#f6f8fa]" title="Clear search">
                     <XMarkIcon className="h-4 w-4" />
                   </button>
                 )}
               </div>
-              
-              {/* Expand/Collapse All Buttons */}
-              <div className="flex gap-1">
-                <button
-                  onClick={() => {
-                    setExpandAll(true);
-                    setTreeCollapsed(false);
-                  }}
-                  className="px-3 py-2 text-xs font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded transition-colors flex items-center gap-1.5"
-                  title="Expand All"
-                >
-                  <span className="text-base font-bold">−</span>
-                  Expand All
-                </button>
-                <button
-                  onClick={() => {
-                    setExpandAll(false);
-                    setTreeCollapsed(1);
-                  }}
-                  className="px-3 py-2 text-xs font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded transition-colors flex items-center gap-1.5"
-                  title="Collapse All"
-                >
-                  <span className="text-base font-bold">+</span>
-                  Collapse All
+              <div className="flex flex-wrap items-center gap-2">
+                {searchTerm && (
+                  <span className="font-mono text-xs text-[#6e7781]">
+                    {countSearchResults(parsedJson, searchTerm)} matches
+                  </span>
+                )}
+                <button onClick={toggleExpandCollapse} className="inline-flex items-center gap-1.5 rounded-md border border-[#d0d7de] bg-white px-3 py-1.5 text-sm font-semibold text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]">
+                  {expandAll ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
+                  {expandAll ? 'Collapse' : 'Expand'}
                 </button>
               </div>
             </div>
-            
-            {/* Search Results Count */}
-            {searchTerm && (
-              <div className="text-xs text-gray-600 flex items-center gap-2 px-2">
-                <span className="inline-flex items-center gap-1">
-                  <svg className="h-3 w-3 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <strong>{countSearchResults(parsedJson, searchTerm)}</strong> match{countSearchResults(parsedJson, searchTerm) !== 1 ? 'es' : ''} found
-                </span>
-              </div>
-            )}
-          </div>
 
-          {/* Minimalistic Two-Panel Layout: Tree + Details */}
-          <div className="flex gap-0 border border-gray-200 bg-white overflow-hidden">
-            {/* Left Panel - Clean Tree View */}
-            <div 
-              ref={treeContainerRef}
-              className="flex-1 p-4 overflow-auto max-h-[600px] json-tree-container bg-white"
-              onPaste={handlePasteInTree}
-              tabIndex={0}
-            >
+            <div className="grid min-h-[640px] bg-white lg:grid-cols-[minmax(0,1fr)_320px]">
+              <div
+                ref={treeContainerRef}
+                className="overflow-auto border-b border-[#d0d7de] p-4 lg:border-b-0 lg:border-r json-tree-container"
+                onPaste={handlePasteInTree}
+                tabIndex={0}
+              >
               {error ? (
                 <div className="p-3 bg-red-50 border border-red-200 rounded">
                   <p className="font-semibold text-sm text-red-700 mb-1">Error</p>
@@ -1067,7 +992,7 @@ export default function JSONTools() {
             </div>
 
             {/* Right Panel - Minimalistic Details (Always Visible) */}
-            <div className="w-80 bg-gray-50 border-l border-gray-200 overflow-auto max-h-[600px]">
+            <div className="bg-[#f6f8fa] overflow-auto">
               {/* Simple Header */}
               <div className="sticky top-0 bg-white border-b border-gray-200 p-3 z-10">
                 <div className="flex items-center justify-between">
@@ -1199,10 +1124,10 @@ export default function JSONTools() {
           </div>
         </div>
       )}
+      </section>
 
-      {/* Error Display - Postman Style */}
       {error && (
-        <div className="mt-3 p-3 bg-red-50 border-l-4 border-red-500 rounded">
+        <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3">
           <p className="text-red-700 font-semibold text-sm">Error</p>
           <p className="text-red-600 text-xs mt-1">{error}</p>
         </div>

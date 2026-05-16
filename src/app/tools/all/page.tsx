@@ -1,7 +1,8 @@
 'use client';
 
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import { ArrowRightIcon, MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import {
   getFeaturedTools,
   getToolsByPillar,
@@ -35,7 +36,32 @@ function ToolRow({
 }
 
 export default function AllToolsPage() {
+  const [query, setQuery] = useState('');
   const featuredTools = getFeaturedTools();
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const visiblePillars = useMemo(() => {
+    return toolPillars
+      .map((pillar) => {
+        const tools = getToolsByPillar(pillar.name).filter((tool) => {
+          if (!normalizedQuery) return true;
+
+          return [
+            tool.name,
+            tool.path,
+            tool.category,
+            tool.pillar,
+            tool.privacy,
+            tool.maturity,
+          ].some((value) => value.toLowerCase().includes(normalizedQuery));
+        });
+
+        return { ...pillar, tools };
+      })
+      .filter((pillar) => pillar.tools.length > 0);
+  }, [normalizedQuery]);
+
+  const visibleCount = visiblePillars.reduce((total, pillar) => total + pillar.tools.length, 0);
 
   return (
     <div className="mx-auto max-w-[1600px]">
@@ -57,32 +83,63 @@ export default function AllToolsPage() {
             </Link>
           </div>
         </div>
+        <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="relative flex-1">
+            <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6e7781]" />
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search tools"
+              className="h-10 w-full rounded-md border border-[#d0d7de] bg-white pl-9 pr-10 text-sm text-[#24292f] outline-none transition-colors placeholder:text-[#6e7781] focus:border-[#0969da] focus:ring-2 focus:ring-[#0969da]/15"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery('')}
+                className="absolute right-2 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded text-[#6e7781] hover:bg-[#f6f8fa] hover:text-[#24292f]"
+                aria-label="Clear search"
+              >
+                <XMarkIcon className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          <span className="font-mono text-xs text-[#6e7781]">
+            {visibleCount} tools
+          </span>
+        </div>
       </section>
 
-      <section className="mt-4 grid gap-3 md:grid-cols-3">
-        {featuredTools.slice(0, 6).map((tool) => (
-          <ToolRow key={tool.path} tool={tool} />
-        ))}
-      </section>
+      {!normalizedQuery && (
+        <section className="mt-4 grid gap-3 md:grid-cols-3">
+          {featuredTools.slice(0, 6).map((tool) => (
+            <ToolRow key={tool.path} tool={tool} />
+          ))}
+        </section>
+      )}
 
       <section className="mt-5 grid gap-4">
-        {toolPillars.map((pillar) => {
-          const tools = getToolsByPillar(pillar.name);
-
+        {visiblePillars.map((pillar) => {
           return (
             <section key={pillar.name} className="rounded-md border border-[#d0d7de] bg-white">
               <div className="flex items-center justify-between gap-3 border-b border-[#d0d7de] bg-[#f6f8fa] px-4 py-3">
                 <h2 className="text-base font-semibold text-[#24292f]">{pillar.name}</h2>
-                <span className="font-mono text-xs text-[#6e7781]">{tools.length}</span>
+                <span className="font-mono text-xs text-[#6e7781]">{pillar.tools.length}</span>
               </div>
               <div className="grid gap-2 p-3 md:grid-cols-2 xl:grid-cols-3">
-                {tools.map((tool) => (
+                {pillar.tools.map((tool) => (
                   <ToolRow key={tool.path} tool={tool} />
                 ))}
               </div>
             </section>
           );
         })}
+        {visibleCount === 0 && (
+          <div className="rounded-md border border-[#d0d7de] bg-white p-8 text-center">
+            <p className="text-sm font-semibold text-[#24292f]">No tools found</p>
+            <p className="mt-1 text-sm text-[#57606a]">Try API, JSON, JWT, hash, diff, URL, or time.</p>
+          </div>
+        )}
       </section>
     </div>
   );
