@@ -8,7 +8,7 @@ import Script from "next/script";
 
 const SITE_URL = 'https://debugtools.org';
 const SITE_NAME = 'debugtools';
-const SITE_DESCRIPTION = 'A local-first open-source workbench for API testing, JSON formatting, JWT decoding, encoding, hashing, diffing, URL inspection, HTTP status lookup, AI-assisted debugging, and everyday developer operations.';
+const SITE_DESCRIPTION = 'A local-first open-source workbench for API testing, JSON formatting, JWT decoding, encoding, hashing, diffing, URL inspection, HTTP status lookup, optional OpenAI BYOK debugging, and everyday developer operations.';
 const CORE_TOOLS = [
   {
     name: 'API Tester',
@@ -53,7 +53,7 @@ const CORE_TOOLS = [
   {
     name: 'AI Debug Assistant',
     url: '/tools/ai/',
-    description: 'Use AI-assisted debugging for errors, API responses, stack traces, and JSON issues when a provider is configured.',
+    description: 'Use optional OpenAI BYOK debugging for errors, API responses, stack traces, and JSON issues.',
   },
 ] as const;
 
@@ -167,7 +167,7 @@ export default function RootLayout({
         '@type': 'ItemList',
         '@id': `${SITE_URL}/#core-tools`,
         name: 'Core debugtools developer tools',
-        description: 'A concise index of debugtools utilities for API, data, encoding, hashing, diff, URL, HTTP, and AI-assisted debugging work.',
+        description: 'A concise index of debugtools utilities for API, data, encoding, hashing, diff, URL, HTTP, and optional OpenAI BYOK debugging work.',
         itemListElement: CORE_TOOLS.map((tool, index) => ({
           '@type': 'ListItem',
           position: index + 1,

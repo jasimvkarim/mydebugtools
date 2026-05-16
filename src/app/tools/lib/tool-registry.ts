@@ -75,7 +75,7 @@ export const toolPillars: Array<{
 
 export const liveTools: ToolModule[] = [
   { name: 'API Tester', description: 'REST workbench with collections, auth, environments, imports, and response inspection.', path: '/tools/api', icon: BeakerIcon, category: 'Network', maturity: 'Beta', privacy: 'Network', pillar: 'API & Network', priority: 1, featured: true },
-  { name: 'AI Debug Assistant', description: 'Analyze errors, API responses, cURL notes, JSON issues, and stack traces with an optional AI provider.', path: '/tools/ai', icon: SparklesIcon, category: 'AI', maturity: 'Beta', privacy: 'Network', pillar: 'API & Network', priority: 2, featured: true },
+  { name: 'AI Debug Assistant', description: 'Analyze errors, API responses, cURL notes, JSON issues, and stack traces with optional OpenAI BYOK support.', path: '/tools/ai', icon: SparklesIcon, category: 'AI', maturity: 'Beta', privacy: 'Network', pillar: 'API & Network', priority: 2, featured: true },
   { name: 'HTTP Status', description: 'Reference HTTP codes and response meanings while debugging requests.', path: '/tools/http-status', icon: GlobeAltIcon, category: 'Network', maturity: 'Stable', privacy: 'Local', pillar: 'API & Network', priority: 3 },
   { name: 'JSON Tools', description: 'Format, validate, repair, and inspect JSON payloads without sending data to a server.', path: '/tools/json', icon: CurlyBracesIcon, category: 'Data', maturity: 'Stable', privacy: 'Local', pillar: 'Inspect & Transform', priority: 1, featured: true },
   { name: 'JWT Decoder', description: 'Decode and inspect JSON Web Token claims during auth debugging.', path: '/tools/jwt', icon: KeyIcon, category: 'Security', maturity: 'Stable', privacy: 'Local', pillar: 'Inspect & Transform', priority: 2 },

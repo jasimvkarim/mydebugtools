@@ -49,6 +49,7 @@ export default function AIDebugPage() {
   const [input, setInput] = useState('');
   const [analysis, setAnalysis] = useState<DebugAnalysis>(emptyAnalysis);
   const [model, setModel] = useState('');
+  const [apiKey, setApiKey] = useState('');
   const [error, setError] = useState('');
   const [isDisabled, setIsDisabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -67,7 +68,7 @@ export default function AIDebugPage() {
       const response = await fetch('/api/ai-debug', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode, input }),
+        body: JSON.stringify({ mode, input, apiKey }),
       });
       const body = await response.json();
 
@@ -99,7 +100,7 @@ export default function AIDebugPage() {
               </p>
             </div>
             <div className="rounded-md border border-[#d0d7de] bg-[#f6f8fa] px-3 py-2 text-xs font-semibold text-[#57606a]">
-              Optional provider: OpenAI
+              Optional provider: OpenAI · Bring your own API key
             </div>
           </div>
         </div>
@@ -135,10 +136,29 @@ export default function AIDebugPage() {
             </button>
 
             <div className="mt-4 rounded-md border border-[#d0d7de] bg-white p-3">
+              <label htmlFor="openai-api-key" className="text-xs font-semibold text-[#24292f]">
+                OpenAI API key
+              </label>
+              <input
+                id="openai-api-key"
+                type="password"
+                value={apiKey}
+                onChange={(event) => setApiKey(event.target.value)}
+                autoComplete="off"
+                spellCheck={false}
+                placeholder="sk-..."
+                className="mt-2 w-full rounded-md border border-[#d0d7de] bg-white px-3 py-2 font-mono text-xs text-[#24292f] outline-none focus:border-[#0969da] focus:ring-2 focus:ring-[#0969da]/15"
+              />
+              <p className="mt-2 text-xs leading-5 text-[#57606a]">
+                Optional. Used only for this request unless the server already has an OpenAI key configured.
+              </p>
+            </div>
+
+            <div className="mt-4 rounded-md border border-[#d0d7de] bg-white p-3">
               <div className="flex items-start gap-2">
                 <ExclamationTriangleIcon className="mt-0.5 h-4 w-4 text-[#57606a]" />
                 <p className="text-xs leading-5 text-[#57606a]">
-                  Remove secrets before analyzing. Prompts are not stored by debugtools, but they are sent to the configured AI provider.
+                  Remove secrets before analyzing. Prompts and API keys are not saved by debugtools, but prompt text is sent to OpenAI when you run analysis.
                 </p>
               </div>
             </div>
@@ -230,7 +250,7 @@ export default function AIDebugPage() {
 
             <div className="flex flex-col justify-between gap-3 border-t border-[#d0d7de] bg-[#f6f8fa] p-4 sm:flex-row sm:items-center">
               <p className="text-xs leading-5 text-[#57606a]">
-                Uses server-side `OPENAI_API_KEY` when configured. No prompts are saved by this tool.
+                Uses your OpenAI key for this request, or server-side `OPENAI_API_KEY` when configured. No prompts or keys are saved by this tool.
               </p>
               <button
                 type="button"

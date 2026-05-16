@@ -21,7 +21,7 @@ describe('/api/ai-debug', () => {
     process.env.OPENAI_API_KEY = originalApiKey;
   });
 
-  it('returns a clear disabled response when OPENAI_API_KEY is missing', async () => {
+  it('returns a clear disabled response when no OpenAI key is available', async () => {
     delete process.env.OPENAI_API_KEY;
 
     const response = await POST({
@@ -36,8 +36,48 @@ describe('/api/ai-debug', () => {
     expect(response.status).toBe(501);
     expect(body).toEqual({
       error: 'AI Debug Assistant is not configured',
-      message: 'Set OPENAI_API_KEY on the server to enable AI analysis.',
+      message: 'Enter an OpenAI API key for this request or set OPENAI_API_KEY on the server.',
       disabled: true,
     });
+  });
+
+  it('uses a request-provided OpenAI key without requiring server env', async () => {
+    delete process.env.OPENAI_API_KEY;
+    const originalFetch = (global as any).fetch;
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        output_text: JSON.stringify({
+          summary: 'Network failure.',
+          likelyCause: 'The request could not complete.',
+          steps: ['Check the URL.'],
+          snippet: '',
+          cautions: [],
+        }),
+      }),
+    } as any);
+    (global as any).fetch = fetchMock;
+
+    try {
+      const response = await POST({
+        json: async () => ({
+          mode: 'explain-error',
+          input: 'TypeError: fetch failed',
+          apiKey: 'sk-test-user-key',
+        }),
+      } as Request);
+
+      expect(response.status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledWith(
+        'https://api.openai.com/v1/responses',
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: 'Bearer sk-test-user-key',
+          }),
+        }),
+      );
+    } finally {
+      (global as any).fetch = originalFetch;
+    }
   });
 });

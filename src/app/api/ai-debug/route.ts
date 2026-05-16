@@ -43,22 +43,24 @@ function extractOutputText(payload: any): string {
 }
 
 export async function POST(request: Request) {
-  if (!process.env.OPENAI_API_KEY) {
-    return jsonResponse(
-      {
-        error: 'AI Debug Assistant is not configured',
-        message: 'Set OPENAI_API_KEY on the server to enable AI analysis.',
-        disabled: true,
-      },
-      { status: 501 },
-    );
-  }
-
-  let body: { mode?: unknown; input?: unknown };
+  let body: { mode?: unknown; input?: unknown; apiKey?: unknown };
   try {
     body = await request.json();
   } catch {
     return jsonResponse({ error: 'Invalid JSON request body' }, { status: 400 });
+  }
+
+  const providedApiKey = typeof body.apiKey === 'string' ? body.apiKey.trim() : '';
+  const apiKey = providedApiKey || process.env.OPENAI_API_KEY || '';
+  if (!apiKey) {
+    return jsonResponse(
+      {
+        error: 'AI Debug Assistant is not configured',
+        message: 'Enter an OpenAI API key for this request or set OPENAI_API_KEY on the server.',
+        disabled: true,
+      },
+      { status: 501 },
+    );
   }
 
   if (!isDebugMode(body.mode)) {
@@ -79,7 +81,7 @@ export async function POST(request: Request) {
     const providerResponse = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
