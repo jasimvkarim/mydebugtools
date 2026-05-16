@@ -1,14 +1,14 @@
-# 🚀 mydebugtools.com Deployment Checklist
+# 🚀 debugtools.org Deployment Checklist
 
-## Google OAuth Setup for mydebugtools.com
+## Google OAuth Setup for debugtools.org
 
 ### Step 1: Configure Google Cloud Console
 Go to: https://console.cloud.google.com/apis/credentials
 
 Add **ALL THREE** redirect URIs to your OAuth client:
 - ✅ Development: `http://localhost:3000/api/auth/callback/google`
-- ✅ Production (non-www): `https://mydebugtools.com/api/auth/callback/google`
-- ✅ Production (www): `https://www.mydebugtools.com/api/auth/callback/google`
+- ✅ Production (non-www): `https://debugtools.org/api/auth/callback/google`
+- ✅ Production (www): `https://www.debugtools.org/api/auth/callback/google`
 
 **Important**: You need BOTH www and non-www versions because users can access your site either way!
 
@@ -24,7 +24,7 @@ GOOGLE_CLIENT_SECRET=your-client-secret
 
 #### Production (Vercel/Hosting Dashboard)
 ```bash
-NEXTAUTH_URL=https://mydebugtools.com
+NEXTAUTH_URL=https://debugtools.org
 NEXTAUTH_SECRET=your-generated-secret-here
 GOOGLE_CLIENT_ID=your-client-id
 GOOGLE_CLIENT_SECRET=your-client-secret
@@ -41,7 +41,7 @@ NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-0798000003597387
 
 ### 🔐 Authentication
 - [ ] Google OAuth client created
-- [ ] Both redirect URIs added (localhost + mydebugtools.com)
+- [ ] Both redirect URIs added (localhost + debugtools.org)
 - [ ] OAuth consent screen configured
 - [ ] Test users added (if app not published)
 - [ ] Credentials copied to both .env.local and hosting platform
@@ -54,7 +54,7 @@ NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-0798000003597387
 - [ ] Connection tested locally
 
 ### 🌐 Domain & DNS
-- [ ] Domain registered: mydebugtools.com
+- [ ] Domain registered: debugtools.org
 - [ ] DNS configured (pointing to hosting)
 - [ ] SSL certificate active (HTTPS working)
 - [ ] www redirect configured (optional)
@@ -94,7 +94,7 @@ git push origin main
 ### 3. Add Environment Variables
 Copy all production variables from `.env.production`:
 ```
-NEXTAUTH_URL=https://mydebugtools.com
+NEXTAUTH_URL=https://debugtools.org
 NEXTAUTH_SECRET=...
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
@@ -107,8 +107,8 @@ NEXT_PUBLIC_ADSENSE_CLIENT=...
 
 ### 4. Configure Domain
 1. Go to Project Settings → Domains
-2. Add domain: `mydebugtools.com`
-3. Add www redirect: `www.mydebugtools.com` → `mydebugtools.com`
+2. Add domain: `debugtools.org`
+3. Add www redirect: `www.debugtools.org` → `debugtools.org`
 4. Configure DNS (follow Vercel instructions)
 
 ### 5. Deploy
@@ -119,13 +119,13 @@ Click **"Deploy"** and wait for build to complete!
 ## Post-Deployment Testing
 
 ### Test Authentication
-1. Visit: https://mydebugtools.com/tools/api
+1. Visit: https://debugtools.org/tools/api
 2. Click "Save My Workspace"
 3. Sign in with Google
 4. Verify:
    - [ ] Modal appears
    - [ ] Google OAuth redirect works
-   - [ ] Redirected back to mydebugtools.com
+   - [ ] Redirected back to debugtools.org
    - [ ] Email shows in header
    - [ ] Can create collections
    - [ ] Collections save to Supabase
@@ -167,7 +167,7 @@ Click **"Deploy"** and wait for build to complete!
 
 ### 400 Error on Google Sign-In
 **Cause**: Redirect URI not configured
-**Fix**: Add `https://mydebugtools.com/api/auth/callback/google` to Google Console
+**Fix**: Add `https://debugtools.org/api/auth/callback/google` to Google Console
 
 ### "Configuration" Error
 **Cause**: Environment variables missing
@@ -201,7 +201,7 @@ Click **"Deploy"** and wait for build to complete!
 ## 🎉 Success!
 
 Your app should now be live at:
-- 🌐 **https://mydebugtools.com**
+- 🌐 **https://debugtools.org**
 - 🔐 Google authentication working
 - 💾 Collections syncing to cloud
 - 📊 Analytics tracking

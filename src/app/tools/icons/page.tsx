@@ -111,7 +111,7 @@ function IconFinderContent() {
   return (
     <div className="space-y-6">
       <StructuredData
-        title="Icon Finder | MyDebugTools"
+        title="Icon Finder | debugtools"
         description="Search, preview, and copy production-ready icon snippets for debugging tools."
         toolType="WebApplication"
       />

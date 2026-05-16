@@ -17,7 +17,7 @@ export default function PrivacyPolicy() {
             <Link href="/" className="flex items-center space-x-3 group">
               <Terminal className="h-8 w-8 text-gray-900" />
               <span className="text-2xl font-bold text-gray-900">
-                MyDebugTools
+                debugtools
               </span>
             </Link>
             <div className="flex items-center gap-3">
@@ -45,8 +45,8 @@ export default function PrivacyPolicy() {
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
       <StructuredData
-        title="Privacy Policy | MyDebugTools"
-        description="Privacy Policy for MyDebugTools - AdSense Compliant"
+        title="Privacy Policy | debugtools"
+        description="Privacy Policy for debugtools - AdSense Compliant"
         toolType="WebPage"
       />
 
@@ -57,9 +57,9 @@ export default function PrivacyPolicy() {
         
         <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Introduction</h2>
         <p>
-          MyDebugTools ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains 
+          debugtools ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains 
           how we collect, use, disclose, and safeguard your information when you visit our website 
-          https://mydebugtools.com (the "Service").
+          https://debugtools.org (the "Service").
         </p>
 
         <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Information We Collect</h2>
@@ -205,8 +205,8 @@ export default function PrivacyPolicy() {
           If you have any questions about this Privacy Policy, please contact us at:
         </p>
         <div className="bg-gray-50 p-4 rounded-lg mt-4">
-          <p><strong>Email:</strong> support@mydebugtools.com</p>
-          <p><strong>Website:</strong> https://mydebugtools.com</p>
+          <p><strong>Email:</strong> support@debugtools.org</p>
+          <p><strong>Website:</strong> https://debugtools.org</p>
         </div>
       </div>
 

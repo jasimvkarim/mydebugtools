@@ -25,7 +25,7 @@ describe('Navigation', () => {
   it('renders logo link', () => {
     render(<Navigation />);
 
-    const logoLink = screen.getByRole('link', { name: /DebugTools/i });
+    const logoLink = screen.getByRole('link', { name: /debugtools/i });
     expect(logoLink).toBeInTheDocument();
     expect(logoLink).toHaveAttribute('href', '/');
   });

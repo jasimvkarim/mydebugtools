@@ -3,19 +3,19 @@
 import Navigation from '../components/Navigation';
 
 const mvpCommands = [
-  { command: 'mydebugtools json', purpose: 'Format, minify, repair, validate, query, and convert JSON.' },
-  { command: 'mydebugtools jwt decode', purpose: 'Decode JWT header and payload locally.' },
-  { command: 'mydebugtools base64', purpose: 'Encode and decode text or files from stdin or disk.' },
-  { command: 'mydebugtools diff', purpose: 'Compare files and emit text, Markdown, or JSON reports.' },
-  { command: 'mydebugtools http-status', purpose: 'Look up HTTP codes and search status references offline.' },
+  { command: 'debugtools json', purpose: 'Format, minify, repair, validate, query, and convert JSON.' },
+  { command: 'debugtools jwt decode', purpose: 'Decode JWT header and payload locally.' },
+  { command: 'debugtools base64', purpose: 'Encode and decode text or files from stdin or disk.' },
+  { command: 'debugtools diff', purpose: 'Compare files and emit text, Markdown, or JSON reports.' },
+  { command: 'debugtools http-status', purpose: 'Look up HTTP codes and search status references offline.' },
 ];
 
 const nextCommands = [
-  { command: 'mydebugtools api run', purpose: 'Run saved API requests and collections in local terminals or CI.' },
-  { command: 'mydebugtools api import-collection', purpose: 'Normalize Postman and MyDebugTools collection exports.' },
-  { command: 'mydebugtools db query', purpose: 'Run SQLite queries and export results as CSV.' },
-  { command: 'mydebugtools css/html/md', purpose: 'Format, validate, and report on frontend files.' },
-  { command: 'mydebugtools releases', purpose: 'List release notes, latest changes, and changelog summaries.' },
+  { command: 'debugtools api run', purpose: 'Run saved API requests and collections in local terminals or CI.' },
+  { command: 'debugtools api import-collection', purpose: 'Normalize Postman and debugtools collection exports.' },
+  { command: 'debugtools db query', purpose: 'Run SQLite queries and export results as CSV.' },
+  { command: 'debugtools css/html/md', purpose: 'Format, validate, and report on frontend files.' },
+  { command: 'debugtools releases', purpose: 'List release notes, latest changes, and changelog summaries.' },
 ];
 
 const laterCommands = [
@@ -48,7 +48,7 @@ export default function CliPage() {
                 Read roadmap
               </a>
               <a
-                href="https://github.com/jasimvk/mydebugtools/issues/new?title=Add%20MyDebugTools%20CLI"
+                href="https://github.com/jasimvk/mydebugtools/issues/new?title=Add%20debugtools%20CLI"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f]"
@@ -84,7 +84,7 @@ export default function CliPage() {
             <aside className="border-t border-[#d0d7de] bg-[#f6f8fa] p-5 lg:border-l lg:border-t-0">
               <h2 className="text-sm font-semibold text-[#24292f]">Recommended shape</h2>
               <ul className="mt-3 space-y-3 text-sm leading-6 text-[#57606a]">
-                <li>One binary: <code className="bg-white">mydebugtools</code>, with <code className="bg-white">mdt</code> as an alias later.</li>
+                <li>One binary: <code className="bg-white">debugtools</code>, with <code className="bg-white">dt</code> as an alias later.</li>
                 <li>Extract shared logic into <code className="bg-white">src/lib/tools/*</code> before adding CLI entrypoints.</li>
                 <li>Keep MVP commands dependency-light and CI-friendly.</li>
                 <li>Use release automation after the first CLI module lands.</li>

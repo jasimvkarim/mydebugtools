@@ -1,6 +1,6 @@
 # Releases
 
-Release notes for MyDebugTools are kept alongside the changelog so users and contributors can see what shipped and what is next.
+Release notes for debugtools are kept alongside the changelog so users and contributors can see what shipped and what is next.
 
 ## 2026-05-11 - OSS Project Refresh
 
@@ -39,4 +39,4 @@ Release notes for MyDebugTools are kept alongside the changelog so users and con
 
 ## 2025-03-28 - Initial Release
 
-- Released the first MyDebugTools project shell with core developer utilities.
+- Released the first debugtools project shell with core developer utilities.

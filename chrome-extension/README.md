@@ -1,4 +1,4 @@
-# MyDebugTools Chrome Extension
+# debugtools Chrome Extension
 
 A Chrome extension that provides quick access to common debugging tools like JSON Formatter, JWT Decoder, and Base64 Converter.
 
@@ -7,7 +7,7 @@ A Chrome extension that provides quick access to common debugging tools like JSO
 - 🚀 Quick access to debugging tools via popup
 - 🔍 Right-click context menu for instant decoding
 - 💾 Auto-saves input data
-- 🔗 Link to full MyDebugTools web app
+- 🔗 Link to full debugtools web app
 
 ## Installation
 

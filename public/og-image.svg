@@ -38,7 +38,7 @@
   
   <!-- Main Heading -->
   <text x="320" y="120" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#1a1a1a">
-    MyDebugTools
+    debugtools
   </text>
   
   <!-- Subheading -->
@@ -99,6 +99,6 @@
   
   <!-- URL -->
   <text x="600" y="600" font-family="Arial, sans-serif" font-size="20" font-weight="500" fill="#FF6C37" text-anchor="middle">
-    mydebugtools.com
+    debugtools.org
   </text>
 </svg>

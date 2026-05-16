@@ -1,7 +1,7 @@
 import { parseImportedCollection } from '../collectionImport';
 
 describe('parseImportedCollection', () => {
-  it('imports native MyDebugTools collections with a stable name fallback', () => {
+  it('imports native debugtools collections with a stable name fallback', () => {
     const collection = parseImportedCollection({
       description: 'Exported without a name by mistake',
       requests: [

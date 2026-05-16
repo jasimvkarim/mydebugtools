@@ -22,7 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Added a GitHub Pages static export workflow for the browser-only version of the app at the repository Pages URL.
 - **API Tester**:
   - Fixed collection imports that previously created `undefined` collections with `0` requests.
-  - Added native MyDebugTools and nested Postman collection parsing with regression coverage.
+  - Added native debugtools and nested Postman collection parsing with regression coverage.
 - Initial changelog setup.
 - **Color Picker Tool**:
   - Improved UI with better contrast and readability
@@ -44,7 +44,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.0.0] - 2025-03-28
 
-- Initial release of MyDebugTools project.
+- Initial release of debugtools project.
 - Core infrastructure and setup.
 - Tools: **JSON Formatter & Beautifier** (basic), **Color Converter** (basic).
 

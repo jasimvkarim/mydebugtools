@@ -1,7 +1,7 @@
 # Supabase Database Setup Guide
 
 ## Overview
-This guide will help you set up Supabase as the database backend for MyDebugTools API Tester, enabling persistent storage of user data, collections, and requests.
+This guide will help you set up Supabase as the database backend for debugtools API Tester, enabling persistent storage of user data, collections, and requests.
 
 ## Step 1: Create a Supabase Project
 

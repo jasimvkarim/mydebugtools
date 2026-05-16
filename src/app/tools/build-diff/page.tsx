@@ -74,7 +74,7 @@ ${diffData.changes.map(c => {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <StructuredData
-        title="Build Diff Viewer | MyDebugTools"
+        title="Build Diff Viewer | debugtools"
         description="Compare and analyze build differences"
         toolType="WebApplication"
       />

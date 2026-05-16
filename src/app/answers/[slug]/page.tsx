@@ -16,7 +16,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   }
 
   return buildMetadata({
-    title: `${page.title} | MyDebugTools`,
+    title: `${page.title} | debugtools`,
     description: page.description,
     path: `/answers/${page.slug}/`,
     keywords: [page.toolName, page.title, 'developer tools', 'debugging tools'],
@@ -35,16 +35,16 @@ export default function AnswerPage({ params }: { params: { slug: string } }) {
     '@graph': [
       {
         '@type': 'WebPage',
-        '@id': `https://mydebugtools.com/answers/${page.slug}/#webpage`,
+        '@id': `https://debugtools.org/answers/${page.slug}/#webpage`,
         name: page.title,
         description: page.description,
-        url: `https://mydebugtools.com/answers/${page.slug}/`,
+        url: `https://debugtools.org/answers/${page.slug}/`,
       },
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Answers', item: 'https://mydebugtools.com/answers/' },
-          { '@type': 'ListItem', position: 2, name: page.title, item: `https://mydebugtools.com/answers/${page.slug}/` },
+          { '@type': 'ListItem', position: 1, name: 'Answers', item: 'https://debugtools.org/answers/' },
+          { '@type': 'ListItem', position: 2, name: page.title, item: `https://debugtools.org/answers/${page.slug}/` },
         ],
       },
     ],
@@ -58,7 +58,7 @@ export default function AnswerPage({ params }: { params: { slug: string } }) {
       />
       <article className="mx-auto max-w-3xl rounded-md border border-[#d0d7de] bg-white p-6">
         <Link href="/answers/" className="font-mono text-xs font-semibold text-[#0969da]">
-          mydebugtools / answers
+          debugtools / answers
         </Link>
         <h1 className="mt-3 text-3xl font-semibold leading-tight">{page.title}</h1>
         <p className="mt-5 rounded-md border border-[#d0d7de] bg-[#f6f8fa] p-4 text-sm leading-6 text-[#24292f]">
@@ -73,7 +73,7 @@ export default function AnswerPage({ params }: { params: { slug: string } }) {
         </ol>
 
         <div className="mt-8 rounded-md border border-[#d0d7de] bg-[#f6f8fa] p-4">
-          <h2 className="text-base font-semibold">Use MyDebugTools</h2>
+          <h2 className="text-base font-semibold">Use debugtools</h2>
           <p className="mt-2 text-sm leading-6 text-[#57606a]">
             Open the <Link href={page.toolHref} className="font-semibold text-[#0969da]">{page.toolName}</Link> to run this workflow in the browser.
           </p>
@@ -91,4 +91,3 @@ export default function AnswerPage({ params }: { params: { slug: string } }) {
     </main>
   )
 }
-

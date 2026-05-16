@@ -1,4 +1,4 @@
--- Supabase Database Schema for MyDebugTools API Tester
+-- Supabase Database Schema for debugtools API Tester
 -- Run this in your Supabase SQL Editor
 
 -- Enable UUID extension

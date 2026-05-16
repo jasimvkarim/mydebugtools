@@ -138,7 +138,7 @@ ${profileData.metrics.map(m => `${m.name}: ${m.duration}ms (${m.phase})`).join('
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <StructuredData
-        title="React Native Startup Profiling | MyDebugTools"
+        title="React Native Startup Profiling | debugtools"
         description="Analyze and visualize React Native app startup performance metrics"
         toolType="WebApplication"
       />

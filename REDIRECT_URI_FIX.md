@@ -1,8 +1,8 @@
 # 🔴 URGENT FIX: redirect_uri_mismatch Error
 
 ## The Problem
-Google OAuth is receiving: `https://www.mydebugtools.com/api/auth/callback/google`
-But you only added: `https://mydebugtools.com/api/auth/callback/google`
+Google OAuth is receiving: `https://www.debugtools.org/api/auth/callback/google`
+But you only added: `https://debugtools.org/api/auth/callback/google`
 
 ## The Solution: Add BOTH URLs
 
@@ -14,19 +14,19 @@ But you only added: `https://mydebugtools.com/api/auth/callback/google`
 
 ```
 http://localhost:3000/api/auth/callback/google
-https://mydebugtools.com/api/auth/callback/google
-https://www.mydebugtools.com/api/auth/callback/google
+https://debugtools.org/api/auth/callback/google
+https://www.debugtools.org/api/auth/callback/google
 ```
 
 ### Why Both?
-- Users might visit `mydebugtools.com` OR `www.mydebugtools.com`
+- Users might visit `debugtools.org` OR `www.debugtools.org`
 - Your hosting (Vercel/Netlify) might redirect between them
 - Google OAuth requires EXACT match of the redirect URI
 
 ### After Adding
 1. Click "Save" in Google Cloud Console
 2. Wait 1-2 minutes for changes to propagate
-3. Clear your browser cookies for mydebugtools.com
+3. Clear your browser cookies for debugtools.org
 4. Try signing in again
 
 ---
@@ -45,10 +45,10 @@ Add to `vercel.json`:
       "has": [
         {
           "type": "host",
-          "value": "www.mydebugtools.com"
+          "value": "www.debugtools.org"
         }
       ],
-      "destination": "https://mydebugtools.com/:path*",
+      "destination": "https://debugtools.org/:path*",
       "permanent": true
     }
   ]
@@ -64,7 +64,7 @@ You can keep only the non-www redirect URI in Google Cloud Console.
 
 - [ ] Go to Google Cloud Console → Credentials
 - [ ] Click your OAuth client
-- [ ] Add `https://www.mydebugtools.com/api/auth/callback/google`
+- [ ] Add `https://www.debugtools.org/api/auth/callback/google`
 - [ ] Save changes
 - [ ] Wait 1-2 minutes
 - [ ] Clear browser cookies

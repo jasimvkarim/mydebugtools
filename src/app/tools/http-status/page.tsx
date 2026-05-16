@@ -258,7 +258,7 @@ function HttpStatusContent() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <StructuredData 
-        title="HTTP Status Codes | MyDebugTools"
+        title="HTTP Status Codes | debugtools"
         description="Comprehensive reference for HTTP status codes with explanations, common use cases, and best practices for web development."
         toolType="WebApplication"
       />

@@ -743,7 +743,7 @@ function APITesterContent() {
         setImportNotice({
           type: 'error',
           message: 'Import failed',
-          detail: error instanceof Error ? error.message : 'Check that the file is a valid Postman, Insomnia, OpenAPI, or MyDebugTools JSON export.'
+          detail: error instanceof Error ? error.message : 'Check that the file is a valid Postman, Insomnia, OpenAPI, or debugtools JSON export.'
         });
         console.error('Import error:', error);
       } finally {

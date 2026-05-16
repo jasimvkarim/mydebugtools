@@ -48,7 +48,7 @@ const activeItems = [
   },
   {
     title: 'CLI foundation',
-    description: 'Start with pipe-friendly `mydebugtools json`, `jwt`, `base64`, `diff`, and `http-status` commands from the CLI roadmap.',
+    description: 'Start with pipe-friendly `debugtools json`, `jwt`, `base64`, `diff`, and `http-status` commands from the CLI roadmap.',
     scope: 'CLI_ROADMAP.md',
   },
   {
@@ -81,7 +81,7 @@ const nextItems = [
   },
   {
     title: 'cURL Converter',
-    description: 'Convert cURL commands into fetch, Python, Go, and MyDebugTools request JSON.',
+    description: 'Convert cURL commands into fetch, Python, Go, and debugtools request JSON.',
     scope: 'proposed/api',
   },
   {

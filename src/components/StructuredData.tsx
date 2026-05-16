@@ -14,14 +14,14 @@ interface StructuredDataProps {
 
 export default function StructuredData({
   id = 'structured-data',
-  title = 'MyDebugTools - All-in-one Developer Debugging Toolkit',
+  title = 'debugtools - All-in-one Developer Debugging Toolkit',
   description = 'A powerful collection of development tools including JSON Formatter, JWT Decoder, Base64 Tools, API Tester, and Icon Finder - all in one place.',
   type = 'WebApplication',
   toolType,
   schema: explicitSchema,
 }: StructuredDataProps) {
   const pathname = usePathname();
-  const url = `https://mydebugtools.com${pathname}`;
+  const url = `https://debugtools.org${pathname}`;
   
   // Basic schema that applies to the whole application
   const baseSchema = {

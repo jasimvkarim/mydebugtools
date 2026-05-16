@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 const entries = [
   ['API Tester request handling', 'Normalized plain domains, cleaned GET/HEAD behavior, and made Import a real button.'],
-  ['OSS lab direction', 'Defined DebugTools as a serious local-first open-source engineering workbench.'],
+  ['OSS lab direction', 'Defined debugtools as a serious local-first open-source engineering workbench.'],
   ['Domain launch', 'Attached debugtools.org to the production Vercel deployment.'],
 ];
 

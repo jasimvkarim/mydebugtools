@@ -57,7 +57,7 @@ export default function ToolsLayout({
         <div className="mx-auto flex max-w-[1600px] items-center justify-between px-4 py-3 sm:px-6">
           <Link href="/" className="flex items-center gap-2 text-[#24292f] hover:text-[#24292f]">
             <Terminal className="h-5 w-5" />
-            <span className="font-semibold">MyDebugTools</span>
+            <span className="font-semibold">debugtools</span>
             <span className="hidden rounded-full border border-[#d0d7de] px-2 py-0.5 text-xs font-medium text-[#57606a] md:inline">
               tools
             </span>

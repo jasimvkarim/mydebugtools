@@ -11,7 +11,7 @@ export default function SecurityPage() {
       <p className="font-mono text-xs text-[#57606a]">debugtools / security</p>
       <h1 className="mt-2 text-3xl font-semibold">Security and privacy model</h1>
       <p className="mt-3 max-w-3xl text-sm leading-7 text-[#57606a]">
-        DebugTools is designed around explicit data boundaries. A tool should make it clear whether data stays in the browser, leaves through a user-triggered request, or syncs through an authenticated cloud feature.
+        debugtools is designed around explicit data boundaries. A tool should make it clear whether data stays in the browser, leaves through a user-triggered request, or syncs through an authenticated cloud feature.
       </p>
       <div className="mt-8 grid gap-3 md:grid-cols-2">
         {boundaries.map(([title, text]) => (

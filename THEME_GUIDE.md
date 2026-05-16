@@ -1,4 +1,4 @@
-# MyDebugTools Theme Guide
+# debugtools Theme Guide
 
 ## 🎨 Brand Colors
 
@@ -130,7 +130,7 @@ className="max-w-[1600px] mx-auto"
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2">
         <Terminal className="h-5 w-5 text-[#FF6C37]" />
-        <span className="text-base font-semibold text-gray-900">MyDebugTools</span>
+        <span className="text-base font-semibold text-gray-900">debugtools</span>
       </Link>
       
       {/* Nav items with active state */}

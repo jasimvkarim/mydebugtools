@@ -14,7 +14,7 @@ Visit: **https://console.cloud.google.com/**
 ## Step 2: Create/Select Project
 1. Click the project dropdown at the top
 2. Click **"New Project"**
-3. Name: `MyDebugTools` (or any name you prefer)
+3. Name: `debugtools` (or any name you prefer)
 4. Click **"Create"**
 5. Wait for the project to be created (10-30 seconds)
 
@@ -33,7 +33,7 @@ Visit: **https://console.cloud.google.com/**
 2. Choose **"External"** (unless you have a Google Workspace)
 3. Click **"Create"**
 4. Fill in:
-   - **App name**: MyDebugTools
+   - **App name**: debugtools
    - **User support email**: Your email
    - **Developer contact email**: Your email
 5. Click **"Save and Continue"**
@@ -47,12 +47,12 @@ Visit: **https://console.cloud.google.com/**
 1. Go to **"APIs & Services"** → **"Credentials"**
 2. Click **"+ Create Credentials"** → **"OAuth client ID"**
 3. Application type: **"Web application"**
-4. Name: `MyDebugTools Web Client`
+4. Name: `debugtools Web Client`
 5. Under **"Authorized redirect URIs"**, click **"+ Add URI"**
 6. Add BOTH URLs (for development and production):
    ```
    http://localhost:3000/api/auth/callback/google
-   https://mydebugtools.com/api/auth/callback/google
+   https://debugtools.org/api/auth/callback/google
    ```
 7. Click **"Create"**
 
@@ -143,30 +143,30 @@ npm run dev
 ### "App not verified" warning?
 **This is normal for development!**
 - Click "Advanced"
-- Click "Go to MyDebugTools (unsafe)" - it's safe, it's your app!
+- Click "Go to debugtools (unsafe)" - it's safe, it's your app!
 
 ---
 
 ## 📝 Production Deployment
 
-When deploying to production at **mydebugtools.com**:
+When deploying to production at **debugtools.org**:
 
 ### ✅ Already Done (if you added both URIs in Step 5):
-- Production redirect URI: `https://mydebugtools.com/api/auth/callback/google`
+- Production redirect URI: `https://debugtools.org/api/auth/callback/google`
 
 ### If You Need to Add Production URI Later:
 1. Go to Google Cloud Console → Credentials
 2. Click your OAuth client
 3. Add redirect URI:
    ```
-   https://mydebugtools.com/api/auth/callback/google
+   https://debugtools.org/api/auth/callback/google
    ```
 
 ### Add Environment Variables in Vercel/Hosting:
 1. Go to your hosting platform dashboard
 2. Add these environment variables:
    ```
-   NEXTAUTH_URL=https://mydebugtools.com
+   NEXTAUTH_URL=https://debugtools.org
    NEXTAUTH_SECRET=your-generated-secret
    GOOGLE_CLIENT_ID=your-client-id
    GOOGLE_CLIENT_SECRET=your-client-secret

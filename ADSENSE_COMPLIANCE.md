@@ -1,6 +1,6 @@
 # Google AdSense Compliance Implementation
 
-This document outlines all the changes made to make MyDebugTools compliant with Google AdSense policies and increase approval chances.
+This document outlines all the changes made to make debugtools compliant with Google AdSense policies and increase approval chances.
 
 ## 🚀 Implemented Features for AdSense Approval
 
@@ -145,7 +145,7 @@ Before applying for AdSense:
 ## 🔍 Google AdSense Application Process
 
 1. **Sign up** at [Google AdSense](https://adsense.google.com)
-2. **Add your website** - https://mydebugtools.com
+2. **Add your website** - https://debugtools.org
 3. **Wait for review** - Usually 1-14 days
 4. **Fix any issues** - Google will provide feedback if rejected
 5. **Start earning** - Once approved, ads will display automatically

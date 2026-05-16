@@ -106,7 +106,7 @@ ${bundleData.modules.map(m =>
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <StructuredData
-        title="Bundle Size Analyzer | MyDebugTools"
+        title="Bundle Size Analyzer | debugtools"
         description="Analyze and optimize your app bundle size"
         toolType="WebApplication"
       />

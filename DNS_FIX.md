@@ -1,16 +1,16 @@
-# DNS Configuration Fix for mydebugtools.com
+# DNS Configuration Fix for debugtools.org
 
 ## Problem
 You have both www and non-www versions serving from Vercel, causing cross-origin redirects that block static assets.
 
 ## Solution Options
 
-### Option 1: Use Only mydebugtools.com (RECOMMENDED)
+### Option 1: Use Only debugtools.org (RECOMMENDED)
 
 1. **In Vercel Dashboard:**
    - Go to Settings → Domains
-   - Remove `www.mydebugtools.com` domain
-   - Keep only `mydebugtools.com`
+   - Remove `www.debugtools.org` domain
+   - Keep only `debugtools.org`
 
 2. **In your DNS Provider (likely Namecheap, GoDaddy, etc.):**
    - Remove any www CNAME record pointing to Vercel
@@ -24,13 +24,13 @@ You have both www and non-www versions serving from Vercel, causing cross-origin
    - This makes www resolve to non-www WITHOUT cross-origin requests
 
 2. **In Vercel:**
-   - Remove `www.mydebugtools.com` from domains
+   - Remove `www.debugtools.org` from domains
    - This way Vercel Edge won't intercept www requests
 
 ### Option 3: Both Domains Without Redirect
 
 1. **In Vercel Dashboard:**
-   - Keep both `www.mydebugtools.com` and `mydebugtools.com`
+   - Keep both `www.debugtools.org` and `debugtools.org`
    - Set BOTH as production domains
    - In vercel.json, remove the redirect
 
@@ -51,9 +51,9 @@ You have both www and non-www versions serving from Vercel, causing cross-origin
 1. Login to Vercel dashboard
 2. Select your project
 3. Go to Settings → Domains
-4. Click the X next to `www.mydebugtools.com`
+4. Click the X next to `www.debugtools.org`
 5. Confirm removal
 6. Update your DNS provider to remove www subdomain
 7. Wait 5-10 minutes for DNS propagation
 
-Your site will then be accessible ONLY at `https://mydebugtools.com`
+Your site will then be accessible ONLY at `https://debugtools.org`

@@ -73,7 +73,7 @@ export default function ToolsLayout({
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
               <Terminal className="h-5 w-5 text-[#FF6C37]" strokeWidth={2.5} />
-              <span className="text-base font-semibold text-gray-900">MyDebugTools</span>
+              <span className="text-base font-semibold text-gray-900">debugtools</span>
             </Link>
 
             {/* Desktop Navigation */}

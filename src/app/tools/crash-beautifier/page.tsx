@@ -89,7 +89,7 @@ function CrashBeautifier() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <StructuredData
-        title="Crash Beautifier | MyDebugTools"
+        title="Crash Beautifier | debugtools"
         description="Format and beautify crash logs from React Native, Android, iOS, and Flutter applications."
         toolType="WebApplication"
       />

@@ -19,9 +19,9 @@ export default function About() {
         <div className="rounded-md border border-[#d0d7de] bg-white">
           <div className="border-b border-[#d0d7de] px-5 py-4">
             <p className="font-mono text-xs text-[#57606a]">README.md</p>
-            <h1 className="mt-2 text-3xl font-semibold text-[#24292f]">About MyDebugTools</h1>
+            <h1 className="mt-2 text-3xl font-semibold text-[#24292f]">About debugtools</h1>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-[#57606a]">
-              MyDebugTools is an open-source collection of browser-based utilities for API testing, data formatting, token inspection, code comparison, and day-to-day debugging.
+              debugtools is an open-source collection of browser-based utilities for API testing, data formatting, token inspection, code comparison, and day-to-day debugging.
             </p>
           </div>
 

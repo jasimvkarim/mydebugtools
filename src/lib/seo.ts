@@ -11,12 +11,12 @@ export function buildMetadata({
   path: string
   keywords?: readonly string[]
 }): Metadata {
-  const url = `https://mydebugtools.com${path}`
-  const image = 'https://mydebugtools.com/og-image.svg'
+  const url = `https://debugtools.org${path}`
+  const image = 'https://debugtools.org/og-image.svg'
   return {
     title,
     description,
-    metadataBase: new URL('https://mydebugtools.com'),
+    metadataBase: new URL('https://debugtools.org'),
     alternates: { canonical: url },
     robots: {
       index: true,
@@ -34,7 +34,7 @@ export function buildMetadata({
       description,
       url,
       type: 'website',
-      siteName: 'MyDebugTools',
+      siteName: 'debugtools',
       images: [
         {
           url: image,

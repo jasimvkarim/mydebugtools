@@ -48,7 +48,7 @@ const Navigation = () => {
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2 text-[#24292f] hover:text-[#24292f]">
               <Terminal className="h-5 w-5" />
-              <span className="font-semibold">DebugTools</span>
+              <span className="font-semibold">debugtools</span>
               <span className="hidden rounded-full border border-[#d0d7de] px-2 py-0.5 text-xs font-medium text-[#57606a] lg:inline">
                 OSS lab
               </span>

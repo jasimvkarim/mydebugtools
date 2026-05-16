@@ -1,6 +1,6 @@
 # CLI Roadmap
 
-MyDebugTools should eventually ship one CLI package instead of scattered scripts. The recommended binary name is `mydebugtools`, with `mdt` as a short alias if the package is published.
+debugtools should eventually ship one CLI package instead of scattered scripts. The recommended binary name is `debugtools`, with `dt` as a short alias if the package is published.
 
 ## Principles
 
@@ -13,32 +13,32 @@ MyDebugTools should eventually ship one CLI package instead of scattered scripts
 
 | Command | Purpose | Existing source |
 | --- | --- | --- |
-| `mydebugtools json format|minify|repair|validate|query|to-yaml` | Format, repair, validate, query, and convert JSON | JSON tool, `jsonrepair`, `jsonpath`, `ajv`, `jsonschema`, `js-yaml` |
-| `mydebugtools jwt decode` | Decode JWT header/payload and inspect common claims | JWT tool, Node `Buffer` |
-| `mydebugtools base64 encode|decode` | Encode/decode strings or files, strip data URI prefixes | Base64 tool, Node `Buffer` |
-| `mydebugtools diff stats|report` | Compare files and emit text, Markdown, or JSON reports | Code Diff and Build Diff tools |
-| `mydebugtools http-status <code>` | Offline HTTP status lookup and search | HTTP Status tool |
+| `debugtools json format|minify|repair|validate|query|to-yaml` | Format, repair, validate, query, and convert JSON | JSON tool, `jsonrepair`, `jsonpath`, `ajv`, `jsonschema`, `js-yaml` |
+| `debugtools jwt decode` | Decode JWT header/payload and inspect common claims | JWT tool, Node `Buffer` |
+| `debugtools base64 encode|decode` | Encode/decode strings or files, strip data URI prefixes | Base64 tool, Node `Buffer` |
+| `debugtools diff stats|report` | Compare files and emit text, Markdown, or JSON reports | Code Diff and Build Diff tools |
+| `debugtools http-status <code>` | Offline HTTP status lookup and search | HTTP Status tool |
 
 ## V1 Commands
 
 | Command | Purpose | Notes |
 | --- | --- | --- |
-| `mydebugtools api run` | Run REST requests with headers, body, auth, variables, and timing output | Requires extracting request execution from the API Tester |
-| `mydebugtools api import-collection` | Normalize Postman/MyDebugTools collection JSON | Can reuse `src/app/tools/api/lib/collectionImport.ts` |
-| `mydebugtools db query|schema|tables|export-csv` | Query SQLite files and export results | Requires Node-safe `sql.js` WASM loading |
-| `mydebugtools css format|minify|validate|stats` | Process CSS and report selectors/properties/colors | Can use `js-beautify` and existing CSS logic |
-| `mydebugtools html format|extract|wrap` | Format HTML and extract/wrap body/style content | Can use `js-beautify`; avoid fragile browser-only logic |
-| `mydebugtools icons search|snippet` | Search curated icons and print import snippets | Extract icon registry from Icon Finder |
-| `mydebugtools releases list|latest|changelog` | Print release notes and changelog summaries | Read `RELEASES.md` and `CHANGELOG.md` |
+| `debugtools api run` | Run REST requests with headers, body, auth, variables, and timing output | Requires extracting request execution from the API Tester |
+| `debugtools api import-collection` | Normalize Postman/debugtools collection JSON | Can reuse `src/app/tools/api/lib/collectionImport.ts` |
+| `debugtools db query|schema|tables|export-csv` | Query SQLite files and export results | Requires Node-safe `sql.js` WASM loading |
+| `debugtools css format|minify|validate|stats` | Process CSS and report selectors/properties/colors | Can use `js-beautify` and existing CSS logic |
+| `debugtools html format|extract|wrap` | Format HTML and extract/wrap body/style content | Can use `js-beautify`; avoid fragile browser-only logic |
+| `debugtools icons search|snippet` | Search curated icons and print import snippets | Extract icon registry from Icon Finder |
+| `debugtools releases list|latest|changelog` | Print release notes and changelog summaries | Read `RELEASES.md` and `CHANGELOG.md` |
 
 ## Later Commands
 
-- `mydebugtools webhook` for local webhook capture, replay, and export into API collections.
-- `mydebugtools openapi` for spec validation, endpoint preview, and API collection generation.
-- `mydebugtools profile` for React Native startup trace summaries and comparisons.
-- `mydebugtools bundle` for bundle stats, before/after comparison, and CI size budgets.
-- `mydebugtools devops` for Dockerfile, Kubernetes YAML, and config validation.
-- `mydebugtools security` for hash/HMAC/checksum generation, TLS certificate checks, and JWT/JWKS workflows.
+- `debugtools webhook` for local webhook capture, replay, and export into API collections.
+- `debugtools openapi` for spec validation, endpoint preview, and API collection generation.
+- `debugtools profile` for React Native startup trace summaries and comparisons.
+- `debugtools bundle` for bundle stats, before/after comparison, and CI size budgets.
+- `debugtools devops` for Dockerfile, Kubernetes YAML, and config validation.
+- `debugtools security` for hash/HMAC/checksum generation, TLS certificate checks, and JWT/JWKS workflows.
 
 ## Release Automation Commands
 

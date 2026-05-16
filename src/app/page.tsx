@@ -80,7 +80,7 @@ export default function Home() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
           <Link href="/" className="flex items-center gap-2 text-[#24292f] hover:text-[#24292f]">
             <Terminal className="h-5 w-5" />
-            <span className="font-semibold">DebugTools</span>
+            <span className="font-semibold">debugtools</span>
             <span className="hidden rounded-full border border-[#d0d7de] px-2 py-0.5 text-xs font-medium text-[#57606a] sm:inline">
               OSS lab
             </span>
@@ -113,13 +113,13 @@ export default function Home() {
           <div>
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#d0d7de] bg-[#f6f8fa] px-3 py-1 text-xs font-semibold text-[#57606a]">
               <GitFork className="h-3.5 w-3.5" />
-              jasimvk / mydebugtools
+              debugtools / public repo
             </div>
             <h1 className="max-w-4xl text-4xl font-semibold tracking-normal text-[#24292f] sm:text-5xl lg:text-6xl">
               Local-first open-source tools for debugging real software.
             </h1>
             <p className="mt-5 max-w-3xl text-lg leading-8 text-[#57606a]">
-              DebugTools is a browser workbench for API testing, JSON and token inspection, code comparison, crash parsing, build analysis, and everyday developer operations. It is built in public, MIT licensed, and designed so sensitive workflows stay local where possible.
+              debugtools is a browser workbench for API testing, JSON and token inspection, code comparison, crash parsing, build analysis, and everyday developer operations. It is built in public, MIT licensed, and designed so sensitive workflows stay local where possible.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -274,7 +274,7 @@ export default function Home() {
             <p className="font-mono text-xs text-[#57606a]">README.md</p>
             <h2 className="mt-2 text-2xl font-semibold text-[#24292f]">Why this project exists</h2>
             <p className="mt-3 text-sm leading-7 text-[#57606a]">
-              Developers reach for quick web utilities all day, but many of them are noisy, opaque, or too narrow. DebugTools keeps the workflows simple and keeps the project inspectable.
+              Developers reach for quick web utilities all day, but many of them are noisy, opaque, or too narrow. debugtools keeps the workflows simple and keeps the project inspectable.
             </p>
           </div>
           <div className="rounded-md border border-[#d0d7de] bg-[#f6f8fa] p-4">
@@ -313,7 +313,7 @@ export default function Home() {
       <footer className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-[#57606a] sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div className="flex items-center gap-2">
           <Terminal className="h-4 w-4" />
-          <span>DebugTools is open source developer infrastructure.</span>
+          <span>debugtools is open source developer infrastructure.</span>
         </div>
         <div className="flex flex-wrap gap-4">
           {repoLinks.map((link) => (

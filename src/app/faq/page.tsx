@@ -7,8 +7,8 @@ import StructuredData from '@/components/StructuredData';
 
 const faqs = [
   {
-    question: "Is MyDebugTools really free?",
-    answer: "Yes. MyDebugTools is free and open-source. All tools are available without any subscription, registration, or hidden fees."
+    question: "Is debugtools really free?",
+    answer: "Yes. debugtools is free and open-source. All tools are available without any subscription, registration, or hidden fees."
   },
   {
     question: "Do I need to create an account?",
@@ -16,7 +16,7 @@ const faqs = [
   },
   {
     question: "Is my data secure?",
-    answer: "Most processing happens locally in your browser. MyDebugTools is designed so common formatting, decoding, and inspection workflows do not need to send your input to a server."
+    answer: "Most processing happens locally in your browser. debugtools is designed so common formatting, decoding, and inspection workflows do not need to send your input to a server."
   },
   {
     question: "Can I use these tools offline?",
@@ -24,23 +24,23 @@ const faqs = [
   },
   {
     question: "What tools are available?",
-    answer: "MyDebugTools includes API testing, JSON formatting, JWT decoding, Base64 conversion, code diffing, regex testing, color picking, icon search, HTTP status lookup, and more."
+    answer: "debugtools includes API testing, JSON formatting, JWT decoding, Base64 conversion, code diffing, regex testing, color picking, icon search, HTTP status lookup, and more."
   },
   {
     question: "Can I contribute to the project?",
-    answer: "Yes. MyDebugTools is open-source on GitHub and welcomes bug reports, feature requests, and contributions."
+    answer: "Yes. debugtools is open-source on GitHub and welcomes bug reports, feature requests, and contributions."
   },
   {
     question: "Which browsers are supported?",
-    answer: "MyDebugTools works on modern browsers including Chrome, Firefox, Safari, Edge, and Opera."
+    answer: "debugtools works on modern browsers including Chrome, Firefox, Safari, Edge, and Opera."
   },
   {
     question: "How can I report a bug or request a feature?",
-    answer: "Open an issue on the MyDebugTools GitHub repository with the bug, expected behavior, or proposed feature."
+    answer: "Open an issue on the debugtools GitHub repository with the bug, expected behavior, or proposed feature."
   },
   {
     question: "Can I use these tools for commercial projects?",
-    answer: "Yes. MyDebugTools is MIT licensed, so you can use it for personal and commercial projects."
+    answer: "Yes. debugtools is MIT licensed, so you can use it for personal and commercial projects."
   },
   {
     question: "Are there any usage limits?",
@@ -79,7 +79,7 @@ export default function FAQPage() {
             <Link href="/" className="flex items-center space-x-3 group">
               <Terminal className="h-8 w-8 text-gray-900" />
               <span className="text-2xl font-bold text-gray-900">
-                MyDebugTools
+                debugtools
               </span>
             </Link>
             <div className="flex items-center gap-3">
@@ -115,7 +115,7 @@ export default function FAQPage() {
               Frequently Asked Questions
             </h1>
             <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Everything you need to know about MyDebugTools
+              Everything you need to know about debugtools
             </p>
           </div>
 

@@ -1,5 +1,5 @@
 {
-  "name": "mydebugtools",
+  "name": "debugtools",
   "version": "1.0.0",
   "description": "A comprehensive suite of debugging and development tools for web developers",
   "scripts": {
@@ -10,7 +10,7 @@
     "lint": "next lint",
     "clean": "rm -rf dist",
     "copy": "mkdir -p dist && cp -r chrome-extension/* dist/",
-    "zip": "cd dist && zip -r ../mydebugtools.zip . -x \"*.DS_Store\" -x \"*.git*\"",
+    "zip": "cd dist && zip -r ../debugtools.zip . -x \"*.DS_Store\" -x \"*.git*\"",
     "build:extension": "npm run clean && npm run copy && npm run zip",
     "test": "jest",
     "test:watch": "jest --watch",

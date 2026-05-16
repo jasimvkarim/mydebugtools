@@ -1,13 +1,13 @@
-# QA Report - MyDebugTools API Tester
+# QA Report - debugtools API Tester
 **Date:** December 2024  
-**Domain:** mydebugtools.com  
+**Domain:** debugtools.org  
 **Status:** ✅ READY FOR PRODUCTION
 
 ---
 
 ## Executive Summary
 
-Comprehensive quality assurance testing has been completed for the MyDebugTools API Tester application. The system has been validated across all critical areas including authentication, database integration, collection syncing, UI components, deployment configuration, and error handling.
+Comprehensive quality assurance testing has been completed for the debugtools API Tester application. The system has been validated across all critical areas including authentication, database integration, collection syncing, UI components, deployment configuration, and error handling.
 
 **Overall Status:** ✅ **PASS** - All systems operational
 
@@ -48,8 +48,8 @@ Comprehensive quality assurance testing has been completed for the MyDebugTools 
 ### Known Requirements
 ⚠️ **USER ACTION NEEDED:** Add these redirect URIs to Google Cloud Console:
 - `http://localhost:3000/api/auth/callback/google` (dev)
-- `https://mydebugtools.com/api/auth/callback/google` (production)
-- `https://www.mydebugtools.com/api/auth/callback/google` (www subdomain)
+- `https://debugtools.org/api/auth/callback/google` (production)
+- `https://www.debugtools.org/api/auth/callback/google` (www subdomain)
 
 ---
 
@@ -273,8 +273,8 @@ Features:
   "redirects": [
     {
       "source": "/:path*",
-      "has": [{"type": "host", "value": "www.mydebugtools.com"}],
-      "destination": "https://mydebugtools.com/:path*",
+      "has": [{"type": "host", "value": "www.debugtools.org"}],
+      "destination": "https://debugtools.org/:path*",
       "permanent": true
     }
   ],
@@ -308,7 +308,7 @@ Features:
 
 **Production (`.env.production`):**
 ```
-✅ NEXTAUTH_URL=https://mydebugtools.com
+✅ NEXTAUTH_URL=https://debugtools.org
 ✅ Same credentials as development (correct for OAuth)
 ✅ All Supabase keys present
 ```
@@ -451,7 +451,7 @@ Features:
 **Files:** `/src/app/api/requests/route.ts` line 16
 
 ### Issue 4: redirect_uri_mismatch (WWW) ✅ FIXED
-**Problem:** OAuth error when accessing www.mydebugtools.com  
+**Problem:** OAuth error when accessing www.debugtools.org  
 **Root Cause:** Missing www redirect and OAuth redirect URI  
 **Solution:** Added permanent redirect in vercel.json, documented need to add www URI to Google Console  
 **Files:** `vercel.json`, `/REDIRECT_URI_FIX.md`
@@ -465,15 +465,15 @@ Features:
 1. **Add WWW Redirect URI to Google Cloud Console**
    - Go to: https://console.cloud.google.com/apis/credentials
    - Select OAuth client ID: `920355093684-9on3291plavh24pt63j48p56svekubqs`
-   - Add: `https://www.mydebugtools.com/api/auth/callback/google`
+   - Add: `https://www.debugtools.org/api/auth/callback/google`
 
 2. **Deploy to Vercel**
    - Push updated `vercel.json` to main branch
    - Vercel will auto-deploy
-   - Verify www redirect works: `www.mydebugtools.com` → `mydebugtools.com`
+   - Verify www redirect works: `www.debugtools.org` → `debugtools.org`
 
 3. **Test Production OAuth Flow**
-   - Visit: https://mydebugtools.com/tools/api
+   - Visit: https://debugtools.org/tools/api
    - Click "Sign in to Sync"
    - Sign in with Google
    - Verify collections sync properly
@@ -645,7 +645,7 @@ Features:
 ## Next Steps
 
 ### Immediate Actions
-1. **User:** Add `https://www.mydebugtools.com/api/auth/callback/google` to Google Cloud Console
+1. **User:** Add `https://www.debugtools.org/api/auth/callback/google` to Google Cloud Console
 2. **User:** Test OAuth flow on production after adding URI
 3. **User:** Deploy latest changes (vercel.json) to production
 
@@ -691,6 +691,6 @@ Features:
 
 **Report Generated:** December 2024  
 **QA Engineer:** GitHub Copilot  
-**Project:** MyDebugTools API Tester  
+**Project:** debugtools API Tester  
 **Version:** 1.0.0  
 **Status:** ✅ PRODUCTION READY

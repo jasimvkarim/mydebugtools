@@ -1,4 +1,4 @@
-# MyDebugTools
+# debugtools
 
 A professional collection of 30+ developer tools built with Next.js 14 and React. Fast, reliable, and always free - featuring a clean, minimal design with cloud sync capabilities.
 
@@ -293,7 +293,7 @@ Automatic www to non-www redirect is included in `vercel.json`:
 
 - **🐛 Found a bug?** [Open an issue](https://github.com/jasimvk/mydebugtools/issues)
 - **💡 Feature request?** [Start a discussion](https://github.com/jasimvk/mydebugtools/discussions)
-- **❓ Questions?** Check our [FAQ](https://mydebugtools.com) or open an issue
+- **❓ Questions?** Check our [FAQ](https://debugtools.org) or open an issue
 
 ## 📁 Project Structure
 
@@ -366,10 +366,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## ⭐ Support the Project
 
-If you find MyDebugTools helpful, please consider:
+If you find debugtools helpful, please consider:
 - ⭐ [Star the repository](https://github.com/jasimvk/mydebugtools)
 - ☕ [Buy me a coffee](https://buymeacoffee.com/jasimvk) - Support development
-- 🐦 [Share on Twitter](https://twitter.com/intent/tweet?text=Check%20out%20MyDebugTools%20-%20A%20collection%20of%2030%2B%20developer%20tools&url=https://github.com/jasimvk/mydebugtools)
+- 🐦 [Share on Twitter](https://twitter.com/intent/tweet?text=Check%20out%20debugtools%20-%20A%20collection%20of%2030%2B%20developer%20tools&url=https://github.com/jasimvk/mydebugtools)
 - 🐛 Report bugs and suggest features
 - 🤝 Contribute code or documentation
 - 💬 Spread the word!
@@ -412,7 +412,7 @@ If you find MyDebugTools helpful, please consider:
 - [ ] Request Templates Library
 - [ ] Shareable Collection Links
 
-Check our full [Roadmap](https://mydebugtools.com/roadmap) for more details.
+Check our full [Roadmap](https://debugtools.org/roadmap) for more details.
 
 ---
 

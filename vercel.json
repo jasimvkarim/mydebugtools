@@ -10,10 +10,10 @@
       "has": [
         {
           "type": "host",
-          "value": "www.mydebugtools.com"
+          "value": "www.debugtools.org"
         }
       ],
-      "destination": "https://mydebugtools.com/:path*",
+      "destination": "https://debugtools.org/:path*",
       "permanent": true
     }
   ],
@@ -38,6 +38,6 @@
   ],
   "env": {
     "NEXT_PUBLIC_GA_MEASUREMENT_ID": "G-X21C1DLPKK",
-    "NEXTAUTH_URL": "https://mydebugtools.com"
+    "NEXTAUTH_URL": "https://debugtools.org"
   }
 } 

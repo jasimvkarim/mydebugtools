@@ -1,9 +1,9 @@
-# MyDebugTools Privacy Policy
+# debugtools Privacy Policy
 
 Last updated: [Current Date]
 
 ## Overview
-MyDebugTools is a developer-focused Chrome extension that provides various debugging and development tools. This privacy policy explains how we handle data and use permissions in our extension.
+debugtools is a developer-focused Chrome extension that provides various debugging and development tools. This privacy policy explains how we handle data and use permissions in our extension.
 
 ## Permissions and Their Use
 

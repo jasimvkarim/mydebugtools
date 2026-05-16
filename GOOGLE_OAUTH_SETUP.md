@@ -1,7 +1,7 @@
 # Google OAuth Setup Guide
 
 ## Overview
-MyDebugTools API Tester uses **Google OAuth** for authentication. Users can sign in with their Google account to save and sync API collections across devices.
+debugtools API Tester uses **Google OAuth** for authentication. Users can sign in with their Google account to save and sync API collections across devices.
 
 ## ✨ Why Google Only?
 
@@ -21,7 +21,7 @@ MyDebugTools API Tester uses **Google OAuth** for authentication. Users can sign
 
 2. **Create a New Project** (if you don't have one)
    - Click "Select a project" → "New Project"
-   - Name: `MyDebugTools` (or your app name)
+   - Name: `debugtools` (or your app name)
    - Click "Create"
 
 3. **Enable Google+ API**
@@ -35,7 +35,7 @@ MyDebugTools API Tester uses **Google OAuth** for authentication. Users can sign
    - Click "Create"
    
    **Fill in the required fields:**
-   - App name: `MyDebugTools API Tester`
+   - App name: `debugtools API Tester`
    - User support email: Your email
    - Developer contact: Your email
    - Click "Save and Continue"
@@ -53,7 +53,7 @@ MyDebugTools API Tester uses **Google OAuth** for authentication. Users can sign
    - Go to "APIs & Services" → "Credentials"
    - Click "Create Credentials" → "OAuth client ID"
    - Application type: **Web application**
-   - Name: `MyDebugTools Web Client`
+   - Name: `debugtools Web Client`
    
    **Authorized JavaScript origins:**
    ```

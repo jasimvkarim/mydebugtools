@@ -295,5 +295,5 @@ export function parseImportedCollection(raw: unknown, fileName?: string): Import
     };
   }
 
-  throw new Error('Unsupported collection format. Import a MyDebugTools or Postman collection JSON file.');
+  throw new Error('Unsupported collection format. Import a debugtools or Postman collection JSON file.');
 }

@@ -17,16 +17,16 @@ export const authOptions: NextAuthOptions = {
 
       const allowedHosts = new Set([
         new URL(baseUrl).host,
-        'mydebugtools.com',
-        'www.mydebugtools.com',
+        'debugtools.org',
+        'www.debugtools.org',
         'mydebugtools-one.vercel.app',
       ]);
 
       try {
         const nextUrl = new URL(url);
 
-        if (nextUrl.host === 'www.mydebugtools.com') {
-          nextUrl.host = 'mydebugtools.com';
+        if (nextUrl.host === 'www.debugtools.org') {
+          nextUrl.host = 'debugtools.org';
           return nextUrl.toString();
         }
 

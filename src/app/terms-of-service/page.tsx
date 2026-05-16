@@ -3,8 +3,8 @@ import type { Metadata } from 'next';
 import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | MyDebugTools',
-  description: 'Terms of Service for MyDebugTools - Read our terms and conditions for using our developer tools.',
+  title: 'Terms of Service | debugtools',
+  description: 'Terms of Service for debugtools - Read our terms and conditions for using our developer tools.',
   robots: 'index, follow',
 };
 
@@ -12,8 +12,8 @@ export default function TermsOfService() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <StructuredData
-        title="Terms of Service | MyDebugTools"
-        description="Terms of Service for MyDebugTools"
+        title="Terms of Service | debugtools"
+        description="Terms of Service for debugtools"
         toolType="WebPage"
       />
 
@@ -24,13 +24,13 @@ export default function TermsOfService() {
         
         <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Agreement to Terms</h2>
         <p>
-          By accessing and using MyDebugTools ("the Service"), you accept and agree to be bound by the terms 
+          By accessing and using debugtools ("the Service"), you accept and agree to be bound by the terms 
           and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
         </p>
 
         <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Description of Service</h2>
         <p>
-          MyDebugTools provides a collection of web-based development tools including but not limited to:
+          debugtools provides a collection of web-based development tools including but not limited to:
         </p>
         <ul>
           <li>JSON Formatter and Validator</li>
@@ -65,7 +65,7 @@ export default function TermsOfService() {
 
         <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Intellectual Property Rights</h2>
         <p>
-          The Service and its original content, features, and functionality are owned by MyDebugTools 
+          The Service and its original content, features, and functionality are owned by debugtools 
           and are protected by international copyright, trademark, patent, trade secret, and other 
           intellectual property laws.
         </p>
@@ -91,7 +91,7 @@ export default function TermsOfService() {
 
         <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Limitation of Liability</h2>
         <p>
-          In no event shall MyDebugTools be liable for any indirect, incidental, special, 
+          In no event shall debugtools be liable for any indirect, incidental, special, 
           consequential, or punitive damages, including without limitation, loss of profits, 
           data, use, goodwill, or other intangible losses.
         </p>
@@ -119,7 +119,7 @@ export default function TermsOfService() {
         <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Governing Law</h2>
         <p>
           These Terms shall be governed by and construed in accordance with the laws of the 
-          jurisdiction in which MyDebugTools operates, without regard to conflict of law provisions.
+          jurisdiction in which debugtools operates, without regard to conflict of law provisions.
         </p>
 
         <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">Changes to Terms</h2>
@@ -133,8 +133,8 @@ export default function TermsOfService() {
           If you have questions about these Terms, please contact us at:
         </p>
         <div className="bg-gray-50 p-4 rounded-lg mt-4">
-          <p><strong>Email:</strong> support@mydebugtools.com</p>
-          <p><strong>Website:</strong> https://mydebugtools.com</p>
+          <p><strong>Email:</strong> support@debugtools.org</p>
+          <p><strong>Website:</strong> https://debugtools.org</p>
         </div>
       </div>
     </div>

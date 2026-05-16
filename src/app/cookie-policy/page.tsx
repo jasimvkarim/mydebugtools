@@ -3,8 +3,8 @@ import type { Metadata } from 'next';
 import StructuredData from '@/components/StructuredData';
 
 export const metadata: Metadata = {
-  title: 'Cookie Policy | MyDebugTools',
-  description: 'Cookie Policy for MyDebugTools - Learn about our use of cookies and tracking technologies.',
+  title: 'Cookie Policy | debugtools',
+  description: 'Cookie Policy for debugtools - Learn about our use of cookies and tracking technologies.',
   robots: 'index, follow',
 };
 
@@ -12,8 +12,8 @@ export default function CookiePolicy() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <StructuredData
-        title="Cookie Policy | MyDebugTools"
-        description="Cookie Policy for MyDebugTools"
+        title="Cookie Policy | debugtools"
+        description="Cookie Policy for debugtools"
         toolType="WebPage"
       />
 
@@ -30,7 +30,7 @@ export default function CookiePolicy() {
 
         <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">How We Use Cookies</h2>
         <p>
-          MyDebugTools uses cookies to enhance your browsing experience and provide personalized content. 
+          debugtools uses cookies to enhance your browsing experience and provide personalized content. 
           We use cookies for:
         </p>
         <ul>
@@ -159,8 +159,8 @@ export default function CookiePolicy() {
           If you have any questions about our use of cookies, please contact us at:
         </p>
         <div className="bg-gray-50 p-4 rounded-lg mt-4">
-          <p><strong>Email:</strong> support@mydebugtools.com</p>
-          <p><strong>Website:</strong> https://mydebugtools.com</p>
+          <p><strong>Email:</strong> support@debugtools.org</p>
+          <p><strong>Website:</strong> https://debugtools.org</p>
         </div>
       </div>
     </div>

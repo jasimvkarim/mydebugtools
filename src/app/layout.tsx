@@ -7,7 +7,7 @@ import Providers from "./providers";
 import Script from "next/script";
 
 const SITE_URL = 'https://debugtools.org';
-const SITE_NAME = 'DebugTools';
+const SITE_NAME = 'debugtools';
 const SITE_DESCRIPTION = 'A local-first open-source workbench for API testing, data inspection, build debugging, and everyday developer operations.';
 
 export const viewport: Viewport = {
@@ -18,7 +18,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "DebugTools - Local-first open-source developer workbench",
+  title: "debugtools - Local-first open-source developer workbench",
   description: SITE_DESCRIPTION,
   metadataBase: new URL(SITE_URL),
   keywords: "debugtools, developer tools, api tester, json formatter, jwt decoder, code diff, local-first tools, open source developer tools, debugging, formatting",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: 'DebugTools - Local-first open-source developer workbench',
+    title: 'debugtools - Local-first open-source developer workbench',
     description: SITE_DESCRIPTION,
     images: [
       {
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@jasimvk',
     creator: '@jasimvk',
-    title: 'DebugTools - Local-first open-source developer workbench',
+    title: 'debugtools - Local-first open-source developer workbench',
     description: SITE_DESCRIPTION,
     images: [`${SITE_URL}/og-image.svg`],
   },

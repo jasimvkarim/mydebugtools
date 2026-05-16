@@ -11,7 +11,7 @@ export default function ContributingPage() {
       <p className="font-mono text-xs text-[#57606a]">debugtools / contributing</p>
       <h1 className="mt-2 text-3xl font-semibold">Contributing</h1>
       <p className="mt-3 max-w-3xl text-sm leading-7 text-[#57606a]">
-        DebugTools works best when contributions are small, reproducible, and attached to a real debugging workflow.
+        debugtools works best when contributions are small, reproducible, and attached to a real debugging workflow.
       </p>
       <div className="mt-8 grid gap-3">
         {steps.map(([title, text]) => (

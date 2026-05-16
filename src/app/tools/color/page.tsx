@@ -287,7 +287,7 @@ function ColorPickerContent() {
   return (
     <div className="container mx-auto p-4">
       <StructuredData 
-        title="Color Picker | MyDebugTools"
+        title="Color Picker | debugtools"
         description="Online color picker tool with RGB, HEX, HSL, CMYK, and HSV color formats."
         toolType="WebApplication"
       />

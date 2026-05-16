@@ -13,7 +13,7 @@ export default function ArchitecturePage() {
       <p className="font-mono text-xs text-[#57606a]">debugtools / architecture</p>
       <h1 className="mt-2 text-3xl font-semibold">Architecture notes</h1>
       <p className="mt-3 max-w-3xl text-sm leading-7 text-[#57606a]">
-        DebugTools is structured as a set of focused browser modules wrapped in an open-source project shell. The default boundary is local execution; network and cloud behavior is called out when a tool needs it.
+        debugtools is structured as a set of focused browser modules wrapped in an open-source project shell. The default boundary is local execution; network and cloud behavior is called out when a tool needs it.
       </p>
       <div className="mt-8 grid gap-3">
         {layers.map(([title, text]) => (

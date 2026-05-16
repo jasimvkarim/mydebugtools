@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Contact Us | MyDebugTools',
-  description: 'Contact MyDebugTools for support, feedback, or questions about our developer tools.',
+  title: 'Contact Us | debugtools',
+  description: 'Contact debugtools for support, feedback, or questions about our developer tools.',
   robots: 'index, follow',
 };
 

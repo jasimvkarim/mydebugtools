@@ -24,10 +24,10 @@ describe('authOptions redirect callback', () => {
   it('normalizes www production callbacks to the canonical domain', async () => {
     await expect(
       redirect?.({
-        url: 'https://www.mydebugtools.com/tools/api/',
-        baseUrl: 'https://mydebugtools.com',
+        url: 'https://www.debugtools.org/tools/api/',
+        baseUrl: 'https://debugtools.org',
       })
-    ).resolves.toBe('https://mydebugtools.com/tools/api/');
+    ).resolves.toBe('https://debugtools.org/tools/api/');
   });
 
   it('rejects external callback URLs', async () => {

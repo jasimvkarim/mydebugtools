@@ -234,7 +234,7 @@ const JSONTreeNode: React.FC<JSONTreeNodeProps> = ({
 
 export default function JSONTools() {
   const [jsonInput, setJsonInput] = useState<string>(`{
-  "name": "MyDebugTools",
+  "name": "debugtools",
   "version": "1.0.0",
   "description": "JSON Viewer Tool",
   "features": {
@@ -612,7 +612,7 @@ export default function JSONTools() {
   // Sample JSON for demo
   const handleSample = () => {
     const sample = {
-      name: "MyDebugTools JSON Example",
+      name: "debugtools JSON Example",
       version: "2.0.0",
       features: { formatting: true, validation: true, minification: true },
       users: [

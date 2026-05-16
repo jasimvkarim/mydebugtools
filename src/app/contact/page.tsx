@@ -17,7 +17,7 @@ export default function Contact() {
     e.preventDefault();
     // For now, create a mailto link
     const emailBody = `Name: ${formData.name}\nEmail: ${formData.email}\nSubject: ${formData.subject}\n\nMessage:\n${formData.message}`;
-    window.location.href = `mailto:support@mydebugtools.com?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(emailBody)}`;
+    window.location.href = `mailto:support@debugtools.org?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(emailBody)}`;
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -36,7 +36,7 @@ export default function Contact() {
             <Link href="/" className="flex items-center space-x-3 group">
               <Terminal className="h-8 w-8 text-gray-900" />
               <span className="text-2xl font-bold text-gray-900">
-                MyDebugTools
+                debugtools
               </span>
             </Link>
             <div className="flex items-center gap-3">
@@ -64,8 +64,8 @@ export default function Contact() {
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
       <StructuredData
-        title="Contact Us | MyDebugTools"
-        description="Contact MyDebugTools for support, feedback, or questions"
+        title="Contact Us | debugtools"
+        description="Contact debugtools for support, feedback, or questions"
         toolType="WebPage"
       />
 
@@ -89,7 +89,7 @@ export default function Contact() {
               </div>
               <div>
                 <p className="font-semibold">Email</p>
-                <p className="text-gray-600">support@mydebugtools.com</p>
+                <p className="text-gray-600">support@debugtools.org</p>
               </div>
             </div>
             
@@ -101,7 +101,7 @@ export default function Contact() {
               </div>
               <div>
                 <p className="font-semibold">Website</p>
-                <p className="text-gray-600">https://mydebugtools.com</p>
+                <p className="text-gray-600">https://debugtools.org</p>
               </div>
             </div>
             
@@ -197,7 +197,7 @@ export default function Contact() {
         <h3 className="text-lg font-semibold text-gray-900 mb-3">Frequently Asked Questions</h3>
         <div className="space-y-4">
           <div>
-            <h4 className="font-medium text-gray-900">Is MyDebugTools free to use?</h4>
+            <h4 className="font-medium text-gray-900">Is debugtools free to use?</h4>
             <p className="text-gray-600">Yes, all our development tools are completely free to use.</p>
           </div>
           <div>

@@ -127,7 +127,7 @@ export default function ToolsLayout({
         <div className="p-4 sticky top-0 h-screen overflow-y-auto">
           <Link href="/" className="flex items-center space-x-2 mb-4">
             <Terminal />
-            <span className="text-xl font-bold">MyDebugTools</span>
+            <span className="text-xl font-bold">debugtools</span>
           </Link>
           
           {/* Search input */}

@@ -218,7 +218,7 @@ export default function Home() {
           <span className="rounded-full bg-blue-900/40 p-2 shadow-lg">
             <Terminal className="h-10 w-10 text-blue-500" />
           </span>
-          <span className="text-2xl font-extrabold text-white tracking-tight">MyDebugTools</span>
+          <span className="text-2xl font-extrabold text-white tracking-tight">debugtools</span>
         </div>
         <div className="flex gap-4 items-center">
           <a href="https://github.com/jasimvk/mydebugtools" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-gray-300 hover:text-white text-sm font-medium">
@@ -282,7 +282,7 @@ export default function Home() {
       </header>
       {/* Features Section */}
       <section id="features" className="container mx-auto px-6 py-16">
-        <h2 className="text-3xl font-bold text-white text-center mb-4">Why Choose MyDebugTools?</h2>
+        <h2 className="text-3xl font-bold text-white text-center mb-4">Why Choose debugtools?</h2>
         <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
           Built with developers in mind, our tools are designed to make your workflow faster and more efficient.
         </p>
@@ -431,7 +431,7 @@ export default function Home() {
         <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-3xl p-8 md:p-12 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">Ready to boost your productivity?</h2>
           <p className="text-blue-100 mb-8 max-w-2xl mx-auto">
-            Start using MyDebugTools today and experience the difference in your development workflow.
+            Start using debugtools today and experience the difference in your development workflow.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
@@ -546,7 +546,7 @@ export default function Home() {
         </div>
         <div className="border-t border-gray-800 pt-8">
           <p className="mb-2">Built by <a href="https://x.com/jasimvk" className="text-blue-400 hover:text-blue-300" target="_blank" rel="noopener noreferrer">Jasim</a></p>
-          <p>© {new Date().getFullYear()} MyDebugTools • <a href="https://github.com/jasimvk/mydebugtools" className="text-blue-400 hover:text-blue-300" target="_blank" rel="noopener noreferrer">Open Source</a></p>
+          <p>© {new Date().getFullYear()} debugtools • <a href="https://github.com/jasimvk/mydebugtools" className="text-blue-400 hover:text-blue-300" target="_blank" rel="noopener noreferrer">Open Source</a></p>
         </div>
       </footer>
     </div>

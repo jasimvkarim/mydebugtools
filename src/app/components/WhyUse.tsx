@@ -7,7 +7,7 @@ import {
 const benefits = [
   {
     name: 'Lightning Fast',
-    description: 'No more waiting for heavy apps to load. MyDebugTools is optimized for speed.',
+    description: 'No more waiting for heavy apps to load. debugtools is optimized for speed.',
     icon: BoltIcon,
   },
   {
@@ -28,7 +28,7 @@ export default function WhyUse() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
-            Why Use MyDebugTools?
+            Why Use debugtools?
           </h2>
           <p className="mt-4 text-lg text-gray-600 dark:text-gray-300">
             Built by developers, for developers.

@@ -3,7 +3,7 @@ chrome.runtime.onInstalled.addListener(() => {
   // JWT Decoder
   chrome.contextMenus.create({
     id: 'decodeJWT',
-    parentId: 'myDebugToolsMenu',
+    parentId: 'debugtoolsMenu',
     title: 'Decode JWT',
     contexts: ['selection']
   });
@@ -11,7 +11,7 @@ chrome.runtime.onInstalled.addListener(() => {
   // JSON Formatter
   chrome.contextMenus.create({
     id: 'formatJSON',
-    parentId: 'myDebugToolsMenu',
+    parentId: 'debugtoolsMenu',
     title: 'Format JSON',
     contexts: ['selection']
   });
@@ -19,7 +19,7 @@ chrome.runtime.onInstalled.addListener(() => {
   // Base64 Decoder
   chrome.contextMenus.create({
     id: 'decodeBase64',
-    parentId: 'myDebugToolsMenu',
+    parentId: 'debugtoolsMenu',
     title: 'Decode Base64',
     contexts: ['selection']
   });

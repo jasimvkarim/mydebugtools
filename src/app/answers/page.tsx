@@ -4,8 +4,8 @@ import { answerPages } from '@/lib/answer-pages'
 import { buildMetadata } from '@/lib/seo'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Developer Tool Answers | MyDebugTools',
-  description: 'Concise answers for common developer debugging tasks, with direct links to open-source MyDebugTools utilities.',
+  title: 'Developer Tool Answers | debugtools',
+  description: 'Concise answers for common developer debugging tasks, with direct links to open-source debugtools utilities.',
   path: '/answers/',
   keywords: ['developer tool answers', 'json formatter answer', 'jwt decoder guide', 'api tester guide'],
 })
@@ -14,7 +14,7 @@ export default function AnswersPage() {
   return (
     <main className="min-h-screen bg-[#f6f8fa] px-4 py-10 text-[#24292f] sm:px-6">
       <div className="mx-auto max-w-5xl">
-        <p className="font-mono text-xs text-[#57606a]">mydebugtools / answers</p>
+        <p className="font-mono text-xs text-[#57606a]">debugtools / answers</p>
         <h1 className="mt-2 text-4xl font-semibold">Developer tool answers</h1>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-[#57606a]">
           Short, source-friendly answers for common debugging, formatting, and inspection workflows.
@@ -37,4 +37,3 @@ export default function AnswersPage() {
     </main>
   )
 }
-
