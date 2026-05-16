@@ -1,8 +1,9 @@
 const steps = [
-  ['Pick a module', 'Start with a single tool, bug, parser, import format, or documentation gap.'],
-  ['Open an issue', 'Describe the workflow, sample input, expected behavior, and failure mode.'],
-  ['Keep changes scoped', 'Small module-focused patches are easier to review and safer to ship.'],
-  ['Verify behavior', 'Run focused tests, build the app, and include screenshots for UI changes.'],
+  ['Pick one surface', 'Start with a single tool, parser, import format, route, test, or documentation gap.'],
+  ['File a reproducible issue', 'Include affected route, steps, sample input, expected behavior, actual behavior, browser/OS, and screenshots for UI bugs.'],
+  ['Use local commands', 'Run npm install, npm run dev, focused Jest tests, npx tsc --noEmit --pretty false, and npm run build for TSX or route changes.'],
+  ['Keep privacy explicit', 'State whether the change is local-only, sends a user-requested network request, or uses optional API Tester sync.'],
+  ['Open a scoped PR', 'Keep patches reviewable, update docs/changelog when behavior changes, and list verification commands in the PR body.'],
 ];
 
 export default function ContributingPage() {
@@ -11,7 +12,7 @@ export default function ContributingPage() {
       <p className="font-mono text-xs text-[#57606a]">debugtools / contributing</p>
       <h1 className="mt-2 text-3xl font-semibold">Contributing</h1>
       <p className="mt-3 max-w-3xl text-sm leading-7 text-[#57606a]">
-        debugtools works best when contributions are small, reproducible, and attached to a real debugging workflow.
+        debugtools contributions should be small, reproducible, and tied to a real debugging workflow.
       </p>
       <div className="mt-8 grid gap-3">
         {steps.map(([title, text]) => (
@@ -22,8 +23,9 @@ export default function ContributingPage() {
         ))}
       </div>
       <div className="mt-8 flex flex-wrap gap-3">
-        <a href="https://github.com/jasimvk/mydebugtools/issues/new" className="rounded-md bg-[#24292f] px-4 py-2 text-sm font-semibold text-white">Open issue</a>
-        <a href="https://github.com/jasimvk/mydebugtools" className="rounded-md border border-[#d0d7de] px-4 py-2 text-sm font-semibold text-[#24292f]">View repository</a>
+        <a href="https://github.com/jasimvkarim/mydebugtools/issues/new" className="rounded-md bg-[#24292f] px-4 py-2 text-sm font-semibold text-white">Open issue</a>
+        <a href="https://github.com/jasimvkarim/mydebugtools/blob/main/CONTRIBUTING.md" className="rounded-md border border-[#d0d7de] px-4 py-2 text-sm font-semibold text-[#24292f]">Read guide</a>
+        <a href="https://github.com/jasimvkarim/mydebugtools" className="rounded-md border border-[#d0d7de] px-4 py-2 text-sm font-semibold text-[#24292f]">View repository</a>
       </div>
     </main>
   );

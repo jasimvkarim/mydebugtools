@@ -1,95 +1,82 @@
-name: 💡 Feature Request
-description: Suggest a new feature or enhancement for MyDebugTools
-title: "[FEATURE] "
+name: Feature request
+description: Propose a debugtools feature, tool, or workflow improvement
+title: "[feature] "
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to suggest a new feature! Please fill out the form below to help us understand your idea.
+        Describe the debugging workflow first. debugtools favors focused, local-first tools and explicit network boundaries.
 
   - type: textarea
-    id: problem
+    id: workflow
     attributes:
-      label: Problem Description
-      description: Is your feature request related to a problem? Please describe what you're trying to accomplish.
-      placeholder: "Example: I'm always frustrated when I need to..."
+      label: Workflow
+      description: What debugging job should this help with?
+      placeholder: "I need to convert cURL commands into repeatable API Tester requests..."
     validations:
       required: true
 
   - type: textarea
-    id: solution
+    id: proposal
     attributes:
-      label: Proposed Solution
-      description: Describe the solution or feature you'd like to see implemented.
-      placeholder: "Example: I would like to have a tool that..."
+      label: Proposal
+      description: What should debugtools add or change?
     validations:
       required: true
 
   - type: textarea
-    id: alternatives
+    id: examples
     attributes:
-      label: Alternatives Considered
-      description: Have you considered any alternative solutions or workarounds?
-      placeholder: "Example: I've tried using X but it doesn't..."
+      label: Input and output examples
+      description: Include safe sample input and expected output.
+      render: shell
     validations:
       required: false
 
   - type: dropdown
     id: feature-type
     attributes:
-      label: Feature Type
-      description: What type of feature is this?
+      label: Feature type
       options:
-        - New Tool
-        - Enhancement to Existing Tool
-        - UI/UX Improvement
-        - Performance Improvement
-        - Integration with External Service
+        - API Tester workflow
+        - New local-first tool
+        - Existing tool improvement
+        - CLI or shared logic
         - Documentation
+        - Project metadata
         - Other
     validations:
       required: true
 
   - type: dropdown
-    id: priority
+    id: privacy-model
     attributes:
-      label: Priority
-      description: How important is this feature to you?
+      label: Privacy model
+      description: How should this feature handle user data?
       options:
-        - Critical - Blocking my work
-        - High - Would significantly improve my workflow
-        - Medium - Nice to have
-        - Low - Just a suggestion
+        - Local-only in the browser
+        - User-triggered network request
+        - Optional authenticated sync
+        - Build-time or documentation only
+        - Not sure
     validations:
-      required: false
+      required: true
 
   - type: textarea
-    id: benefits
+    id: alternatives
     attributes:
-      label: Benefits
-      description: What are the main benefits of implementing this feature?
-      placeholder: |
-        - Improves productivity by...
-        - Saves time when...
-        - Makes it easier to...
-    validations:
-      required: false
-
-  - type: textarea
-    id: additional-context
-    attributes:
-      label: Additional Context
-      description: Add any other context, screenshots, mockups, or examples about the feature request here.
-      placeholder: You can attach images by dragging & dropping, selecting them, or pasting from the clipboard.
+      label: Alternatives considered
+      description: Existing tools, workarounds, or reasons this belongs in debugtools.
     validations:
       required: false
 
   - type: checkboxes
-    id: terms
+    id: checks
     attributes:
-      label: Code of Conduct
-      description: By submitting this feature request, you agree to follow our Code of Conduct
+      label: Checks
       options:
-        - label: I agree to follow this project's Code of Conduct
+        - label: I removed secrets, credentials, cookies, tokens, and private customer data.
+          required: true
+        - label: I searched existing issues and the roadmap.
           required: true

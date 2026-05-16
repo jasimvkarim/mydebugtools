@@ -84,7 +84,7 @@ export default function FAQPage() {
             </Link>
             <div className="flex items-center gap-3">
               <a
-                href="https://github.com/jasimvk/mydebugtools"
+                href="https://github.com/jasimvkarim/mydebugtools"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-lg transition-colors"
@@ -166,7 +166,7 @@ export default function FAQPage() {
                 Contact Us
               </Link>
               <a
-                href="https://github.com/jasimvk/mydebugtools/issues"
+                href="https://github.com/jasimvkarim/mydebugtools/issues"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-4 bg-white hover:bg-gray-100 text-gray-900 font-bold rounded-lg transition-all duration-200 shadow hover:shadow-lg transform hover:scale-105"
@@ -185,16 +185,16 @@ export default function FAQPage() {
             <div className="flex flex-col gap-8">
               {/* Footer Links */}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-center md:text-left">
-                <a href="https://github.com/jasimvk/mydebugtools" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#FF6C37] transition-colors font-medium text-sm">
+                <a href="https://github.com/jasimvkarim/mydebugtools" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#FF6C37] transition-colors font-medium text-sm">
                   ⭐ Star on GitHub
                 </a>
-                <a href="https://github.com/jasimvk/mydebugtools/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#FF6C37] transition-colors font-medium text-sm">
+                <a href="https://github.com/jasimvkarim/mydebugtools/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#FF6C37] transition-colors font-medium text-sm">
                   MIT License
                 </a>
-                <a href="https://github.com/jasimvk/mydebugtools/issues" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#FF6C37] transition-colors font-medium text-sm">
+                <a href="https://github.com/jasimvkarim/mydebugtools/issues" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#FF6C37] transition-colors font-medium text-sm">
                   Report Issue
                 </a>
-                <a href="https://github.com/jasimvk/mydebugtools/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#FF6C37] transition-colors font-medium text-sm">
+                <a href="https://github.com/jasimvkarim/mydebugtools/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#FF6C37] transition-colors font-medium text-sm">
                   Contribute
                 </a>
                 <Link href="/contact" className="text-gray-300 hover:text-[#FF6C37] transition-colors font-medium text-sm">

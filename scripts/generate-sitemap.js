@@ -30,6 +30,7 @@ const pages = [
   { url: '/tools/uuid/', changefreq: 'monthly', priority: 0.8 },
   { url: '/tools/url/', changefreq: 'monthly', priority: 0.8 },
   { url: '/tools/timestamp/', changefreq: 'monthly', priority: 0.8 },
+  { url: '/tools/ai/', changefreq: 'monthly', priority: 0.8 },
   // Policy and legal pages
   { url: '/faq/', changefreq: 'monthly', priority: 0.7 },
   { url: '/privacy-policy/', changefreq: 'monthly', priority: 0.6 },
@@ -43,6 +44,10 @@ const pages = [
   { url: '/answers/base64-encode-vs-decode/', changefreq: 'monthly', priority: 0.6 },
   { url: '/answers/test-api-request-online/', changefreq: 'monthly', priority: 0.6 },
   { url: '/answers/compare-two-code-snippets/', changefreq: 'monthly', priority: 0.6 },
+  { url: '/answers/generate-hash-for-text/', changefreq: 'monthly', priority: 0.6 },
+  { url: '/answers/decode-url-query-string/', changefreq: 'monthly', priority: 0.6 },
+  { url: '/answers/what-http-status-code-means/', changefreq: 'monthly', priority: 0.6 },
+  { url: '/answers/use-ai-debug-assistant-safely/', changefreq: 'monthly', priority: 0.6 },
   { url: '/architecture/', changefreq: 'monthly', priority: 0.7 },
   { url: '/security/', changefreq: 'monthly', priority: 0.7 },
   { url: '/contributing/', changefreq: 'monthly', priority: 0.7 },

@@ -1,52 +1,80 @@
 # Contributing to debugtools
 
-We love your input! We want to make contributing to debugtools as easy and transparent as possible, whether it's:
+Thanks for helping improve debugtools. The best contributions are small, reproducible, and tied to a real debugging workflow.
 
-- Reporting a bug
-- Discussing the current state of the code
-- Submitting a fix
-- Proposing new features
-- Becoming a maintainer
+## Start with an Issue
 
-## We Develop with GitHub
-We use GitHub to host code, to track issues and feature requests, as well as accept pull requests.
+Use GitHub issues: https://github.com/jasimvkarim/mydebugtools/issues.
 
-## We Use [Github Flow](https://guides.github.com/introduction/flow/index.html)
-Pull requests are the best way to propose changes to the codebase. We actively welcome your pull requests:
+For bug reports, include:
 
-1. Fork the repo and create your branch from `main`.
-2. If you've added code that should be tested, add tests.
-3. If you've changed APIs, update the documentation.
-4. Ensure the test suite passes.
-5. Make sure your code lints.
-6. Issue that pull request!
+- Summary: one sentence describing the failure.
+- Affected tool or route: for example `/tools/api` or `/tools/json`.
+- Steps to reproduce: numbered, minimal, and repeatable.
+- Sample input: sanitized request, token shape, JSON, HTML, curl command, or file contents.
+- Expected result.
+- Actual result.
+- Environment: browser, OS, Node version when relevant.
+- Screenshots or screen recordings for UI bugs.
 
-## Any contributions you make will be under the MIT Software License
-In short, when you submit code changes, your submissions are understood to be under the same [MIT License](http://choosealicense.com/licenses/mit/) that covers the project. Feel free to contact the maintainers if that's a concern.
+For feature proposals, include:
 
-## Report bugs using GitHub's [issue tracker](https://github.com/jasimvk/mydebugtools/issues)
-We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/jasimvk/mydebugtools/issues/new); it's that easy!
+- Workflow: what debugging job this solves.
+- Input and output examples.
+- Privacy model: local-only, network request, or optional cloud sync.
+- Suggested route or module.
+- Notes about tests, edge cases, and docs.
 
-## Write bug reports with detail, background, and sample code
+Do not include production secrets, private API tokens, cookies, credentials, customer data, or internal URLs that should not be public.
 
-**Great Bug Reports** tend to have:
+## Local Setup
 
-- A quick summary and/or background
-- Steps to reproduce
-  - Be specific!
-  - Give sample code if you can.
-- What you expected would happen
-- What actually happens
-- Notes (possibly including why you think this might be happening, or stuff you tried that didn't work)
+```bash
+git clone https://github.com/jasimvkarim/mydebugtools.git
+cd mydebugtools
+npm install
+npm run dev
+```
 
-## Use a Consistent Coding Style
+The app works without environment variables for local-first tools. Optional API Tester sync requires local NextAuth, Google OAuth, and Supabase settings.
 
-* Use TypeScript for type safety
-* 2 spaces for indentation rather than tabs
-* You can try running `npm run lint` for style unification
+## Development Commands
+
+```bash
+npm run dev
+npx tsc --noEmit --pretty false
+npm test
+npm run build
+```
+
+Use focused tests while developing, for example:
+
+```bash
+npm test -- src/app/tools/api/lib/__tests__/collectionImport.test.ts --runInBand
+```
+
+Before opening a pull request, run the smallest relevant test suite, then `npx tsc --noEmit --pretty false`. Run `npm run build` for TSX page, route, metadata, registry, or layout changes.
+
+## Pull Request Expectations
+
+- Keep the patch scoped to one tool, route, parser, workflow, or docs update.
+- Preserve the `debugtools` name and canonical links:
+  - https://debugtools.org
+  - https://github.com/jasimvkarim/mydebugtools
+  - https://buymeacoffee.com/jasimvk
+- Add or update tests for parser, import/export, storage, auth, and transformation logic.
+- Include before/after screenshots for visible UI changes.
+- Update README, CHANGELOG, SECURITY, route copy, or docs when behavior changes.
+- Keep local-first behavior explicit. Browser-only tools should not send user input to a backend.
+
+## Code Style
+
+- TypeScript first.
+- Prefer small pure helpers for parsing and transformation logic.
+- Keep tool behavior accessible without sign-in unless the feature explicitly depends on sync.
+- Avoid broad refactors inside feature PRs.
+- Use existing app patterns before adding new dependencies.
 
 ## License
-By contributing, you agree that your contributions will be licensed under its MIT License.
 
-## References
-This document was adapted from the open-source contribution guidelines for [Facebook's Draft](https://github.com/facebook/draft-js/blob/a9316a723f9e918afde44dea68b5f9f39b7d9b00/CONTRIBUTING.md). 
+By contributing, you agree that your contributions are licensed under the same MIT License as the project.

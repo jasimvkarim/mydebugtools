@@ -204,7 +204,7 @@ export default function ToolsLayout({
         <footer className="w-full flex flex-col items-center gap-2 py-6 border-t border-gray-200 mt-8 bg-gray-50">
           <div className="flex justify-center items-center gap-4">
             <a
-              href="https://github.com/jasimvk/mydebugtools/blob/main/CHANGELOG.md"
+              href="https://github.com/jasimvkarim/mydebugtools/blob/main/CHANGELOG.md"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center space-x-2 p-1 text-blue-600 hover:underline font-medium"
@@ -217,7 +217,7 @@ export default function ToolsLayout({
               <span>Updates</span>
             </a>
             <a
-              href="https://github.com/jasimvk/mydebugtools/issues"
+              href="https://github.com/jasimvkarim/mydebugtools/issues"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center space-x-2 p-1 text-gray-500 hover:text-black hover:bg-gray-100 rounded-full transition-all duration-200 group"
@@ -228,7 +228,7 @@ export default function ToolsLayout({
               <span className="text-sm font-medium hidden sm:inline">Report Issue</span>
             </a>
             <a
-              href="https://github.com/jasimvk/mydebugtools"
+              href="https://github.com/jasimvkarim/mydebugtools"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center space-x-2 p-1 text-gray-500 hover:text-black hover:bg-gray-100 rounded-full transition-all duration-200 group"

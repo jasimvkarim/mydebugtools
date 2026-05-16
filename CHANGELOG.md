@@ -1,86 +1,92 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+All notable debugtools changes are tracked here. This project follows a practical Keep a Changelog style; released versions are dated when a semantic version is not yet assigned.
 
 ## [Unreleased]
 
-- **Project-wide OSS redesign and anomaly cleanup**:
-  - Reworked the homepage, navigation, tools registry, about page, and roadmap into a repository/docs-style open-source presentation.
-  - Added a proposed modules backlog to the tools registry for future incorporatable tools, including OpenAPI, GraphQL, webhooks, HAR, DNS, SSL, hash, UUID, YAML/TOML, SQL, cron, Dockerfile, Kubernetes, accessibility, and QR utilities.
-  - Normalized individual tool pages through the shared tools shell so older product-style gradients, oversized radii, heavy shadows, and off-brand primary actions align with the OSS interface.
-  - Removed the unused `src/app/tools/layout-old.tsx` file that was breaking full TypeScript validation.
-  - Moved NextAuth configuration into `src/lib/auth-options.ts` so the auth route exports only valid route handlers.
-  - Fixed Supabase admin and icon finder type anomalies so `npx tsc --noEmit --pretty false` passes.
-  - Added `RELEASES.md`, a `/releases` page, release navigation, and sitemap coverage for release notes.
-  - Added `CLI_ROADMAP.md`, a `/cli` page, navigation links, and sitemap coverage for future CLI work.
-  - Switched the site-wide typography stack to Menlo-style monospace and removed the remaining Inter override.
-  - Added Buy Me a Coffee sponsorship links for `jasimvk` across the OSS project shell.
-  - Updated the public roadmap to reflect shipped code, active foundation work, proposed modules, CLI plans, and extension/package status.
-  - Added SEO/GEO/PSEO/AEO cleanup with complete tool sitemap coverage, AI-readable `llms.txt`, fixed Open Graph image metadata, answer-engine structured data, and per-tool route metadata.
-  - Added a GitHub Pages static export workflow for the browser-only version of the app at the repository Pages URL.
-- **API Tester**:
-  - Fixed collection imports that previously created `undefined` collections with `0` requests.
-  - Added native debugtools and nested Postman collection parsing with regression coverage.
-- Initial changelog setup.
-- **Color Picker Tool**:
-  - Improved UI with better contrast and readability
-  - Fixed background colors for color value displays
-  - Enhanced text colors and added proper borders
-  - Added individual copy buttons for each color format
-  - Improved layout for advanced color information view
-  - Better responsiveness for mobile devices
-  - Added empty state for recent colors
-  - **Added opacity/alpha selector with slider (0-100%)**
-  - **Added RGBA and HSLA color format support**
-  - **Added checkered background pattern to preview transparency**
-  - **Enhanced color preview to show real-time opacity changes**
-- **Icon Finder Tool**:
-  - Optimized memory usage with on-demand loading of icon libraries
-  - Changed default to load only one library at a time
-  - Added progress indicators for multi-library loading
-  - Improved instructions and user guidance
+### Added
 
-## [1.0.0] - 2025-03-28
+- OSS bookkeeping refresh across README, contributing guidance, security guidance, roadmap, releases, and changelog surfaces.
+- Clear local-first project positioning for debugtools and its browser-only tools.
+- Roadmap language that treats API Tester as the flagship module and CLI/shared logic extraction as the next engineering step.
 
-- Initial release of debugtools project.
-- Core infrastructure and setup.
-- Tools: **JSON Formatter & Beautifier** (basic), **Color Converter** (basic).
+### Changed
 
-## [1.1.0] - 2025-04-02
+- Refined public roadmap copy to match the current codebase: API Tester, JSON, JWT, Hash, HTML, HTTP Status, Diff, Base64, UUID, URL, Timestamp, SQLite, Crash Beautifier, Bundle Analyzer, and other shipped modules.
+- Updated release notes for recent API Tester collection import fixes, typography/header polish, local-first positioning, OSS docs, and roadmap cleanup.
+- Tightened contributing docs around reproducible bugs, issue shape, local commands, tests, and build expectations.
 
-- Major update to **JSON Formatter & Beautifier**:
-  - Improved UI and advanced features.
-  - Added transform, repair, and export capabilities.
-  - Large document support with chunked loading.
-  - Offline support and file system access.
-  - Document statistics and progress tracking.
-  - Switched to Monaco Editor for tree view.
-- **Chrome Extension**: initial release and integration with web tools.
+### Security
 
-## [1.2.0] - 2025-04-03
+- Added SECURITY.md with the local-first model, API Tester network behavior, sync/storage guidance, secrets handling, and vulnerability reporting path.
 
-- **API Tester**:
-  - Enhanced UI/UX, authentication, and response handling.
+## [2026-05-16] - OSS Bookkeeping Polish
 
-## [1.3.0] - 2025-04-08
+### Added
 
-- **Base64 Converter**:
-  - Added image and PDF to Base64 conversion features.
+- Practical open-source documentation for setup, contribution, security, and project direction.
+- Metadata page copy for releases, changelog, roadmap, and contributing routes.
 
-## [1.4.0] - 2025-04-17
+### Changed
 
-- Added/Improved the following tools:
-  - **Regex Tester**: real-time matching and replacement.
-  - **HTML Validator & Formatter**: validate and beautify HTML code.
-  - **CSS Minifier & Beautifier**: minify, beautify, and validate CSS code.
-  - **Markdown Previewer**: live markdown rendering.
-  - **Color Converter**: enhanced color conversion features.
-  - **Code Diff Viewer**: compare code snippets side by side.
-- Improved JSON tools layout and navigation structure.
-- Various bug fixes and UI improvements.
+- Kept naming as `debugtools`, public links as `https://debugtools.org`, repository links as `jasimvkarim/mydebugtools`, and sponsor links as `https://buymeacoffee.com/jasimvk`.
+
+## [2026-05-11] - OSS Project Refresh
+
+### Added
+
+- Repository-style public site direction with Menlo/monospace-friendly presentation.
+- Releases page, changelog page, CLI roadmap, and sponsor links.
+- Tool registry and proposed module backlog.
+
+### Fixed
+
+- API Tester imports now handle native debugtools exports and nested Postman collections without creating empty `undefined` collections.
+- TypeScript validation issues from stale layout/auth/icon code were cleaned up.
+
+### Changed
+
+- Shifted positioning toward a local-first open-source debugging workbench.
+- Normalized tool pages toward a shared OSS shell.
 
 ## [1.5.0] - 2025-04-25
 
-- **Database Query Tool (SQLite)**: added to tools page sidebar, supports running SQL queries on local databases.
+### Added
+
+- SQLite Database Query tool with local query execution and result export workflows.
+
+## [1.4.0] - 2025-04-17
+
+### Added
+
+- Regex Tester, HTML Tools, CSS Tools, Markdown Preview, Color Picker, and Code Diff.
+
+### Changed
+
+- Improved JSON tool layout and navigation structure.
+
+## [1.3.0] - 2025-04-03
+
+### Added
+
+- Base64 file workflows for images and PDFs.
+
+## [1.2.0] - 2025-04-03
+
+### Changed
+
+- Expanded API Tester authentication, response handling, and collection workflows.
+
+## [1.1.0] - 2025-04-02
+
+### Added
+
+- Advanced JSON formatting, repair, export, large document support, and tree inspection.
+- Initial Chrome extension integration.
+
+## [1.0.0] - 2025-03-28
+
+### Added
+
+- Initial debugtools project shell.
+- JSON Formatter and Color Converter foundations.

@@ -227,7 +227,7 @@ Use these hero actions:
 ```tsx
 <Link href="/tools/all">Browse tools</Link>
 <Link href="/tools/api">Open API Tester</Link>
-<a href="https://github.com/jasimvk/mydebugtools">View GitHub</a>
+<a href="https://github.com/jasimvkarim/mydebugtools">View GitHub</a>
 ```
 
 Keep Sponsor as a secondary link in the project links area.
@@ -486,8 +486,8 @@ export default function ContributingPage() {
         ))}
       </div>
       <div className="mt-8 flex flex-wrap gap-3">
-        <a href="https://github.com/jasimvk/mydebugtools/issues/new" className="rounded-md bg-[#24292f] px-4 py-2 text-sm font-semibold text-white">Open issue</a>
-        <a href="https://github.com/jasimvk/mydebugtools" className="rounded-md border border-[#d0d7de] px-4 py-2 text-sm font-semibold text-[#24292f]">View repository</a>
+        <a href="https://github.com/jasimvkarim/mydebugtools/issues/new" className="rounded-md bg-[#24292f] px-4 py-2 text-sm font-semibold text-white">Open issue</a>
+        <a href="https://github.com/jasimvkarim/mydebugtools" className="rounded-md border border-[#d0d7de] px-4 py-2 text-sm font-semibold text-[#24292f]">View repository</a>
       </div>
     </main>
   );

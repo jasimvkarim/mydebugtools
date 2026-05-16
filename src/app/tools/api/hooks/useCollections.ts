@@ -71,7 +71,7 @@ export function addRequestToCollections(
   });
 }
 
-export function useCollections() {
+export function useCollections(privateMode = false) {
   const { data: session } = useSession();
   const [collections, setCollections] = useState<Collection[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -79,6 +79,11 @@ export function useCollections() {
 
   // Load collections from localStorage
   const loadLocalCollections = () => {
+    if (privateMode) {
+      setCollections([]);
+      return;
+    }
+
     try {
       const stored = localStorage.getItem('api-collections');
       if (stored) {
@@ -92,6 +97,8 @@ export function useCollections() {
 
   // Save collections to localStorage
   const saveLocalCollections = (cols: Collection[]) => {
+    if (privateMode) return;
+
     try {
       localStorage.setItem('api-collections', JSON.stringify(cols));
     } catch (err) {
@@ -101,6 +108,13 @@ export function useCollections() {
 
   // Load collections from Supabase (when logged in)
   const loadCollections = async () => {
+    if (privateMode) {
+      setCollections([]);
+      setIsLoading(false);
+      setError(null);
+      return;
+    }
+
     if (!session?.user) {
       // Load from localStorage if not logged in
       loadLocalCollections();
@@ -259,7 +273,7 @@ export function useCollections() {
     };
 
     // If logged in, save to cloud
-    if (session?.user) {
+    if (session?.user && !privateMode) {
       try {
         const response = await fetch('/api/collections', {
           method: 'POST',
@@ -298,7 +312,7 @@ export function useCollections() {
   // Delete collection
   const deleteCollection = async (collectionId: string) => {
     // If logged in and cloud ID, delete from cloud
-    if (session?.user && !collectionId.startsWith('local-')) {
+    if (session?.user && !privateMode && !collectionId.startsWith('local-')) {
       try {
         const response = await fetch(`/api/collections?id=${collectionId}`, {
           method: 'DELETE'
@@ -335,7 +349,7 @@ export function useCollections() {
     };
 
     // If logged in and cloud collection, save to cloud
-    if (session?.user && !collectionId.startsWith('local-')) {
+    if (session?.user && !privateMode && !collectionId.startsWith('local-')) {
       try {
         const response = await fetch('/api/requests', {
           method: 'POST',
@@ -373,7 +387,7 @@ export function useCollections() {
   // Delete request from collection
   const deleteRequest = async (collectionId: string, requestId: string) => {
     // If logged in and cloud request, delete from cloud
-    if (session?.user && !requestId.startsWith('local-')) {
+    if (session?.user && !privateMode && !requestId.startsWith('local-')) {
       try {
         const response = await fetch(`/api/requests?id=${requestId}`, {
           method: 'DELETE'
@@ -425,7 +439,7 @@ export function useCollections() {
   // Load collections on mount and when session changes
   useEffect(() => {
     loadCollections();
-  }, [session?.user]);
+  }, [session?.user, privateMode]);
 
   return {
     collections,

@@ -221,7 +221,7 @@ export default function Home() {
           <span className="text-2xl font-extrabold text-white tracking-tight">debugtools</span>
         </div>
         <div className="flex gap-4 items-center">
-          <a href="https://github.com/jasimvk/mydebugtools" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-gray-300 hover:text-white text-sm font-medium">
+          <a href="https://github.com/jasimvkarim/mydebugtools" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-gray-300 hover:text-white text-sm font-medium">
             <Github className="h-5 w-5" />
             GitHub
           </a>
@@ -252,7 +252,7 @@ export default function Home() {
             Try Now
           </a>
           <a
-            href="https://github.com/jasimvk/mydebugtools"
+            href="https://github.com/jasimvkarim/mydebugtools"
             className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 text-lg shadow-lg transition-all duration-200 hover:scale-105"
             target="_blank" rel="noopener noreferrer"
           >
@@ -416,7 +416,7 @@ export default function Home() {
         </div>
         <div className="text-center mt-8">
           <a 
-            href="https://github.com/jasimvk/mydebugtools/issues" 
+            href="https://github.com/jasimvkarim/mydebugtools/issues" 
             className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-medium"
             target="_blank" 
             rel="noopener noreferrer"
@@ -442,7 +442,7 @@ export default function Home() {
               Get Started
             </a>
             <a
-              href="https://github.com/jasimvk/mydebugtools"
+              href="https://github.com/jasimvkarim/mydebugtools"
               className="bg-blue-900/50 text-white px-8 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 text-lg shadow-lg transition-all duration-200 hover:scale-105"
               target="_blank" 
               rel="noopener noreferrer"
@@ -456,7 +456,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="container mx-auto px-6 py-12 text-center text-gray-400 mt-auto">
         <div className="flex justify-center gap-6 mb-6">
-          <a href="https://github.com/jasimvk/mydebugtools" className="hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/jasimvkarim/mydebugtools" className="hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
             <Github className="h-6 w-6" />
           </a>
           <a href="https://x.com/jasimvk" className="hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
@@ -502,12 +502,12 @@ export default function Home() {
             <h3 className="text-white font-semibold mb-4">Community</h3>
             <ul className="space-y-2">
               <li>
-                <a href="https://github.com/jasimvk/mydebugtools/issues" className="text-gray-400 hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
+                <a href="https://github.com/jasimvkarim/mydebugtools/issues" className="text-gray-400 hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
                   Report Issues
                 </a>
               </li>
               <li>
-                <a href="https://github.com/jasimvk/mydebugtools" className="text-gray-400 hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
+                <a href="https://github.com/jasimvkarim/mydebugtools" className="text-gray-400 hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
                   Contribute
                 </a>
               </li>
@@ -537,7 +537,7 @@ export default function Home() {
                 </Link>
               </li>
               <li>
-                <a href="https://github.com/jasimvk/mydebugtools/blob/main/LICENSE" className="text-gray-400 hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
+                <a href="https://github.com/jasimvkarim/mydebugtools/blob/main/LICENSE" className="text-gray-400 hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
                   License
                 </a>
               </li>
@@ -546,7 +546,7 @@ export default function Home() {
         </div>
         <div className="border-t border-gray-800 pt-8">
           <p className="mb-2">Built by <a href="https://x.com/jasimvk" className="text-blue-400 hover:text-blue-300" target="_blank" rel="noopener noreferrer">Jasim</a></p>
-          <p>© {new Date().getFullYear()} debugtools • <a href="https://github.com/jasimvk/mydebugtools" className="text-blue-400 hover:text-blue-300" target="_blank" rel="noopener noreferrer">Open Source</a></p>
+          <p>© {new Date().getFullYear()} debugtools • <a href="https://github.com/jasimvkarim/mydebugtools" className="text-blue-400 hover:text-blue-300" target="_blank" rel="noopener noreferrer">Open Source</a></p>
         </div>
       </footer>
     </div>

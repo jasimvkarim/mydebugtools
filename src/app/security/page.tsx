@@ -1,8 +1,9 @@
 const boundaries = [
-  ['Local', 'Formatters, encoders, decoders, diff tools, and most inspectors run in the browser.'],
-  ['Network', 'API Tester sends requests to the URLs you enter and exposes browser CORS limits clearly.'],
-  ['Cloud optional', 'Authenticated collection sync is optional and separate from the local workspace.'],
-  ['Private mode', 'API Tester can avoid saving tabs, history, auth tokens, passwords, and environment secrets locally.'],
+  ['Local-first tools', 'JSON, JWT, Hash, HTML, HTTP Status, Diff, Base64, UUID, URL, Timestamp, and most inspectors process data in the browser.'],
+  ['API Tester network requests', 'API Tester sends headers, bodies, tokens, and cookies only to the target URLs entered by the user, subject to browser CORS rules.'],
+  ['Optional sync', 'Authenticated collection sync is optional and stores saved API Tester collections through the configured Supabase project.'],
+  ['Secrets handling', 'Use throwaway tokens for reports, redact credentials, and keep production secrets out of issues, screenshots, fixtures, and exports.'],
+  ['Private reporting', 'Security issues should go through GitHub Security Advisories before any public issue or disclosure.'],
 ];
 
 export default function SecurityPage() {
@@ -20,6 +21,10 @@ export default function SecurityPage() {
             <p className="mt-2 text-sm leading-6 text-[#57606a]">{text}</p>
           </section>
         ))}
+      </div>
+      <div className="mt-8 flex flex-wrap gap-3">
+        <a href="https://github.com/jasimvkarim/mydebugtools/security/advisories/new" className="rounded-md bg-[#24292f] px-4 py-2 text-sm font-semibold text-white">Report privately</a>
+        <a href="https://github.com/jasimvkarim/mydebugtools/blob/main/SECURITY.md" className="rounded-md border border-[#d0d7de] px-4 py-2 text-sm font-semibold text-[#24292f]">Read SECURITY.md</a>
       </div>
     </main>
   );

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { answerPages } from '@/lib/answer-pages'
 import { buildMetadata } from '@/lib/seo'
+import { answerPages } from './data'
 
 export const metadata: Metadata = buildMetadata({
   title: 'Developer Tool Answers | debugtools',
@@ -11,8 +11,27 @@ export const metadata: Metadata = buildMetadata({
 })
 
 export default function AnswersPage() {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    '@id': 'https://debugtools.org/answers/#answers',
+    name: 'debugtools developer tool answers',
+    description: 'Concise answers for common API testing, formatting, encoding, hashing, diffing, URL, and HTTP debugging workflows.',
+    itemListElement: answerPages.map((page, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: page.title,
+      url: `https://debugtools.org/answers/${page.slug}/`,
+      description: page.shortAnswer,
+    })),
+  }
+
   return (
     <main className="min-h-screen bg-[#f6f8fa] px-4 py-10 text-[#24292f] sm:px-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-5xl">
         <p className="font-mono text-xs text-[#57606a]">debugtools / answers</p>
         <h1 className="mt-2 text-4xl font-semibold">Developer tool answers</h1>

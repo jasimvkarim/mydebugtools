@@ -52,7 +52,7 @@ export default function About() {
               <h2 className="text-sm font-semibold text-[#24292f]">Repository</h2>
               <div className="mt-4 grid gap-2">
                 <a
-                  href="https://github.com/jasimvk/mydebugtools"
+                  href="https://github.com/jasimvkarim/mydebugtools"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-md bg-[#24292f] px-3 py-2 text-sm font-semibold text-white hover:bg-[#32383f] hover:text-white"
@@ -60,13 +60,13 @@ export default function About() {
                   <Github className="h-4 w-4" />
                   View on GitHub
                 </a>
-                <a href="https://github.com/jasimvk/mydebugtools/issues" target="_blank" rel="noopener noreferrer" className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f]">
+                <a href="https://github.com/jasimvkarim/mydebugtools/issues" target="_blank" rel="noopener noreferrer" className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f]">
                   Issues
                 </a>
                 <a href="https://buymeacoffee.com/jasimvk" target="_blank" rel="noopener noreferrer" className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f]">
                   Sponsor
                 </a>
-                <a href="https://github.com/jasimvk/mydebugtools/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f]">
+                <a href="https://github.com/jasimvkarim/mydebugtools/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f]">
                   MIT License
                 </a>
                 <Link href="/roadmap" className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f]">

@@ -23,7 +23,8 @@ const config: Config = {
         }
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['var(--font-sans)', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['var(--font-mono)', 'Roboto Mono', 'Menlo', 'monospace'],
       },
     },
   },

@@ -30,6 +30,9 @@ describe('parseImportedCollection', () => {
         name: 'Shop API',
         description: { content: 'Checkout endpoints' },
       },
+      variable: [
+        { key: 'mrktplaceapiurl', value: 'https://api.example.com' },
+      ],
       item: [
         {
           name: 'Auth',
@@ -70,6 +73,9 @@ describe('parseImportedCollection', () => {
 
     expect(collection.name).toBe('Shop API');
     expect(collection.description).toBe('Checkout endpoints');
+    expect(collection.variables).toEqual([
+      { key: 'mrktplaceapiurl', value: 'https://api.example.com' },
+    ]);
     expect(collection.requests).toHaveLength(2);
     expect(collection.requests[0]).toMatchObject({
       name: 'Login',
@@ -86,8 +92,84 @@ describe('parseImportedCollection', () => {
     });
   });
 
+  it('imports OpenAPI collections instead of creating undefined empty collections', () => {
+    const collection = parseImportedCollection({
+      openapi: '3.1.0',
+      info: { title: 'Public Store', description: 'Storefront API' },
+      servers: [{ url: 'https://api.example.com/v1' }],
+      paths: {
+        '/products/{id}': {
+          get: {
+            summary: 'Get product',
+            parameters: [{ name: 'include', in: 'query', example: 'variants' }],
+          },
+          post: {
+            operationId: 'createProduct',
+            requestBody: {
+              content: {
+                'application/json': {
+                  example: { name: 'Desk', price: 120 },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    expect(collection.name).toBe('Public Store');
+    expect(collection.description).toBe('Storefront API');
+    expect(collection.requests).toHaveLength(2);
+    expect(collection.requests[0]).toMatchObject({
+      name: 'Get product',
+      method: 'GET',
+      url: 'https://api.example.com/v1/products/{{id}}?include=variants',
+      body: '',
+    });
+    expect(collection.requests[1]).toMatchObject({
+      name: 'createProduct',
+      method: 'POST',
+      url: 'https://api.example.com/v1/products/{{id}}',
+      contentType: 'application/json',
+      body: '{\n  "name": "Desk",\n  "price": 120\n}',
+    });
+  });
+
+  it('imports Insomnia request exports', () => {
+    const collection = parseImportedCollection({
+      __export_format: 4,
+      resources: [
+        { _type: 'workspace', name: 'Insomnia Shop', description: 'Local workspace' },
+        { _type: 'environment', name: 'Base Environment', data: { base_url: 'https://api.example.com' } },
+        {
+          _type: 'request',
+          name: 'Create order',
+          method: 'POST',
+          url: 'https://api.example.com/orders',
+          headers: [{ name: 'X-Shop', value: '{{shop}}' }],
+          body: { mimeType: 'application/json', text: '{"sku":"abc"}' },
+        },
+      ],
+    });
+
+    expect(collection.name).toBe('Insomnia Shop');
+    expect(collection.description).toBe('Local workspace');
+    expect(collection.variables).toEqual([
+      { key: 'base_url', value: 'https://api.example.com' },
+    ]);
+    expect(collection.requests).toHaveLength(1);
+    expect(collection.requests[0]).toMatchObject({
+      name: 'Create order',
+      method: 'POST',
+      url: 'https://api.example.com/orders',
+      headers: [{ key: 'X-Shop', value: '{{shop}}', enabled: true }],
+      body: '{"sku":"abc"}',
+      contentType: 'application/json',
+    });
+  });
+
   it('rejects unsupported JSON instead of creating an undefined empty collection', () => {
-    expect(() => parseImportedCollection({ openapi: '3.1.0', paths: {} }))
+    expect(() => parseImportedCollection({ paths: {}, notACollection: true }))
       .toThrow('Unsupported collection format');
   });
 });

@@ -194,7 +194,7 @@ Click **"Deploy"** and wait for build to complete!
 - **Supabase Dashboard**: https://app.supabase.com/
 - **Vercel Dashboard**: https://vercel.com/dashboard
 - **Domain Registrar**: Your DNS provider
-- **GitHub Repo**: https://github.com/jasimvk/mydebugtools
+- **GitHub Repo**: https://github.com/jasimvkarim/mydebugtools
 
 ---
 

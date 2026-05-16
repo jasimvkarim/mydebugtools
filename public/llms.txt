@@ -11,7 +11,7 @@
 - [Roadmap](https://debugtools.org/roadmap/): Shipped work, active foundation work, and future modules.
 - [Releases](https://debugtools.org/releases/): Release notes and changelog context.
 - [FAQ](https://debugtools.org/faq/): Product, privacy, contribution, licensing, and usage answers.
-- [GitHub repository](https://github.com/jasimvk/mydebugtools): Source code, issues, license, and contribution workflow.
+- [GitHub repository](https://github.com/jasimvkarim/mydebugtools): Source code, issues, license, and contribution workflow.
 
 ## Shipped Tools
 

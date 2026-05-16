@@ -3,7 +3,6 @@
 export const dynamic = "force-dynamic";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import ProtectedRoute from '@/app/components/ProtectedRoute';
 import { useSession, signOut, signIn } from 'next-auth/react';
 import { useCollections } from './hooks/useCollections';
 import { parseImportedCollection } from './lib/collectionImport';
@@ -163,7 +162,10 @@ const PRIVATE_MODE_KEYS = [
   'presets',
   'activeEnvironment',
   'apiTesterTabs',
-  'apiTesterActiveTabIndex'
+  'apiTesterActiveTabIndex',
+  'api-collections',
+  'apiTesterCollections',
+  'settings'
 ];
 const SENSITIVE_KEY_PATTERN = /(authorization|cookie|token|secret|password|passwd|api[-_\s]?key|x-api-key|client[-_\s]?secret|access[-_\s]?key|private[-_\s]?key)/i;
 
@@ -215,11 +217,42 @@ const normalizeRequestUrl = (rawUrl: string) => {
   return `https://${trimmed}`;
 };
 
+const VARIABLE_PATTERN = /{{\s*([^{}\s]+)\s*}}/g;
+
+const findTemplateVariables = (value: string) =>
+  Array.from(value.matchAll(VARIABLE_PATTERN), (match) => match[1]);
+
+const applyEnvironmentVariables = (value: string, environment?: Environment) => {
+  if (!value || !environment) return value;
+
+  const variables = new Map(
+    environment.variables
+      .filter((variable) => variable.key.trim())
+      .map((variable) => [variable.key.trim(), variable.value])
+  );
+
+  return value.replace(VARIABLE_PATTERN, (match, key) => (
+    variables.has(key) ? variables.get(key) || '' : match
+  ));
+};
+
+const mergeVariables = (
+  existing: Environment['variables'],
+  incoming: Environment['variables']
+) => {
+  const seen = new Set(existing.map((variable) => variable.key.trim()).filter(Boolean));
+  return [
+    ...existing,
+    ...incoming.filter((variable) => variable.key.trim() && !seen.has(variable.key.trim())),
+  ];
+};
+
 const shellSingleQuote = (value: string) => `'${value.replace(/'/g, `'\\''`)}'`;
 
 function APITesterContent() {
   const { data: session } = useSession();
   const importFileInputRef = useRef<HTMLInputElement>(null);
+  const [storageReady, setStorageReady] = useState(false);
   
   // Tab management
   const [tabs, setTabs] = useState<RequestTab[]>([{
@@ -314,6 +347,7 @@ function APITesterContent() {
   const [activeEnvironment, setActiveEnvironment] = useState('Development');
   const [presets, setPresets] = useState<RequestPreset[]>([]);
   const [responseTime, setResponseTime] = useState<number>(0);
+  const [privateMode, setPrivateMode] = useState(false);
   
   // Collections state - now using Supabase hook
   const {
@@ -326,7 +360,7 @@ function APITesterContent() {
     saveRequest: saveRequestAPI,
     deleteRequest: deleteRequestAPI,
     renameCollection: renameCollectionAPI,
-  } = useCollections();
+  } = useCollections(privateMode);
   
   const [showCollections, setShowCollections] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -362,9 +396,9 @@ function APITesterContent() {
   const [requestFormat, setRequestFormat] = useState<'pretty' | 'raw'>('pretty');
   const [autoFormat, setAutoFormat] = useState(true);
   const [autoSave, setAutoSave] = useState(true);
-  const [privateMode, setPrivateMode] = useState(false);
   const [showVariables, setShowVariables] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showAdvancedAuth, setShowAdvancedAuth] = useState(false);
   const [importNotice, setImportNotice] = useState<{ type: 'success' | 'error'; message: string; detail?: string } | null>(null);
   const [networkHint, setNetworkHint] = useState<{ title: string; message: string; curl: string } | null>(null);
@@ -401,7 +435,6 @@ function APITesterContent() {
     const savedSettings = localStorage.getItem('settings');
     const savedTabs = localStorage.getItem('apiTesterTabs');
     const savedActiveTabIndex = localStorage.getItem('apiTesterActiveTabIndex');
-    const savedCollections = localStorage.getItem('apiTesterCollections');
 
     if (savedHistory) setRequestHistory(JSON.parse(savedHistory));
     if (savedEnvironments) setEnvironments(JSON.parse(savedEnvironments));
@@ -412,7 +445,6 @@ function APITesterContent() {
       setAutoFormat(settings.autoFormat ?? true);
       setAutoSave(settings.autoSave ?? true);
       setPrivateMode(Boolean(settings.privateMode));
-      setShowVariables(Boolean(settings.showVariables));
     }
     if (savedTabs) {
       try {
@@ -436,6 +468,7 @@ function APITesterContent() {
   useEffect(() => {
     setIsEditorMounted(true);
     loadSavedData();
+    setStorageReady(true);
   }, []);
 
   useEffect(() => {
@@ -445,17 +478,16 @@ function APITesterContent() {
   }, [privateMode]);
 
   const saveData = () => {
-    localStorage.setItem('settings', JSON.stringify({
-      autoFormat,
-      autoSave,
-      privateMode,
-      showVariables
-    }));
-
     if (privateMode) {
       clearPrivateModeStorage();
       return;
     }
+
+    localStorage.setItem('settings', JSON.stringify({
+      autoFormat,
+      autoSave,
+      privateMode
+    }));
 
     localStorage.setItem('requestHistory', JSON.stringify(requestHistory));
     localStorage.setItem('environments', JSON.stringify(environments));
@@ -580,17 +612,10 @@ function APITesterContent() {
 
   // Save tabs whenever they change
   useEffect(() => {
-    if (autoSave && tabs.length > 0) {
+    if (storageReady && autoSave && tabs.length > 0) {
       saveData();
     }
-  }, [tabs, activeTabIndex, autoSave, privateMode]);
-
-  // Save collections whenever they change
-  useEffect(() => {
-    if (!privateMode && collections.length >= 0) {
-      localStorage.setItem('apiTesterCollections', JSON.stringify(collections));
-    }
-  }, [collections, privateMode]);
+  }, [tabs, activeTabIndex, autoSave, privateMode, storageReady]);
 
   // Collection management functions
   const createCollection = async () => {
@@ -710,6 +735,21 @@ function APITesterContent() {
           });
           return;
         }
+
+        const importedVariables = importedCollection.variables || [];
+        if (importedVariables.length > 0) {
+          setEnvironments((currentEnvironments) => {
+            const envIndex = currentEnvironments.findIndex(env => env.name === activeEnvironment);
+            if (envIndex === -1) return currentEnvironments;
+
+            const nextEnvironments = [...currentEnvironments];
+            nextEnvironments[envIndex] = {
+              ...nextEnvironments[envIndex],
+              variables: mergeVariables(nextEnvironments[envIndex].variables, importedVariables),
+            };
+            return nextEnvironments;
+          });
+        }
         
         // Import all requests
         let importedRequestCount = 0;
@@ -737,7 +777,7 @@ function APITesterContent() {
         setImportNotice({
           type: 'success',
           message: `Imported "${importedCollection.name}"`,
-          detail: `${importedRequestCount} request${importedRequestCount === 1 ? '' : 's'} added${skippedRequests ? `, ${skippedRequests} skipped` : ''}.`
+          detail: `${importedRequestCount} request${importedRequestCount === 1 ? '' : 's'} added${skippedRequests ? `, ${skippedRequests} skipped` : ''}${importedVariables.length ? `, ${importedVariables.length} variable${importedVariables.length === 1 ? '' : 's'} added` : ''}.`
         });
       } catch (error) {
         setImportNotice({
@@ -1223,10 +1263,10 @@ function APITesterContent() {
   }, [authConfig.token, authConfig.autoRefresh]);
 
   useEffect(() => {
-    if (autoSave) {
+    if (storageReady && autoSave) {
       saveData();
     }
-  }, [requestHistory, environments, presets, activeEnvironment, autoSave, privateMode]);
+  }, [requestHistory, environments, presets, activeEnvironment, autoSave, privateMode, storageReady]);
 
   const handleHeaderChange = (index: number, field: 'key' | 'value' | 'enabled', value: string | boolean) => {
     const newHeaders = [...headers];
@@ -1250,6 +1290,33 @@ function APITesterContent() {
     const newEnvironments = [...environments];
     newEnvironments[envIndex].variables.push({ key: '', value: '' });
     setEnvironments(newEnvironments);
+  };
+
+  const setEnvironmentVariableValue = (key: string, value: string) => {
+    setEnvironments((currentEnvironments) => {
+      const envIndex = currentEnvironments.findIndex(env => env.name === activeEnvironment);
+      if (envIndex === -1) return currentEnvironments;
+
+      const nextEnvironments = [...currentEnvironments];
+      const variables = [...nextEnvironments[envIndex].variables];
+      const varIndex = variables.findIndex(variable => variable.key.trim() === key);
+
+      if (varIndex >= 0) {
+        variables[varIndex] = { ...variables[varIndex], value };
+      } else {
+        variables.push({ key, value });
+      }
+
+      nextEnvironments[envIndex] = {
+        ...nextEnvironments[envIndex],
+        variables,
+      };
+      return nextEnvironments;
+    });
+
+    if (error.startsWith('Missing environment variable')) {
+      setError('');
+    }
   };
 
   const removeEnvironmentVariable = (envIndex: number, varIndex: number) => {
@@ -1298,34 +1365,12 @@ function APITesterContent() {
         throw new Error(`Rate limit exceeded. Please wait ${Math.ceil((RATE_LIMIT_WINDOW - (now - recentRequests[0])) / 1000)} seconds.`);
       }
 
-      // Check cache
-      const cacheKey = `${method}:${url}:${JSON.stringify(headers)}:${body}`;
-      const cachedResponse = requestCache[cacheKey];
-      
-      if (cachedResponse && now - cachedResponse.timestamp < CACHE_DURATION) {
-        setResponse({
-          status: cachedResponse.status,
-          headers: cachedResponse.headers,
-          data: cachedResponse.data,
-        });
-        setResponseMetrics({
-          size: new Blob([JSON.stringify(cachedResponse.data)]).size,
-          time: 0,
-          status: cachedResponse.status,
-          headers: cachedResponse.headers
-        });
-        setLoading(false);
-        return;
-      }
-
-      // Replace environment variables in URL and headers
-      let processedUrl = normalizeRequestUrl(url);
+      // Replace environment variables in URL, headers, and body
       const activeEnv = environments.find(env => env.name === activeEnvironment);
-      if (activeEnv) {
-        activeEnv.variables.forEach(({ key, value }) => {
-          processedUrl = processedUrl.replace(`{{${key}}}`, value);
-        });
-      }
+      let processedUrl = normalizeRequestUrl(applyEnvironmentVariables(url, activeEnv));
+      const processedBody = methodSupportsBody(method)
+        ? applyEnvironmentVariables(body, activeEnv)
+        : '';
 
       const requestHeaders: Record<string, string> = {};
       if (methodSupportsBody(method)) {
@@ -1354,21 +1399,72 @@ function APITesterContent() {
 
       headers.forEach(({ key, value, enabled }) => {
         if (enabled && key.trim() && value.trim()) {
-          let processedValue = value;
-          if (activeEnv) {
-            activeEnv.variables.forEach(({ key: envKey, value: envValue }) => {
-              processedValue = processedValue.replace(`{{${envKey}}}`, envValue);
-            });
-          }
-          requestHeaders[key] = processedValue;
+          requestHeaders[key] = applyEnvironmentVariables(value, activeEnv);
         }
       });
+
+      const unresolvedVariables = Array.from(new Set([
+        ...findTemplateVariables(processedUrl),
+        ...Object.values(requestHeaders).flatMap(findTemplateVariables),
+        ...findTemplateVariables(processedBody),
+      ]));
+      if (unresolvedVariables.length > 0) {
+        setEnvironments((currentEnvironments) => {
+          const envIndex = currentEnvironments.findIndex(env => env.name === activeEnvironment);
+          if (envIndex === -1) return currentEnvironments;
+
+          const existingKeys = new Set(
+            currentEnvironments[envIndex].variables
+              .map((variable) => variable.key.trim())
+              .filter(Boolean)
+          );
+          const missingRows = unresolvedVariables
+            .filter((variable) => !existingKeys.has(variable))
+            .map((variable) => ({ key: variable, value: '' }));
+
+          if (missingRows.length === 0) return currentEnvironments;
+
+          const nextEnvironments = [...currentEnvironments];
+          nextEnvironments[envIndex] = {
+            ...nextEnvironments[envIndex],
+            variables: [...nextEnvironments[envIndex].variables, ...missingRows],
+          };
+          return nextEnvironments;
+        });
+        throw new Error(
+          `Missing environment variable${unresolvedVariables.length === 1 ? '' : 's'}: ${unresolvedVariables.join(', ')}. Add ${unresolvedVariables.length === 1 ? 'it' : 'them'} in Environment Variables or choose the right environment.`
+        );
+      }
+
+      const cacheKey = JSON.stringify({
+        method,
+        url: processedUrl,
+        headers: requestHeaders,
+        body: processedBody
+      });
+      const cachedResponse = requestCache[cacheKey];
+      
+      if (cachedResponse && now - cachedResponse.timestamp < CACHE_DURATION) {
+        setResponse({
+          status: cachedResponse.status,
+          headers: cachedResponse.headers,
+          data: cachedResponse.data,
+        });
+        setResponseMetrics({
+          size: new Blob([JSON.stringify(cachedResponse.data)]).size,
+          time: 0,
+          status: cachedResponse.status,
+          headers: cachedResponse.headers
+        });
+        setLoading(false);
+        return;
+      }
 
       const startTime = Date.now();
       let response = await fetch(processedUrl, {
         method,
         headers: requestHeaders,
-        body: methodSupportsBody(method) ? body : undefined,
+        body: methodSupportsBody(method) ? processedBody : undefined,
       });
 
       // Parse response data safely
@@ -1480,7 +1576,7 @@ function APITesterContent() {
         method,
         url: processedUrl,
         headers,
-        body,
+        body: processedBody,
         timestamp: now,
         status: response.status,
         duration
@@ -1518,6 +1614,17 @@ function APITesterContent() {
       return JSON.stringify(json, null, 2);
     } catch {
       return json;
+    }
+  };
+
+  const formatResponseBody = (data: any) => {
+    if (typeof data === 'string') return data;
+    try {
+      return responseFormat === 'raw'
+        ? JSON.stringify(data)
+        : JSON.stringify(data, null, 2);
+    } catch {
+      return String(data);
     }
   };
 
@@ -1588,6 +1695,10 @@ print(response.json())`,
 
   // Render JSON with clickable token fields
   const renderClickableJSON = (data: any, path: string = '') => {
+    if (typeof data === 'string') {
+      return <span className="whitespace-pre-wrap break-words text-gray-700">{data}</span>;
+    }
+
     if (typeof data !== 'object' || data === null) {
       return <span className="text-gray-700">{JSON.stringify(data)}</span>;
     }
@@ -1643,30 +1754,44 @@ print(response.json())`,
     );
   };
 
+  const activeEnvironmentDetails = environments.find(env => env.name === activeEnvironment);
+  const currentTemplateVariables = Array.from(new Set([
+    ...findTemplateVariables(url),
+    ...headers
+      .filter(header => header.enabled)
+      .flatMap(header => findTemplateVariables(header.value)),
+    ...(methodSupportsBody(method) ? findTemplateVariables(body) : []),
+  ]));
+  const missingEnvironmentVariables = currentTemplateVariables.filter((key) => {
+    const variable = activeEnvironmentDetails?.variables.find(item => item.key.trim() === key);
+    return !variable || !variable.value.trim();
+  });
+  const getEnvironmentVariableValue = (key: string) =>
+    activeEnvironmentDetails?.variables.find(item => item.key.trim() === key)?.value || '';
+
   return (
-    <div className="flex h-screen bg-gray-100 overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-[#f5f6f8] text-[13px] leading-5 text-[#2b2f38]">
       {/* Left Sidebar - Collections (Postman-style) */}
-      <div className="w-80 bg-white border-r border-gray-300 flex flex-col">
+      {showCollections && (
+      <div className="w-72 bg-white border-r border-gray-200 flex flex-col">
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-gray-200 bg-[#FF6C37]">
-          <h2 className="text-white font-semibold text-sm">Collections</h2>
+        <div className="flex items-center justify-between gap-3 px-3 py-3 border-b border-gray-200 bg-white">
+          <h2 className="text-gray-900 font-semibold text-sm">Collections</h2>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowNewCollectionDialog(true)}
-              className="inline-flex items-center gap-1 rounded-md border border-white/60 bg-white px-2.5 py-1.5 text-xs font-semibold text-[#24292f] shadow-sm transition-colors hover:bg-[#f6f8fa]"
+              className="inline-flex items-center gap-1 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-xs font-semibold text-[#24292f] transition-colors hover:bg-[#f6f8fa]"
               title="New Collection"
             >
               <PlusIcon className="h-4 w-4" />
-              New
             </button>
             <button
               type="button"
               onClick={() => importFileInputRef.current?.click()}
-              className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-white/60 bg-white px-2.5 py-1.5 text-xs font-semibold text-[#24292f] shadow-sm transition-colors hover:bg-[#f6f8fa]"
+              className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-xs font-semibold text-[#24292f] transition-colors hover:bg-[#f6f8fa]"
               title="Import Collection"
             >
               <ArrowDownOnSquareIcon className="h-4 w-4" />
-              Import
             </button>
             <input
               ref={importFileInputRef}
@@ -1684,26 +1809,26 @@ print(response.json())`,
                   setTimeout(() => setSyncingCollections(false), 1000);
                 }}
                 disabled={syncingCollections}
-                className="inline-flex items-center gap-1 rounded-md border border-white/60 bg-white px-2.5 py-1.5 text-xs font-semibold text-[#24292f] shadow-sm transition-colors hover:bg-[#f6f8fa] disabled:opacity-50"
+                className="inline-flex items-center gap-1 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-xs font-semibold text-[#24292f] transition-colors hover:bg-[#f6f8fa] disabled:opacity-50"
                 title="Sync Collections"
               >
                 <ArrowPathIcon className={`h-4 w-4 ${syncingCollections ? 'animate-spin' : ''}`} />
-                Sync
               </button>
             )}
+            <button
+              onClick={() => setShowCollections(false)}
+              className="inline-flex items-center gap-1 rounded-md border border-gray-300 bg-white px-2 py-1.5 text-xs font-semibold text-[#24292f] transition-colors hover:bg-[#f6f8fa]"
+              title="Hide Collections"
+            >
+              <XMarkIcon className="h-4 w-4" />
+            </button>
           </div>
         </div>
 
-        <div className="border-b border-gray-200 bg-gray-50 px-4 py-3 space-y-2">
-          <div className="flex items-start gap-2 text-xs text-gray-700">
-            <CheckIcon className="h-4 w-4 text-emerald-800 flex-shrink-0 mt-0.5" />
-            <p>
-              Works without login. Use <span className="font-semibold">Cloud Sync</span> only when you want collections across devices.
-            </p>
-          </div>
+        <div className="border-b border-gray-200 bg-gray-50 px-3 py-2 space-y-2">
           {privateMode && (
             <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-              Private mode is on: tabs, history, environments, auth tokens, and imported secrets stay out of localStorage.
+              Private mode is on. Nothing sensitive is saved locally.
             </div>
           )}
           {importNotice && (
@@ -1729,7 +1854,7 @@ print(response.json())`,
           )}
         </div>
 
-        {requestHistory.length > 0 && (
+        {requestHistory.length > 0 && showHistory && (
           <div className="border-b border-gray-200 bg-white px-4 py-3">
             <div className="mb-2 flex items-center justify-between">
               <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-600">Recent</h3>
@@ -1861,34 +1986,50 @@ print(response.json())`,
           )}
         </div>
 
-        {/* Sidebar Footer */}
-        <div className="border-t border-gray-200 p-3 space-y-2">
-          <button
-            onClick={() => setShowVariables(!showVariables)}
-            className="w-full px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded transition-colors flex items-center gap-2"
-          >
-            <CodeBracketIcon className="h-4 w-4" />
-            Environment Variables
-          </button>
-          <button
-            onClick={() => setShowHelp(!showHelp)}
-            className="w-full px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded transition-colors flex items-center gap-2"
-          >
-            <QuestionMarkCircleIcon className="h-4 w-4" />
-            Help & Shortcuts
-          </button>
-        </div>
       </div>
+      )}
 
       {/* Right Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Navigation Bar */}
-        <div className="bg-white border-b border-gray-300 px-4 py-2.5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h1 className="text-lg font-bold text-gray-900">My Workspace</h1>
-            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">API Tester</span>
+        <div className="bg-white/95 border-b border-[#d9dde3] px-4 py-2 flex flex-wrap items-center justify-between gap-3 backdrop-blur">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setShowCollections(!showCollections)}
+              className={`inline-flex items-center gap-2 rounded border px-3 py-1.5 text-[13px] font-semibold transition-colors ${
+                showCollections
+                  ? 'border-[#111827] bg-[#111827] text-white'
+                  : 'border-[#d0d7de] bg-white text-[#2b2f38] hover:bg-[#f6f8fa]'
+              }`}
+            >
+              <FolderIcon className="h-4 w-4" />
+              Collections
+              {collections.length > 0 && (
+                <span className={`rounded-full px-1.5 py-0.5 text-[10px] ${
+                  showCollections ? 'bg-white/15 text-white' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  {collections.length}
+                </span>
+              )}
+            </button>
+            <div className="flex items-center gap-2">
+              <h1 className="text-base font-semibold tracking-tight text-[#111827]">API Tester</h1>
+              <span className="rounded bg-[#eef1f5] px-2 py-1 text-[11px] font-medium text-[#687182]">debugtools</span>
+              {privateMode && (
+                <span className="rounded bg-amber-50 px-2 py-1 text-[11px] font-medium text-amber-800 ring-1 ring-amber-200">
+                  private
+                </span>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={createNewTab}
+              className="inline-flex items-center gap-2 rounded border border-[#d0d7de] bg-white px-3 py-1.5 text-[13px] font-semibold text-[#2b2f38] transition-colors hover:bg-[#f6f8fa]"
+            >
+              <PlusIcon className="h-4 w-4" />
+              New request
+            </button>
             {session && (
               <>
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded text-xs">
@@ -1901,24 +2042,74 @@ print(response.json())`,
                 >
                   Sign Out
                 </button>
-                <button
-                  onClick={() => setShowSaveDialog(true)}
-                  className="px-3 py-1.5 text-sm font-medium bg-[#FF6C37] text-white rounded hover:bg-[#ff5722] transition-colors flex items-center gap-1.5"
-                >
-                  <DocumentDuplicateIcon className="h-4 w-4" />
-                  Save
-                </button>
               </>
             )}
-            {!session && (
+            <div className="relative">
               <button
-                onClick={() => setShowAuthModal(true)}
-                className="px-4 py-1.5 text-sm font-semibold bg-[#24292f] text-white border-2 border-[#24292f] rounded hover:bg-[#111827] hover:border-[#111827] transition-colors"
-                title="Sync collections across devices"
+                onClick={() => setShowMoreMenu(!showMoreMenu)}
+                className="inline-flex items-center gap-2 rounded border border-[#d0d7de] bg-white px-3 py-1.5 text-[13px] font-semibold text-[#2b2f38] transition-colors hover:bg-[#f6f8fa]"
               >
-                Cloud Sync
+                More
+                <ArrowsUpDownIcon className="h-3.5 w-3.5" />
               </button>
-            )}
+              {showMoreMenu && (
+                <div className="absolute right-0 top-full z-30 mt-2 w-56 overflow-hidden rounded-md border border-gray-200 bg-white shadow-lg">
+                  <button
+                    onClick={() => {
+                      setShowSaveDialog(true);
+                      setShowMoreMenu(false);
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
+                  >
+                    <DocumentDuplicateIcon className="h-4 w-4" />
+                    Save request
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowVariables(true);
+                      setShowMoreMenu(false);
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
+                  >
+                    <CodeBracketIcon className="h-4 w-4" />
+                    Variables
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowCollections(true);
+                      setShowHistory(!showHistory);
+                      setShowMoreMenu(false);
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
+                  >
+                    <ClockIcon className="h-4 w-4" />
+                    {showHistory ? 'Hide history' : 'Show history'}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowHelp(!showHelp);
+                      setShowMoreMenu(false);
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
+                  >
+                    <QuestionMarkCircleIcon className="h-4 w-4" />
+                    Help
+                  </button>
+                  {!session && (
+                    <button
+                      onClick={() => {
+                        setShowAuthModal(true);
+                        setShowMoreMenu(false);
+                      }}
+                      className="flex w-full items-center gap-2 border-t border-gray-100 px-3 py-2 text-left text-sm font-semibold text-gray-900 hover:bg-gray-50"
+                    >
+                      <ArrowPathIcon className="h-4 w-4" />
+                      Cloud Sync
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -2377,6 +2568,7 @@ print(response.json())`,
       )}
 
       {/* Request Tabs */}
+      {tabs.length > 1 && (
       <div className="bg-white border-b border-gray-300">
         <div className="flex items-center overflow-x-auto">
           <div className="flex flex-1 min-w-0">
@@ -2449,25 +2641,26 @@ print(response.json())`,
           </button>
         </div>
       </div>
+      )}
 
       {/* Main Content Area with Scroll */}
-      <div className="flex-1 overflow-auto bg-gray-50">
-        <div className="p-4">
+      <div className="flex-1 overflow-auto bg-[#f5f6f8]">
+        <div className="mx-auto flex max-w-[1760px] flex-col gap-3 p-3">
 
       {/* Main Request Section */}
-      <div className="bg-white rounded-lg shadow-sm">
+      <div className="overflow-hidden rounded-md border border-[#d9dde3] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
         {/* URL Bar - Postman Style */}
-        <div className="p-4 border-b border-gray-200">
+        <div className="border-b border-[#e5e8ee] bg-[#fbfcfd] p-2.5">
           <div className="flex flex-wrap gap-2 items-center">
             <select
               value={method}
               onChange={(e) => setMethod(e.target.value as HttpMethod)}
-              className={`px-3 py-2 border border-gray-300 rounded font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[100px] ${
-                method === 'GET' ? 'text-emerald-800' :
-                method === 'POST' ? 'text-orange-600' :
-                method === 'PUT' ? 'text-yellow-600' :
-                method === 'DELETE' ? 'text-red-600' :
-                'text-gray-600'
+              className={`h-9 min-w-[92px] rounded border border-[#d0d7de] bg-white px-3 font-mono text-[12px] font-semibold shadow-sm outline-none transition focus:border-[#6366f1] focus:ring-2 focus:ring-[#6366f1]/20 ${
+                method === 'GET' ? 'text-emerald-700' :
+                method === 'POST' ? 'text-sky-700' :
+                method === 'PUT' ? 'text-amber-700' :
+                method === 'DELETE' ? 'text-rose-700' :
+                'text-slate-600'
               }`}
               title="Select HTTP method"
             >
@@ -2475,24 +2668,29 @@ print(response.json())`,
                 <option key={m} value={m}>{m}</option>
               ))}
             </select>
-            <div className="flex-1 min-w-[220px] relative">
+            <div className="relative min-w-[240px] flex-1">
               <input
                 type="text"
                 value={url}
-                onChange={(e) => setUrl(e.target.value)}
+                onChange={(e) => {
+                  setUrl(e.target.value);
+                  if (error.startsWith('Missing environment variable')) {
+                    setError('');
+                  }
+                }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && url.trim() && !loading) {
                     handleSubmit();
                   }
                 }}
                 placeholder="Enter URL or paste text"
-                className="w-full px-4 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="h-9 w-full rounded border border-[#d0d7de] bg-white px-3 font-mono text-[13px] text-[#24292f] shadow-sm outline-none transition placeholder:text-[#8a94a6] focus:border-[#6366f1] focus:ring-2 focus:ring-[#6366f1]/20"
               />
             </div>
             <button
               onClick={handleSubmit}
               disabled={loading || !url.trim()}
-              className="px-6 py-2 bg-[#6366F1] hover:bg-[#5558E3] text-white text-sm font-semibold rounded disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+              className="inline-flex h-9 items-center gap-2 rounded bg-[#6366f1] px-5 text-[13px] font-semibold text-white shadow-sm transition-all hover:bg-[#5558e3] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? (
                 <>
@@ -2506,17 +2704,47 @@ print(response.json())`,
                 'Send'
               )}
             </button>
-            <button
-              onClick={() => setShowSaveDialog(true)}
-              className="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium rounded transition-all flex items-center gap-1"
-            >
-              <DocumentDuplicateIcon className="h-4 w-4" />
-              Save
-            </button>
           </div>
+          {missingEnvironmentVariables.length > 0 && (
+            <div className="mt-3 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p className="font-semibold">Set missing variable{missingEnvironmentVariables.length === 1 ? '' : 's'}</p>
+                  <p className="mt-0.5 text-xs text-amber-800">
+                    These values are replaced before the request is sent.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowVariables(true)}
+                  className="rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-amber-950 shadow-sm hover:bg-amber-100"
+                >
+                  Advanced variables
+                </button>
+              </div>
+              <div className="mt-3 grid gap-2">
+                {missingEnvironmentVariables.map((key) => (
+                  <div key={key} className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                    <code className="rounded border border-amber-200 bg-white px-2 py-2 text-xs text-amber-950 sm:w-56">
+                      {'{{'}{key}{'}}'}
+                    </code>
+                    <input
+                      type="text"
+                      value={getEnvironmentVariableValue(key)}
+                      onChange={(event) => setEnvironmentVariableValue(key, event.target.value)}
+                      placeholder="https://api.example.com"
+                      className="min-w-0 flex-1 rounded border border-amber-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+                    />
+                  </div>
+                ))}
+              </div>
+              {error && error.startsWith('Missing environment variable') && (
+                <p className="mt-2 text-xs text-amber-800">{error}</p>
+              )}
+            </div>
+          )}
           
           {/* Error Display */}
-          {error && (
+          {error && !error.startsWith('Missing environment variable') && (
             <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded text-red-800 text-sm">
               <div className="flex items-start gap-2">
                 <XMarkIcon className="h-5 w-5 flex-shrink-0 mt-0.5" />
@@ -2557,46 +2785,46 @@ print(response.json())`,
         </div>
 
         {/* Tabs for Request Configuration - Postman Style */}
-        <div className="border-b border-gray-200 bg-white">
-          <div className="flex px-6">
+        <div className="border-b border-[#e5e8ee] bg-white">
+          <div className="flex px-4">
             <button
               onClick={() => setActiveTab('params')}
-              className={`px-4 py-3 text-sm font-medium transition-colors relative ${
+              className={`px-4 py-2.5 text-[13px] font-medium transition-colors relative ${
                 activeTab === 'params'
-                  ? 'text-gray-900 border-b-2 border-orange-500'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'border-b-2 border-[#6366f1] text-[#111827]'
+                  : 'text-[#687182] hover:text-[#111827]'
               }`}
             >
               Parameters
             </button>
             <button
               onClick={() => setActiveTab('authorization')}
-              className={`px-4 py-3 text-sm font-medium transition-colors relative ${
+              className={`px-4 py-2.5 text-[13px] font-medium transition-colors relative ${
                 activeTab === 'authorization'
-                  ? 'text-gray-900 border-b-2 border-orange-500'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'border-b-2 border-[#6366f1] text-[#111827]'
+                  : 'text-[#687182] hover:text-[#111827]'
               }`}
             >
               Authorization
             </button>
             <button
               onClick={() => setActiveTab('headers')}
-              className={`px-4 py-3 text-sm font-medium transition-colors relative ${
+              className={`px-4 py-2.5 text-[13px] font-medium transition-colors relative ${
                 activeTab === 'headers'
-                  ? 'text-gray-900 border-b-2 border-orange-500'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'border-b-2 border-[#6366f1] text-[#111827]'
+                  : 'text-[#687182] hover:text-[#111827]'
               }`}
             >
               Headers
             </button>
             <button
               onClick={() => methodSupportsBody(method) && setActiveTab('body')}
-              className={`px-4 py-3 text-sm font-medium transition-colors relative ${
+              className={`px-4 py-2.5 text-[13px] font-medium transition-colors relative ${
                 activeTab === 'body' && methodSupportsBody(method)
-                  ? 'text-gray-900 border-b-2 border-orange-500'
+                  ? 'border-b-2 border-[#6366f1] text-[#111827]'
                   : !methodSupportsBody(method)
                   ? 'text-gray-400 cursor-not-allowed'
-                  : 'text-gray-600 hover:text-gray-900'
+                  : 'text-[#687182] hover:text-[#111827]'
               }`}
               disabled={!methodSupportsBody(method)}
               title={!methodSupportsBody(method) ? `${method} requests cannot have a request body` : 'Request body content'}
@@ -2610,16 +2838,13 @@ print(response.json())`,
         </div>
 
         {/* Tab Content */}
-        <div className="p-6 bg-white min-h-[300px]">
+        <div className="bg-white p-4">
           {/* Params Tab */}
           {activeTab === 'params' && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-600">Query parameters are appended to the URL</p>
-              </div>
-              <div className="text-center py-12 text-gray-500">
-                <p className="text-sm">Query parameters can be added directly to the URL above</p>
-                <p className="text-xs mt-2">Example: ?key=value&foo=bar</p>
+              <div className="rounded border border-dashed border-[#d0d7de] bg-[#fbfcfd] px-4 py-4 text-center text-[#687182]">
+                <p className="text-[13px]">Add query parameters in the URL.</p>
+                <p className="mt-1 font-mono text-[11px]">?key=value&foo=bar</p>
               </div>
             </div>
           )}
@@ -2952,8 +3177,9 @@ print(response.json())`,
 
       {/* Environment Variables Section */}
       {showVariables && (
-        <div className="bg-white border border-gray-200 rounded max-w-[1600px] mx-auto shadow-sm mb-4">
-          <div className="p-4 border-b border-gray-200 bg-gray-50">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30 px-4">
+        <div className="w-full max-w-3xl rounded-lg border border-gray-200 bg-white shadow-2xl">
+          <div className="p-4 border-b border-gray-200 bg-white rounded-t-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <CodeBracketIcon className="h-5 w-5 text-gray-600" />
@@ -2982,7 +3208,7 @@ print(response.json())`,
               </div>
             </div>
           </div>
-          <div className="p-4">
+          <div className="max-h-[60vh] overflow-y-auto p-4">
             <div className="space-y-2">
               {environments.find(env => env.name === activeEnvironment)?.variables.map((variable, index) => (
                 <div key={index} className="flex gap-2 items-center">
@@ -3045,33 +3271,32 @@ print(response.json())`,
             </div>
           </div>
         </div>
+        </div>
       )}
 
       {/* Response Section */}
-      <div className="bg-white border border-gray-200 rounded max-w-[1600px] mx-auto shadow-sm">
+      <div className="w-full overflow-hidden rounded-md border border-[#d9dde3] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
         {/* Response Header */}
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div className="border-b border-[#e5e8ee] bg-[#fbfcfd] px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h2 className="text-base font-semibold text-gray-900">Response</h2>
+            <div className="flex flex-wrap items-center gap-3">
+              <h2 className="text-[13px] font-semibold text-[#111827]">Response</h2>
               {responseMetrics && (
-                <div className="flex items-center gap-3 text-sm">
-                  <span className={`font-medium ${
+                <div className="flex flex-wrap items-center gap-2 text-[12px]">
+                  <span className={`rounded px-2 py-1 font-mono font-semibold ring-1 ${
                     responseMetrics.status >= 200 && responseMetrics.status < 300
-                      ? 'text-emerald-800'
-                      : responseMetrics.status >= 400 && responseMetrics.status < 500
-                      ? 'text-orange-600'
-                      : 'text-red-600'
+                      ? 'bg-emerald-50 text-emerald-700 ring-emerald-200'
+                    : responseMetrics.status >= 400 && responseMetrics.status < 500
+                      ? 'bg-amber-50 text-amber-700 ring-amber-200'
+                      : 'bg-rose-50 text-rose-700 ring-rose-200'
                   }`}>
                     {responseMetrics.status} • {getStatusText(responseMetrics.status)}
                   </span>
-                  <span className="text-gray-400">•</span>
-                  <div className="flex items-center gap-1.5 text-gray-600">
+                  <div className="flex items-center gap-1.5 rounded bg-white px-2 py-1 text-[#687182] ring-1 ring-[#e5e8ee]">
                     <ClockIcon className="h-4 w-4" />
                     <span>{responseMetrics.time}ms</span>
                   </div>
-                  <span className="text-gray-400">•</span>
-                  <div className="flex items-center gap-1.5 text-gray-600">
+                  <div className="flex items-center gap-1.5 rounded bg-white px-2 py-1 text-[#687182] ring-1 ring-[#e5e8ee]">
                     <DocumentTextIcon className="h-4 w-4" />
                     <span>{(responseMetrics.size / 1024).toFixed(2)} KB</span>
                   </div>
@@ -3093,14 +3318,14 @@ print(response.json())`,
         {/* Response Tabs */}
         {response && (
           <>
-            <div className="border-b border-gray-200 bg-white">
-              <div className="flex px-6">
+            <div className="border-b border-[#e5e8ee] bg-white">
+              <div className="flex px-4">
                 <button
                   onClick={() => setShowResponseBody(true)}
-                  className={`px-4 py-3 text-sm font-medium transition-colors ${
+                  className={`px-4 py-2.5 text-[13px] font-medium transition-colors ${
                     showResponseBody
-                      ? 'text-orange-600 border-b-2 border-orange-500'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'border-b-2 border-[#6366f1] text-[#111827]'
+                      : 'text-[#687182] hover:text-[#111827]'
                   }`}
                 >
                   Body
@@ -3110,10 +3335,10 @@ print(response.json())`,
                     setShowResponseBody(false);
                     setShowResponseHeaders(true);
                   }}
-                  className={`px-4 py-3 text-sm font-medium transition-colors ${
+                  className={`px-4 py-2.5 text-[13px] font-medium transition-colors ${
                     showResponseHeaders && !showResponseBody
-                      ? 'text-orange-600 border-b-2 border-orange-500'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'border-b-2 border-[#6366f1] text-[#111827]'
+                      : 'text-[#687182] hover:text-[#111827]'
                   }`}
                 >
                   Headers
@@ -3122,11 +3347,11 @@ print(response.json())`,
             </div>
 
             {/* Response Content */}
-            <div className="p-6 bg-white min-h-[300px]">
+            <div className="min-h-[240px] bg-white p-4">
               {showResponseBody && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm text-gray-600">Response body</p>
+                    <p className="text-[13px] font-medium text-[#687182]">Response body</p>
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => setResponseFormat(responseFormat === 'pretty' ? 'raw' : 'pretty')}
@@ -3143,33 +3368,30 @@ print(response.json())`,
                     </div>
                   </div>
                   
-                  {/* Clickable JSON View */}
-                  <div className="border border-gray-200 rounded-md p-4 bg-gray-50 overflow-auto max-h-[450px]">
-                    <div className="text-xs mb-3 text-gray-500 flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-700 px-2 py-1 rounded">
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                        Click token fields to setup bearer auth
-                      </span>
-                    </div>
-                    <div className="font-mono text-sm">
-                      {response && renderClickableJSON(response.data)}
-                    </div>
+                  <div className="max-h-[520px] overflow-auto rounded border border-[#d9dde3] bg-[#fbfcfd]">
+                    {response && responseFormat === 'pretty' && typeof response.data === 'object' && response.data !== null ? (
+                      <div className="p-3 font-mono text-[12px] leading-5 text-[#24292f]">
+                        {renderClickableJSON(response.data)}
+                      </div>
+                    ) : (
+                      <pre className="m-0 whitespace-pre-wrap break-words bg-transparent p-3 font-mono text-[12px] leading-5 text-[#24292f]">
+                        {response ? formatResponseBody(response.data) : ''}
+                      </pre>
+                    )}
                   </div>
                 </div>
               )}
 
               {showResponseHeaders && !showResponseBody && response && (
                 <div className="space-y-3">
-                  <p className="text-sm text-gray-600">Response headers</p>
+                  <p className="text-[13px] font-medium text-[#687182]">Response headers</p>
                   <div className="border border-gray-200 rounded-md overflow-hidden">
                     <div className="grid grid-cols-2 gap-2 px-4 py-2 bg-gray-50 border-b border-gray-200 text-xs font-medium text-gray-600">
                       <div>KEY</div>
                       <div>VALUE</div>
                     </div>
                     {Object.entries(response.headers as Record<string, string>).map(([key, value]) => (
-                      <div key={key} className="grid grid-cols-2 gap-2 px-4 py-2 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 text-sm">
+                      <div key={key} className="grid grid-cols-2 gap-2 px-4 py-2 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 text-[13px]">
                         <div className="font-medium text-gray-700">{key}</div>
                         <div className="text-gray-600 break-all">{value}</div>
                       </div>
@@ -3183,10 +3405,11 @@ print(response.json())`,
 
         {/* No Response State */}
         {!response && !loading && (
-          <div className="p-12 text-center text-gray-400">
-         
-            <p className="text-base mb-1">No response yet</p>
-            <p className="text-sm">Hit "Send" to see the response here</p>
+          <div className="flex min-h-[220px] items-center justify-center p-8 text-center text-[#8a94a6]">
+            <div className="rounded-md border border-dashed border-[#d0d7de] bg-[#fbfcfd] px-8 py-6">
+              <p className="mb-1 text-[13px] font-semibold text-[#687182]">No response yet</p>
+              <p className="text-[12px]">Send a request to inspect status, headers, and body.</p>
+            </div>
           </div>
         )}
       </div>

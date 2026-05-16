@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { answerPages, getAnswerPage } from '@/lib/answer-pages'
 import { buildMetadata } from '@/lib/seo'
+import { answerPages, getAnswerPage } from '../data'
 
 export function generateStaticParams() {
   return answerPages.map((page) => ({ slug: page.slug }))
@@ -45,6 +45,20 @@ export default function AnswerPage({ params }: { params: { slug: string } }) {
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Answers', item: 'https://debugtools.org/answers/' },
           { '@type': 'ListItem', position: 2, name: page.title, item: `https://debugtools.org/answers/${page.slug}/` },
+        ],
+      },
+      {
+        '@type': 'FAQPage',
+        '@id': `https://debugtools.org/answers/${page.slug}/#faq`,
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: page.title,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: page.shortAnswer,
+            },
+          },
         ],
       },
     ],

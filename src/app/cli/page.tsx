@@ -40,7 +40,7 @@ export default function CliPage() {
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <a
-                href="https://github.com/jasimvk/mydebugtools/blob/main/CLI_ROADMAP.md"
+                href="https://github.com/jasimvkarim/mydebugtools/blob/main/CLI_ROADMAP.md"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-md bg-[#24292f] px-3 py-2 text-sm font-semibold text-white hover:bg-[#32383f] hover:text-white"
@@ -48,7 +48,7 @@ export default function CliPage() {
                 Read roadmap
               </a>
               <a
-                href="https://github.com/jasimvk/mydebugtools/issues/new?title=Add%20debugtools%20CLI"
+                href="https://github.com/jasimvkarim/mydebugtools/issues/new?title=Add%20debugtools%20CLI"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f]"

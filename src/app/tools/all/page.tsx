@@ -1,185 +1,147 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  AdjustmentsHorizontalIcon,
-  ArrowsRightLeftIcon,
-  BeakerIcon,
-  BoltIcon,
-  BuildingLibraryIcon,
-  ClockIcon,
-  CommandLineIcon,
-  CubeTransparentIcon,
-  DocumentCheckIcon,
-  DocumentTextIcon,
-  GlobeAltIcon,
-  KeyIcon,
-  PaintBrushIcon,
-  ShieldCheckIcon,
-  SparklesIcon,
-} from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import { CurlyBracesIcon } from 'lucide-react';
+import {
+  getFeaturedTools,
+  getToolsByPillar,
+  toolPillars,
+} from '../lib/tool-registry';
 
-type ToolMaturity = 'Stable' | 'Beta' | 'Experimental';
-type ToolPrivacy = 'Local' | 'Network' | 'Cloud optional';
+function ToolCard({
+  tool,
+  compact = false,
+}: {
+  tool: ReturnType<typeof getFeaturedTools>[number];
+  compact?: boolean;
+}) {
+  const Icon = tool.icon;
 
-type ToolModule = {
-  name: string;
-  description: string;
-  path: string;
-  icon: React.ComponentType<{ className?: string }>;
-  category: string;
-  maturity: ToolMaturity;
-  privacy: ToolPrivacy;
-};
-
-const allTools: ToolModule[] = [
-  { name: 'API Tester', description: 'REST client with collections, auth, environments, and imports.', path: '/tools/api', icon: BeakerIcon, category: 'Network', maturity: 'Beta', privacy: 'Network' },
-  { name: 'JSON Tools', description: 'Format, validate, repair, and inspect JSON payloads.', path: '/tools/json', icon: CurlyBracesIcon, category: 'Data', maturity: 'Stable', privacy: 'Local' },
-  { name: 'JWT Decoder', description: 'Decode and inspect JSON Web Token claims.', path: '/tools/jwt', icon: KeyIcon, category: 'Security', maturity: 'Stable', privacy: 'Local' },
-  { name: 'Hash Generator', description: 'Generate SHA hashes locally in the browser.', path: '/tools/hash', icon: ShieldCheckIcon, category: 'Security', maturity: 'Stable', privacy: 'Local' },
-  { name: 'HTTP Status', description: 'Reference HTTP codes and response meanings.', path: '/tools/http-status', icon: GlobeAltIcon, category: 'Network', maturity: 'Stable', privacy: 'Local' },
-  { name: 'Code Diff', description: 'Compare snippets during review and debugging.', path: '/tools/code-diff', icon: ArrowsRightLeftIcon, category: 'Code', maturity: 'Stable', privacy: 'Local' },
-  { name: 'Base64', description: 'Encode and decode Base64 strings and files.', path: '/tools/base64', icon: DocumentCheckIcon, category: 'Data', maturity: 'Stable', privacy: 'Local' },
-  { name: 'Regex Tester', description: 'Test regular expressions with live matches.', path: '/tools/regex', icon: CommandLineIcon, category: 'Code', maturity: 'Stable', privacy: 'Local' },
-  { name: 'Color Picker', description: 'Pick, convert, and inspect color values.', path: '/tools/color', icon: PaintBrushIcon, category: 'Design', maturity: 'Stable', privacy: 'Local' },
-  { name: 'CSS Tools', description: 'Minify, beautify, and validate CSS.', path: '/tools/css', icon: AdjustmentsHorizontalIcon, category: 'Code', maturity: 'Stable', privacy: 'Local' },
-  { name: 'HTML Tools', description: 'Edit, format, preview, and export HTML.', path: '/tools/html', icon: DocumentTextIcon, category: 'Code', maturity: 'Stable', privacy: 'Local' },
-  { name: 'Markdown Preview', description: 'Write and preview Markdown content.', path: '/tools/markdown', icon: DocumentTextIcon, category: 'Docs', maturity: 'Stable', privacy: 'Local' },
-  { name: 'Icon Finder', description: 'Search icon libraries for UI assets.', path: '/tools/icons', icon: SparklesIcon, category: 'Design', maturity: 'Stable', privacy: 'Local' },
-  { name: 'Crash Beautifier', description: 'Clean up and inspect stack traces.', path: '/tools/crash-beautifier', icon: BoltIcon, category: 'Debugging', maturity: 'Stable', privacy: 'Local' },
-  { name: 'Build Diff', description: 'Compare build outputs and artifact changes.', path: '/tools/build-diff', icon: CubeTransparentIcon, category: 'Builds', maturity: 'Stable', privacy: 'Local' },
-  { name: 'Bundle Analyzer', description: 'Inspect bundle size and composition.', path: '/tools/bundle-analyzer', icon: BuildingLibraryIcon, category: 'Builds', maturity: 'Experimental', privacy: 'Local' },
-  { name: 'Database Query', description: 'Run SQLite queries in a focused workspace.', path: '/tools/database', icon: BuildingLibraryIcon, category: 'Data', maturity: 'Beta', privacy: 'Local' },
-  { name: 'Startup Profiling', description: 'Visualize React Native startup timelines.', path: '/tools/startup-profiling', icon: BoltIcon, category: 'Performance', maturity: 'Experimental', privacy: 'Local' },
-  { name: 'UUID Generator', description: 'Generate UUID v4 values in bulk.', path: '/tools/uuid', icon: CommandLineIcon, category: 'Utilities', maturity: 'Stable', privacy: 'Local' },
-  { name: 'URL Encoder', description: 'Encode, decode, and inspect URLs and query strings.', path: '/tools/url', icon: GlobeAltIcon, category: 'Utilities', maturity: 'Stable', privacy: 'Local' },
-  { name: 'Timestamp Converter', description: 'Convert Unix, ISO, UTC, and local dates.', path: '/tools/timestamp', icon: ClockIcon, category: 'Utilities', maturity: 'Stable', privacy: 'Local' },
-];
-
-const categories = Array.from(new Set(allTools.map((tool) => tool.category)));
-
-const incorporatableTools = [
-  { name: 'OpenAPI Viewer', category: 'API', description: 'Preview Swagger/OpenAPI specs, endpoints, schemas, and examples.' },
-  { name: 'GraphQL Explorer', category: 'API', description: 'Run GraphQL queries with variables, headers, and schema introspection.' },
-  { name: 'Webhook Inspector', category: 'Network', description: 'Capture, replay, and debug webhook payloads from external services.' },
-  { name: 'cURL Converter', category: 'API', description: 'Convert cURL commands into fetch, Python, Go, and Postman-style requests.' },
-  { name: 'HAR Viewer', category: 'Network', description: 'Inspect browser network exports with request waterfalls and timing data.' },
-  { name: 'DNS Lookup', category: 'Network', description: 'Resolve A, AAAA, CNAME, MX, TXT, and NS records from a simple workbench.' },
-  { name: 'SSL Certificate Inspector', category: 'Security', description: 'Check certificate chain, expiry, issuer, SANs, and TLS metadata.' },
-  { name: 'YAML/TOML Tools', category: 'Data', description: 'Format, validate, and convert YAML, TOML, and JSON configuration files.' },
-  { name: 'SQL Formatter', category: 'Data', description: 'Format SQL queries and highlight common syntax mistakes.' },
-  { name: 'Cron Parser', category: 'Ops', description: 'Explain schedules, preview next run times, and validate cron expressions.' },
-  { name: 'Dockerfile Linter', category: 'DevOps', description: 'Review Dockerfiles for ordering, caching, security, and image size issues.' },
-  { name: 'Kubernetes YAML Validator', category: 'DevOps', description: 'Validate manifests and surface common deployment configuration problems.' },
-  { name: 'Accessibility Checker', category: 'Frontend', description: 'Inspect contrast, labels, landmark structure, and common WCAG issues.' },
-  { name: 'QR Code Studio', category: 'Utilities', description: 'Generate QR codes for URLs, Wi-Fi, contact cards, and payload testing.' },
-];
+  return (
+    <Link
+      href={tool.path}
+      className="group rounded-md border border-[#d0d7de] bg-white p-4 text-[#24292f] hover:border-[#0969da] hover:bg-[#f6f8fa] hover:text-[#24292f]"
+    >
+      <div className="flex items-start gap-3">
+        <div className="rounded-md border border-[#d0d7de] bg-[#f6f8fa] p-2">
+          <Icon className="h-5 w-5 text-[#57606a]" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <h3 className="font-semibold text-[#0969da]">{tool.name}</h3>
+            {!compact && (
+              <div className="flex flex-wrap justify-end gap-1.5">
+                {[tool.maturity, tool.privacy].map((badge) => (
+                  <span key={badge} className="rounded-full border border-[#d0d7de] bg-[#f6f8fa] px-2 py-0.5 text-xs font-semibold text-[#57606a]">
+                    {badge}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+          <p className="mt-2 font-mono text-xs text-[#57606a]">{tool.path.replace(/^\//, '')}</p>
+          <p className="mt-3 text-sm leading-6 text-[#57606a]">{tool.description}</p>
+          <div className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#0969da]">
+            Open tool
+            <ArrowRightIcon className="h-4 w-4" />
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
 
 export default function AllToolsPage() {
+  const featuredTools = getFeaturedTools();
+
   return (
     <div className="mx-auto max-w-[1600px]">
       <section className="rounded-md border border-[#d0d7de] bg-white">
-        <div className="border-b border-[#d0d7de] px-5 py-4">
-          <p className="font-mono text-xs text-[#57606a]">debugtools / modules</p>
-          <h1 className="mt-2 text-3xl font-semibold text-[#24292f]">Module registry</h1>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-[#57606a]">
-            Each module is a focused debugging workflow with an explicit maturity level and privacy model. Open a tool, inspect its behavior, or propose the next module through GitHub.
-          </p>
-        </div>
-
-        <div className="grid gap-0 lg:grid-cols-[240px_1fr]">
-          <aside className="border-b border-[#d0d7de] bg-[#f6f8fa] p-5 lg:border-b-0 lg:border-r">
-            <h2 className="text-sm font-semibold text-[#24292f]">Categories</h2>
-            <div className="mt-3 flex flex-wrap gap-2 lg:block lg:space-y-2">
-              {categories.map((category) => (
-                <a
-                  key={category}
-                  href={`#category-${category.toLowerCase()}`}
-                  className="inline-flex rounded-md border border-[#d0d7de] bg-white px-3 py-1.5 text-xs font-semibold text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#0969da] lg:flex"
-                >
-                  {category}
-                </a>
-              ))}
+        <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="border-b border-[#d0d7de] px-5 py-5 lg:border-b-0 lg:border-r">
+            <p className="font-mono text-xs text-[#57606a]">debugtools / workflows</p>
+            <h1 className="mt-2 text-3xl font-semibold text-[#24292f]">Choose a debugging workflow</h1>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-[#57606a]">
+              debugtools is organized around the jobs developers repeat every day: inspect requests, transform data, compare code, parse crashes, and verify runtime behavior locally.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <Link href="/tools/api" className="rounded-md bg-[#1f883d] px-3 py-2 text-sm font-semibold text-white hover:bg-[#1a7f37] hover:text-white">
+                Open API Tester
+              </Link>
+              <a
+                href="#all-workflows"
+                className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f]"
+              >
+                Browse workflows
+              </a>
             </div>
-          </aside>
+          </div>
 
-          <div className="p-5">
-            <div className="sr-only">
-              {categories.map((category) => (
-                <span key={category} id={`category-${category.toLowerCase()}`}>
-                  {category}
-                </span>
-              ))}
-            </div>
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {allTools.map((tool) => {
+          <aside className="bg-[#f6f8fa] p-5">
+            <p className="font-mono text-xs text-[#57606a]">featured</p>
+            <div className="mt-3 grid gap-2">
+              {featuredTools.map((tool) => {
                 const Icon = tool.icon;
                 return (
                   <Link
                     key={tool.path}
                     href={tool.path}
-                    className="group rounded-md border border-[#d0d7de] bg-white p-4 text-[#24292f] hover:border-[#0969da] hover:bg-[#f6f8fa] hover:text-[#24292f]"
+                    className="flex items-start gap-3 rounded-md border border-[#d0d7de] bg-white p-3 hover:border-[#0969da]"
                   >
-                    <div className="flex items-start gap-3">
-                      <div className="rounded-md border border-[#d0d7de] bg-[#f6f8fa] p-2">
-                        <Icon className="h-5 w-5 text-[#57606a]" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-start justify-between gap-2">
-                          <h3 className="font-semibold text-[#0969da]">{tool.name}</h3>
-                          <div className="flex flex-wrap justify-end gap-1.5">
-                            {[tool.category, tool.maturity, tool.privacy].map((badge) => (
-                              <span key={badge} className="rounded-full border border-[#d0d7de] bg-[#f6f8fa] px-2 py-0.5 text-xs font-semibold text-[#57606a]">
-                                {badge}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                        <p className="mt-3 font-mono text-xs text-[#57606a]">{tool.path.replace(/^\//, '')}</p>
-                        <p className="mt-3 text-sm leading-6 text-[#57606a]">{tool.description}</p>
-                        <div className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#0969da]">
-                          Open module
-                          <ArrowRightIcon className="h-4 w-4" />
-                        </div>
-                      </div>
-                    </div>
+                    <Icon className="mt-0.5 h-4 w-4 text-[#57606a]" />
+                    <span>
+                      <span className="block text-sm font-semibold text-[#0969da]">{tool.name}</span>
+                      <span className="mt-1 block text-xs leading-5 text-[#57606a]">{tool.pillar}</span>
+                    </span>
                   </Link>
                 );
               })}
             </div>
-          </div>
+          </aside>
         </div>
       </section>
 
-      <section className="mt-5 rounded-md border border-[#d0d7de] bg-white">
-        <div className="border-b border-[#d0d7de] px-5 py-4">
-          <p className="font-mono text-xs text-[#57606a]">proposed / modules</p>
-          <h2 className="mt-2 text-2xl font-semibold text-[#24292f]">Proposed modules</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-[#57606a]">
-            This backlog is shaped like OSS issues: each item is small enough to scope, discuss, and build as an independent module.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 gap-3 p-5 md:grid-cols-2 xl:grid-cols-4">
-          {incorporatableTools.map((tool) => (
-            <a
-              key={tool.name}
-              href={`https://github.com/jasimvk/mydebugtools/issues/new?title=${encodeURIComponent(`Add ${tool.name}`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-md border border-[#d0d7de] bg-[#f6f8fa] p-4 text-[#24292f] hover:border-[#0969da] hover:bg-white hover:text-[#24292f]"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <h3 className="font-semibold text-[#0969da]">{tool.name}</h3>
-                <span className="rounded-full border border-[#d0d7de] bg-white px-2 py-0.5 text-xs text-[#57606a]">
-                  {tool.category}
-                </span>
+      <section id="all-workflows" className="mt-5 grid gap-5">
+        {toolPillars.map((pillar) => {
+          const tools = getToolsByPillar(pillar.name);
+
+          return (
+            <section key={pillar.name} className="rounded-md border border-[#d0d7de] bg-white">
+              <div className="border-b border-[#d0d7de] bg-[#f6f8fa] px-5 py-4">
+                <div className="flex flex-col justify-between gap-3 md:flex-row md:items-end">
+                  <div>
+                    <p className="font-mono text-xs text-[#57606a]">{tools.length} live tools</p>
+                    <h2 className="mt-1 text-2xl font-semibold text-[#24292f]">{pillar.name}</h2>
+                    <p className="mt-2 max-w-3xl text-sm leading-6 text-[#57606a]">{pillar.description}</p>
+                  </div>
+                  <span className="w-fit rounded-full border border-[#d0d7de] bg-white px-3 py-1 text-xs font-semibold text-[#57606a]">
+                    {tools.filter((tool) => tool.privacy === 'Local').length} local-first
+                  </span>
+                </div>
               </div>
-              <p className="mt-3 text-sm leading-6 text-[#57606a]">{tool.description}</p>
-              <div className="mt-4 text-sm font-semibold text-[#0969da]">Open proposal</div>
-            </a>
-          ))}
+              <div className="grid grid-cols-1 gap-3 p-5 md:grid-cols-2 xl:grid-cols-3">
+                {tools.map((tool) => (
+                  <ToolCard key={tool.path} tool={tool} />
+                ))}
+              </div>
+            </section>
+          );
+        })}
+      </section>
+
+      <section className="mt-5 rounded-md border border-[#d0d7de] bg-white p-5">
+        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+          <div>
+            <p className="font-mono text-xs text-[#57606a]">backlog</p>
+            <h2 className="mt-2 text-xl font-semibold text-[#24292f]">Proposed modules now live on the roadmap</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-[#57606a]">
+              Future tools are grouped as product bets instead of mixed into the live catalog, so this page stays focused on workflows you can use now.
+            </p>
+          </div>
+          <Link href="/roadmap" className="inline-flex w-fit items-center gap-2 rounded-md border border-[#d0d7de] bg-[#f6f8fa] px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-white">
+            View roadmap
+            <ArrowRightIcon className="h-4 w-4" />
+          </Link>
         </div>
       </section>
     </div>

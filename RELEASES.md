@@ -2,6 +2,21 @@
 
 Release notes for debugtools are kept alongside the changelog so users and contributors can see what shipped and what is next.
 
+## 2026-05-16 - OSS Bookkeeping Polish
+
+### Highlights
+
+- Rewrote README, CONTRIBUTING, SECURITY, CHANGELOG, and project metadata pages in a concise open-source style.
+- Documented debugtools as a local-first developer workbench with API Tester as the flagship module.
+- Clarified API Tester network behavior, optional collection sync, secrets handling, and private security reporting.
+- Updated roadmap and release surfaces around shipped tools, CLI/shared logic extraction, and deeper API workflows.
+- Refreshed GitHub issue and pull request templates and added Buy Me a Coffee funding metadata.
+
+### Verification
+
+- `npx tsc --noEmit --pretty false`
+- `npm run build`
+
 ## 2026-05-11 - OSS Project Refresh
 
 ### Highlights

@@ -10,9 +10,11 @@ describe('Navigation', () => {
   it('renders navigation links', () => {
     render(<Navigation />);
 
-    ['Tools', 'API Tester', 'CLI', 'Docs', 'Roadmap', 'Releases'].forEach((name) => {
+    ['Tools', 'API Tester', 'AI Debug', 'Docs', 'Roadmap'].forEach((name) => {
       expect(screen.getByRole('link', { name: new RegExp(`^${name}$`, 'i') })).toBeInTheDocument();
     });
+    expect(screen.queryByRole('link', { name: /^CLI$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /^Releases$/i })).not.toBeInTheDocument();
   });
 
   it('marks only the current page for assistive technology', () => {

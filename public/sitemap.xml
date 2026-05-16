@@ -145,6 +145,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://debugtools.org/tools/ai/</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://debugtools.org/faq/</loc>
     <lastmod>2026-05-16</lastmod>
     <changefreq>monthly</changefreq>
@@ -212,6 +218,30 @@
   </url>
   <url>
     <loc>https://debugtools.org/answers/compare-two-code-snippets/</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://debugtools.org/answers/generate-hash-for-text/</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://debugtools.org/answers/decode-url-query-string/</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://debugtools.org/answers/what-http-status-code-means/</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://debugtools.org/answers/use-ai-debug-assistant-safely/</loc>
     <lastmod>2026-05-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

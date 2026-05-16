@@ -4,16 +4,27 @@ import Navigation from '../components/Navigation';
 
 const releases = [
   {
+    version: '2026-05-16',
+    title: 'OSS Bookkeeping Polish',
+    status: 'latest',
+    summary: 'Concise project metadata for contributors: README, security, contributing, changelog, releases, and roadmap surfaces.',
+    changes: [
+      'Documented debugtools as a local-first open-source workbench.',
+      'Added practical contribution and security guidance.',
+      'Updated roadmap copy around API Tester, shipped modules, CLI, and deeper API workflows.',
+      'Kept canonical project links for debugtools.org, jasimvkarim/mydebugtools, and Buy Me a Coffee sponsorship.',
+    ],
+  },
+  {
     version: '2026-05-11',
     title: 'OSS Project Refresh',
-    status: 'latest',
-    summary: 'Repository-style redesign, anomaly cleanup, API import fixes, and a visible module backlog.',
+    status: 'stable',
+    summary: 'Repository-style site polish, API Tester import fixes, typography/header cleanup, and a visible module backlog.',
     changes: [
-      'Reworked the public site into an open-source project surface.',
-      'Added a proposed tools backlog for incorporatable modules.',
-      'Normalized individual tool pages through the shared OSS shell.',
-      'Fixed native and nested Postman collection imports.',
-      'Restored full TypeScript validation.',
+      'Fixed native debugtools and nested Postman collection imports.',
+      'Polished typography and shared header direction for a monospace OSS shell.',
+      'Positioned debugtools around local-first browser tools.',
+      'Added release, changelog, CLI, and roadmap pages.',
     ],
   },
   {
@@ -61,11 +72,11 @@ export default function ReleasesPage() {
             <p className="font-mono text-xs text-[#57606a]">RELEASES.md</p>
             <h1 className="mt-2 text-3xl font-semibold text-[#24292f]">Releases</h1>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-[#57606a]">
-              Human-readable release notes for users, contributors, and future maintainers. Detailed change history stays in the changelog.
+              Human-readable release notes for users and contributors. Detailed implementation history stays in the changelog.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <a
-                href="https://github.com/jasimvk/mydebugtools/releases"
+                href="https://github.com/jasimvkarim/mydebugtools/releases"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-md bg-[#24292f] px-3 py-2 text-sm font-semibold text-white hover:bg-[#32383f] hover:text-white"
@@ -73,7 +84,7 @@ export default function ReleasesPage() {
                 GitHub releases
               </a>
               <a
-                href="https://github.com/jasimvk/mydebugtools/blob/main/CHANGELOG.md"
+                href="https://github.com/jasimvkarim/mydebugtools/blob/main/CHANGELOG.md"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f]"

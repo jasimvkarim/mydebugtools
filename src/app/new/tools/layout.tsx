@@ -101,7 +101,7 @@ export default function ToolsLayout({
             {/* Right side */}
             <div className="hidden md:flex items-center gap-3">
               <a
-                href="https://github.com/jasimvk/mydebugtools"
+                href="https://github.com/jasimvkarim/mydebugtools"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900"
@@ -151,7 +151,7 @@ export default function ToolsLayout({
                 );
               })}
               <a
-                href="https://github.com/jasimvk/mydebugtools"
+                href="https://github.com/jasimvkarim/mydebugtools"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded"
@@ -178,7 +178,7 @@ export default function ToolsLayout({
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <a
-                  href="https://github.com/jasimvk/mydebugtools"
+                  href="https://github.com/jasimvkarim/mydebugtools"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium rounded"

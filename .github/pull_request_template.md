@@ -1,28 +1,43 @@
-## Description
-Please include a summary of the change and which issue is fixed. Please also include relevant motivation and context. List any dependencies that are required for this change.
+## Summary
 
-Fixes # (issue)
+What changed, and which issue does this close?
 
-## Type of change
-Please delete options that are not relevant.
+Fixes #
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] This change requires a documentation update
+## Scope
 
-## How Has This Been Tested?
-Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce. Please also list any relevant details for your test configuration.
+- [ ] API Tester
+- [ ] Local-first tool
+- [ ] CLI or shared logic
+- [ ] Documentation or project metadata
+- [ ] UI polish
+- [ ] Other
 
-- [ ] Test A
-- [ ] Test B
+## Data boundary
 
-## Checklist:
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] New and existing unit tests pass locally with my changes
-- [ ] Any dependent changes have been merged and published in downstream modules 
+- [ ] Local-only browser behavior
+- [ ] User-triggered network request
+- [ ] Optional authenticated sync
+- [ ] Build-time or docs-only change
+
+## Verification
+
+List the exact commands you ran:
+
+```bash
+npx tsc --noEmit --pretty false
+npm test
+npm run build
+```
+
+## Screenshots
+
+Add before/after screenshots for visible UI changes.
+
+## Checklist
+
+- [ ] I kept the patch scoped and avoided unrelated refactors.
+- [ ] I updated tests for parser, import/export, storage, auth, or transformation changes.
+- [ ] I updated README, CHANGELOG, SECURITY, route copy, or docs when behavior changed.
+- [ ] I removed secrets, credentials, cookies, tokens, private URLs, and customer data.
+- [ ] I preserved the `debugtools` name and canonical links to `https://debugtools.org`, `jasimvkarim/mydebugtools`, and `https://buymeacoffee.com/jasimvk`.

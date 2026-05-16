@@ -33,6 +33,7 @@ export interface ImportedCollection {
   name: string;
   description: string;
   color?: string;
+  variables?: { key: string; value: string }[];
   requests: ImportedRequest[];
 }
 
@@ -65,6 +66,10 @@ function normalizeContentType(value: unknown): ContentType {
   return CONTENT_TYPES.includes(contentType as ContentType) ? contentType as ContentType : 'application/json';
 }
 
+function methodSupportsBody(method: HttpMethod) {
+  return !['GET', 'HEAD'].includes(method);
+}
+
 function normalizeHeaders(headers: unknown): Header[] {
   if (!Array.isArray(headers)) return [];
 
@@ -74,6 +79,17 @@ function normalizeHeaders(headers: unknown): Header[] {
       key: header.key.trim(),
       value: String(header.value ?? ''),
       enabled: header.enabled !== false && header.disabled !== true,
+    }));
+}
+
+function normalizeVariables(variables: unknown): { key: string; value: string }[] {
+  if (!Array.isArray(variables)) return [];
+
+  return variables
+    .filter((variable) => isObject(variable) && typeof variable.key === 'string' && variable.key.trim())
+    .map((variable) => ({
+      key: variable.key.trim(),
+      value: String(variable.value ?? variable.initial ?? ''),
     }));
 }
 
@@ -261,12 +277,223 @@ function collectPostmanRequests(items: unknown, output: ImportedRequest[]) {
   }
 }
 
+function firstDefined<T>(values: T[]): T | undefined {
+  return values.find((value) => value !== undefined && value !== null && value !== '');
+}
+
+function openApiBaseUrl(raw: Record<string, any>): string {
+  if (Array.isArray(raw.servers)) {
+    const server = raw.servers.find((item: unknown) => isObject(item) && typeof item.url === 'string' && item.url.trim());
+    if (server) return String(server.url).trim();
+  }
+
+  if (typeof raw.host === 'string' && raw.host.trim()) {
+    const scheme = Array.isArray(raw.schemes) && raw.schemes[0] ? raw.schemes[0] : 'https';
+    const basePath = typeof raw.basePath === 'string' ? raw.basePath : '';
+    return `${scheme}://${raw.host}${basePath}`;
+  }
+
+  return '';
+}
+
+function joinUrl(baseUrl: string, path: string): string {
+  const normalizedPath = path.replace(/{([^}]+)}/g, '{{$1}}');
+  if (!baseUrl) return normalizedPath;
+  return `${baseUrl.replace(/\/$/, '')}/${normalizedPath.replace(/^\//, '')}`;
+}
+
+function openApiQueryString(parameters: unknown): string {
+  if (!Array.isArray(parameters)) return '';
+
+  return parameters
+    .filter((parameter) => isObject(parameter) && parameter.in === 'query' && typeof parameter.name === 'string')
+    .map((parameter) => {
+      const value = firstDefined([parameter.example, parameter.default, `{{${parameter.name}}}`]);
+      return `${encodeURIComponent(parameter.name)}=${encodeURIComponent(String(value))}`;
+    })
+    .join('&');
+}
+
+function openApiBody(operation: Record<string, any>): { body: string; contentType: ContentType } {
+  const requestBody = operation.requestBody;
+  const content = isObject(requestBody) && isObject(requestBody.content) ? requestBody.content : null;
+  if (!content) return { body: '', contentType: 'application/json' };
+
+  const contentTypeKey = Object.keys(content).find((key) => key.includes('json'))
+    || Object.keys(content).find((key) => key.includes('xml'))
+    || Object.keys(content)[0];
+  const media = contentTypeKey && isObject(content[contentTypeKey]) ? content[contentTypeKey] : null;
+  if (!media) return { body: '', contentType: normalizeContentType(contentTypeKey) };
+
+  const namedExample = isObject(media.examples)
+    ? Object.values(media.examples).find((item) => isObject(item) && 'value' in item)
+    : undefined;
+  const example = firstDefined([
+    media.example,
+    isObject(namedExample) ? namedExample.value : undefined,
+  ]);
+
+  if (example === undefined) {
+    return { body: '', contentType: normalizeContentType(contentTypeKey) };
+  }
+
+  return {
+    body: typeof example === 'string' ? example : JSON.stringify(example, null, 2),
+    contentType: normalizeContentType(contentTypeKey),
+  };
+}
+
+function normalizeOpenApiRequest(
+  path: string,
+  method: string,
+  operation: Record<string, any>,
+  pathItem: Record<string, any>,
+  baseUrl: string,
+  index: number
+): ImportedRequest | null {
+  const normalizedMethod = normalizeMethod(method);
+  const body = openApiBody(operation);
+  const headers: Header[] = [];
+  if (body.body && methodSupportsBody(normalizedMethod)) {
+    headers.push({ key: 'Content-Type', value: body.contentType, enabled: true });
+  }
+
+  const combinedParameters = [
+    ...(Array.isArray(pathItem.parameters) ? pathItem.parameters : []),
+    ...(Array.isArray(operation.parameters) ? operation.parameters : []),
+  ];
+  const query = openApiQueryString(combinedParameters);
+  const url = `${joinUrl(baseUrl, path)}${query ? `?${query}` : ''}`;
+
+  if (!url.trim()) return null;
+
+  return {
+    name: String(operation.summary || operation.operationId || `${normalizedMethod} ${path}` || `Request ${index + 1}`),
+    method: normalizedMethod,
+    url,
+    headers,
+    body: methodSupportsBody(normalizedMethod) ? body.body : '',
+    contentType: body.contentType,
+    authConfig: { type: 'none' },
+    description: String(operation.description ?? ''),
+  };
+}
+
+function collectOpenApiRequests(raw: Record<string, any>): ImportedRequest[] {
+  const output: ImportedRequest[] = [];
+  const paths = isObject(raw.paths) ? raw.paths : {};
+  const baseUrl = openApiBaseUrl(raw);
+
+  Object.entries(paths).forEach(([path, pathItem]) => {
+    if (!isObject(pathItem)) return;
+
+    METHODS.forEach((method) => {
+      const operation = pathItem[method.toLowerCase()];
+      if (!isObject(operation)) return;
+
+      const request = normalizeOpenApiRequest(path, method, operation, pathItem, baseUrl, output.length);
+      if (request) output.push(request);
+    });
+  });
+
+  return output;
+}
+
+function insomniaBody(value: unknown): { body: string; contentType: ContentType } {
+  if (!isObject(value)) return { body: '', contentType: 'application/json' };
+
+  const mimeType = normalizeContentType(value.mimeType);
+  if (typeof value.text === 'string') return { body: value.text, contentType: mimeType };
+  if (Array.isArray(value.params)) {
+    return {
+      body: value.params
+        .filter((item) => isObject(item) && item.disabled !== true && typeof item.name === 'string')
+        .map((item) => `${encodeURIComponent(item.name)}=${encodeURIComponent(String(item.value ?? ''))}`)
+        .join('&'),
+      contentType: 'application/x-www-form-urlencoded',
+    };
+  }
+
+  return { body: '', contentType: mimeType };
+}
+
+function normalizeInsomniaRequest(resource: Record<string, any>, index: number): ImportedRequest | null {
+  const url = String(resource.url ?? '').trim();
+  if (!url) return null;
+
+  const headers = normalizeHeaders(
+    Array.isArray(resource.headers)
+      ? resource.headers.map((header) => ({
+          key: header.name ?? header.key,
+          value: header.value,
+          enabled: header.disabled !== true,
+        }))
+      : []
+  );
+  const body = insomniaBody(resource.body);
+
+  return {
+    name: String(resource.name || `Request ${index + 1}`),
+    method: normalizeMethod(resource.method),
+    url,
+    headers,
+    body: body.body,
+    contentType: contentTypeFromHeaders(headers, body.contentType),
+    authConfig: { type: 'none' },
+    description: String(resource.description ?? ''),
+  };
+}
+
+function collectInsomniaRequests(resources: unknown): ImportedRequest[] {
+  if (!Array.isArray(resources)) return [];
+
+  return resources
+    .filter((resource) => isObject(resource) && resource._type === 'request')
+    .map((resource, index) => normalizeInsomniaRequest(resource, index))
+    .filter((request): request is ImportedRequest => request !== null);
+}
+
+function collectInsomniaVariables(resources: unknown): { key: string; value: string }[] {
+  if (!Array.isArray(resources)) return [];
+
+  return resources.flatMap((resource) => {
+    if (!isObject(resource) || resource._type !== 'environment' || !isObject(resource.data)) return [];
+    return Object.entries(resource.data).map(([key, value]) => ({
+      key,
+      value: typeof value === 'string' ? value : JSON.stringify(value),
+    }));
+  });
+}
+
 export function parseImportedCollection(raw: unknown, fileName?: string): ImportedCollection {
   if (!isObject(raw)) {
     throw new Error('Collection import must be a JSON object.');
   }
 
   const fallbackName = fallbackNameFromFile(fileName);
+
+  if (typeof raw.openapi === 'string' || typeof raw.swagger === 'string') {
+    const requests = collectOpenApiRequests(raw);
+
+    return {
+      name: String(raw.info?.title || raw.info?.name || fallbackName),
+      description: String(raw.info?.description ?? ''),
+      color: typeof raw.color === 'string' ? raw.color : undefined,
+      variables: normalizeVariables(raw.variables),
+      requests,
+    };
+  }
+
+  if (Array.isArray(raw.resources) && raw.__export_format) {
+    const workspace = raw.resources.find((resource: unknown) => isObject(resource) && resource._type === 'workspace');
+    return {
+      name: String(workspace?.name || raw.name || fallbackName),
+      description: String(workspace?.description ?? raw.description ?? ''),
+      color: typeof raw.color === 'string' ? raw.color : undefined,
+      variables: collectInsomniaVariables(raw.resources),
+      requests: collectInsomniaRequests(raw.resources),
+    };
+  }
 
   if (isObject(raw.info) || Array.isArray(raw.item)) {
     const requests: ImportedRequest[] = [];
@@ -276,6 +503,7 @@ export function parseImportedCollection(raw: unknown, fileName?: string): Import
       name: String(raw.info?.name || raw.name || fallbackName),
       description: postmanDescription(raw.info?.description || raw.description),
       color: typeof raw.color === 'string' ? raw.color : undefined,
+      variables: normalizeVariables(raw.variable),
       requests,
     };
   }
@@ -291,9 +519,10 @@ export function parseImportedCollection(raw: unknown, fileName?: string): Import
       name: raw.name?.trim() || fallbackName,
       description: String(raw.description ?? ''),
       color: typeof raw.color === 'string' ? raw.color : undefined,
+      variables: normalizeVariables(raw.variables),
       requests,
     };
   }
 
-  throw new Error('Unsupported collection format. Import a debugtools or Postman collection JSON file.');
+  throw new Error('Unsupported collection format. Import a debugtools, Postman, Insomnia, or OpenAPI JSON file.');
 }
