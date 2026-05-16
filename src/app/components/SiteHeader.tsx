@@ -11,6 +11,7 @@ import {
   CommandLineIcon,
   DocumentTextIcon,
   InformationCircleIcon,
+  SparklesIcon,
   WrenchIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
@@ -31,6 +32,7 @@ const primaryNav: Array<{
 
 const toolNav: Array<{ name: string; href: string; icon: IconComponent }> = [
   { name: 'API', href: '/tools/api', icon: BeakerIcon },
+  { name: 'AI Debug', href: '/tools/ai', icon: SparklesIcon },
   { name: 'JSON', href: '/tools/json', icon: Braces },
   { name: 'JWT', href: '/tools/jwt', icon: KeyRound },
   { name: 'Hash', href: '/tools/hash', icon: Hash },
