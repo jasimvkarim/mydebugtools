@@ -35,8 +35,7 @@ import {
   AdjustmentsHorizontalIcon,
   EyeIcon,
   EyeSlashIcon,
-  FunnelIcon,
-  ArrowsUpDownIcon
+  FunnelIcon
 } from '@heroicons/react/24/outline';
 import nextDynamic from 'next/dynamic';
 
@@ -398,7 +397,6 @@ function APITesterContent() {
   const [autoSave, setAutoSave] = useState(true);
   const [showVariables, setShowVariables] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showAdvancedAuth, setShowAdvancedAuth] = useState(false);
   const [importNotice, setImportNotice] = useState<{ type: 'success' | 'error'; message: string; detail?: string } | null>(null);
   const [networkHint, setNetworkHint] = useState<{ title: string; message: string; curl: string } | null>(null);
@@ -2030,6 +2028,60 @@ print(response.json())`,
               <PlusIcon className="h-4 w-4" />
               New request
             </button>
+            <div className="flex items-center overflow-hidden rounded border border-[#d0d7de] bg-white">
+              <button
+                onClick={() => setShowSaveDialog(true)}
+                className="inline-flex items-center gap-1.5 border-r border-[#d0d7de] px-3 py-1.5 text-[13px] font-semibold text-[#2b2f38] transition-colors hover:bg-[#f6f8fa]"
+                title="Save request"
+              >
+                <DocumentDuplicateIcon className="h-4 w-4" />
+                <span className="hidden xl:inline">Save</span>
+              </button>
+              <button
+                onClick={() => setShowVariables(true)}
+                className="inline-flex items-center gap-1.5 border-r border-[#d0d7de] px-3 py-1.5 text-[13px] font-semibold text-[#2b2f38] transition-colors hover:bg-[#f6f8fa]"
+                title="Environment variables"
+              >
+                <CodeBracketIcon className="h-4 w-4" />
+                <span className="hidden xl:inline">Variables</span>
+              </button>
+              <button
+                onClick={() => {
+                  setShowCollections(true);
+                  setShowHistory(!showHistory);
+                }}
+                className={`inline-flex items-center gap-1.5 border-r border-[#d0d7de] px-3 py-1.5 text-[13px] font-semibold transition-colors ${
+                  showHistory
+                    ? 'bg-[#eaeef2] text-[#111827]'
+                    : 'text-[#2b2f38] hover:bg-[#f6f8fa]'
+                }`}
+                title={showHistory ? 'Hide history' : 'Show history'}
+              >
+                <ClockIcon className="h-4 w-4" />
+                <span className="hidden xl:inline">History</span>
+              </button>
+              <button
+                onClick={() => setShowHelp(!showHelp)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-semibold transition-colors ${
+                  showHelp
+                    ? 'bg-[#eaeef2] text-[#111827]'
+                    : 'text-[#2b2f38] hover:bg-[#f6f8fa]'
+                }`}
+                title={showHelp ? 'Hide help' : 'Show help'}
+              >
+                <QuestionMarkCircleIcon className="h-4 w-4" />
+                <span className="hidden xl:inline">Help</span>
+              </button>
+            </div>
+            {!session && (
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="inline-flex items-center gap-2 rounded border border-[#d0d7de] bg-white px-3 py-1.5 text-[13px] font-semibold text-[#2b2f38] transition-colors hover:bg-[#f6f8fa]"
+              >
+                <ArrowPathIcon className="h-4 w-4" />
+                Cloud Sync
+              </button>
+            )}
             {session && (
               <>
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded text-xs">
@@ -2044,72 +2096,6 @@ print(response.json())`,
                 </button>
               </>
             )}
-            <div className="relative">
-              <button
-                onClick={() => setShowMoreMenu(!showMoreMenu)}
-                className="inline-flex items-center gap-2 rounded border border-[#d0d7de] bg-white px-3 py-1.5 text-[13px] font-semibold text-[#2b2f38] transition-colors hover:bg-[#f6f8fa]"
-              >
-                More
-                <ArrowsUpDownIcon className="h-3.5 w-3.5" />
-              </button>
-              {showMoreMenu && (
-                <div className="absolute right-0 top-full z-30 mt-2 w-56 overflow-hidden rounded-md border border-gray-200 bg-white shadow-lg">
-                  <button
-                    onClick={() => {
-                      setShowSaveDialog(true);
-                      setShowMoreMenu(false);
-                    }}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
-                  >
-                    <DocumentDuplicateIcon className="h-4 w-4" />
-                    Save request
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowVariables(true);
-                      setShowMoreMenu(false);
-                    }}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
-                  >
-                    <CodeBracketIcon className="h-4 w-4" />
-                    Variables
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowCollections(true);
-                      setShowHistory(!showHistory);
-                      setShowMoreMenu(false);
-                    }}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
-                  >
-                    <ClockIcon className="h-4 w-4" />
-                    {showHistory ? 'Hide history' : 'Show history'}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowHelp(!showHelp);
-                      setShowMoreMenu(false);
-                    }}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-50"
-                  >
-                    <QuestionMarkCircleIcon className="h-4 w-4" />
-                    Help
-                  </button>
-                  {!session && (
-                    <button
-                      onClick={() => {
-                        setShowAuthModal(true);
-                        setShowMoreMenu(false);
-                      }}
-                      className="flex w-full items-center gap-2 border-t border-gray-100 px-3 py-2 text-left text-sm font-semibold text-gray-900 hover:bg-gray-50"
-                    >
-                      <ArrowPathIcon className="h-4 w-4" />
-                      Cloud Sync
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
           </div>
         </div>
 

@@ -7,14 +7,14 @@ import { usePathname } from 'next/navigation';
 import {
   Bars3Icon,
   BeakerIcon,
+  ChevronDownIcon,
   CommandLineIcon,
+  DocumentTextIcon,
   InformationCircleIcon,
-  MapIcon,
-  SparklesIcon,
   WrenchIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { Coffee, Github, Terminal } from 'lucide-react';
+import { Braces, Coffee, Github, Hash, KeyRound, Terminal } from 'lucide-react';
 
 type IconComponent = ComponentType<{ className?: string }>;
 
@@ -24,19 +24,26 @@ const primaryNav: Array<{
   icon: IconComponent;
   activeRoot?: string;
 }> = [
-  { name: 'Tools', href: '/tools/all', icon: WrenchIcon, activeRoot: '/tools' },
   { name: 'API Tester', href: '/tools/api', icon: BeakerIcon },
-  { name: 'AI Debug', href: '/tools/ai', icon: SparklesIcon },
+  { name: 'All Tools', href: '/tools/all', icon: WrenchIcon, activeRoot: '/tools' },
   { name: 'Docs', href: '/answers', icon: InformationCircleIcon },
-  { name: 'Roadmap', href: '/roadmap', icon: MapIcon },
 ];
 
 const toolNav: Array<{ name: string; href: string; icon: IconComponent }> = [
-  { name: 'Tools', href: '/tools/all', icon: CommandLineIcon },
-  { name: 'API Tester', href: '/tools/api', icon: BeakerIcon },
-  { name: 'AI Debug', href: '/tools/ai', icon: SparklesIcon },
-  { name: 'Docs', href: '/answers', icon: InformationCircleIcon },
-  { name: 'Roadmap', href: '/roadmap', icon: MapIcon },
+  { name: 'API', href: '/tools/api', icon: BeakerIcon },
+  { name: 'JSON', href: '/tools/json', icon: Braces },
+  { name: 'JWT', href: '/tools/jwt', icon: KeyRound },
+  { name: 'Hash', href: '/tools/hash', icon: Hash },
+  { name: 'Diff', href: '/tools/code-diff', icon: CommandLineIcon },
+  { name: 'Base64', href: '/tools/base64', icon: DocumentTextIcon },
+  { name: 'All tools', href: '/tools/all', icon: WrenchIcon },
+];
+
+const projectLinks = [
+  { name: 'Roadmap', href: '/roadmap' },
+  { name: 'Releases', href: '/releases' },
+  { name: 'Changelog', href: '/changelog' },
+  { name: 'Contribute', href: '/contributing' },
 ];
 
 interface SiteHeaderProps {
@@ -51,6 +58,7 @@ export default function SiteHeader({
   mobileLabel = 'main',
 }: SiteHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProjectOpen, setIsProjectOpen] = useState(false);
   const pathname = usePathname() || '';
   const mobileMenuId = showToolRail ? 'tools-navigation-menu' : 'primary-navigation-menu';
   const menuName = mobileLabel === 'tools' ? 'tools navigation' : 'main menu';
@@ -87,7 +95,7 @@ export default function SiteHeader({
               </span>
             </Link>
 
-            <div className="hidden items-center gap-1 rounded-lg border border-[#d0d7de] bg-[#f6f8fa] p-1 lg:flex">
+            <div className="hidden items-center gap-1 lg:flex">
               {primaryNav.map((item) => {
                 const Icon = item.icon;
                 const active = isPrimaryActive(item);
@@ -95,10 +103,10 @@ export default function SiteHeader({
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[13px] font-semibold ${
+                    className={`inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold ${
                       active
-                        ? 'bg-white text-[#24292f] shadow-sm'
-                        : 'text-[#57606a] hover:bg-white/70 hover:text-[#24292f]'
+                        ? 'bg-[#eaeef2] text-[#24292f]'
+                        : 'text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]'
                     }`}
                     aria-current={isActivePath(item.href) ? 'page' : undefined}
                   >
@@ -111,19 +119,44 @@ export default function SiteHeader({
           </div>
 
           <div className="flex items-center gap-2">
+            <div className="relative hidden lg:block">
+              <button
+                type="button"
+                onClick={() => setIsProjectOpen(!isProjectOpen)}
+                className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]"
+                aria-expanded={isProjectOpen}
+              >
+                Project
+                <ChevronDownIcon className="h-4 w-4" />
+              </button>
+              {isProjectOpen && (
+                <div className="absolute right-0 top-full z-50 mt-2 w-44 overflow-hidden rounded-md border border-[#d0d7de] bg-white py-1 shadow-lg">
+                  {projectLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setIsProjectOpen(false)}
+                      className="block px-3 py-2 text-sm font-medium text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]"
+                    >
+                      {link.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
             <a
               href="https://github.com/jasimvkarim/mydebugtools/issues/new"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-xs font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f] lg:inline-flex"
+              className="hidden rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f] xl:inline-flex"
             >
-              New issue
+              Issue
             </a>
             <a
               href="https://buymeacoffee.com/jasimvk"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden items-center gap-1.5 rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-xs font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f] xl:inline-flex"
+              className="hidden items-center gap-1.5 rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa] hover:text-[#24292f] 2xl:inline-flex"
             >
               <Coffee className="h-3.5 w-3.5" />
               Sponsor
@@ -132,7 +165,7 @@ export default function SiteHeader({
               href="https://github.com/jasimvkarim/mydebugtools"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden items-center gap-2 rounded-md bg-[#24292f] px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#32383f] hover:text-white lg:inline-flex"
+              className="hidden items-center gap-2 rounded-md bg-[#24292f] px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#32383f] hover:text-white lg:inline-flex"
             >
               <Github className="h-4 w-4" />
               GitHub
@@ -157,7 +190,10 @@ export default function SiteHeader({
 
       {showToolRail && (
         <div className="hidden border-t border-[#d0d7de] bg-white/75 lg:block">
-          <div className={`mx-auto flex ${maxWidth} items-center gap-1 overflow-x-auto px-4 py-2 sm:px-6`}>
+          <div className={`mx-auto flex ${maxWidth} items-center gap-2 overflow-x-auto px-4 py-2 sm:px-6`}>
+            <span className="shrink-0 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6e7781]">
+              Tools
+            </span>
             {toolNav.map((tool) => {
               const Icon = tool.icon;
               const active = isActivePath(tool.href);
@@ -165,7 +201,7 @@ export default function SiteHeader({
                 <Link
                   key={tool.href}
                   href={tool.href}
-                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium ${
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold ${
                     active
                       ? 'bg-[#eaeef2] text-[#24292f]'
                       : 'text-[#6e7781] hover:bg-[#f6f8fa] hover:text-[#24292f]'
@@ -203,6 +239,16 @@ export default function SiteHeader({
                 </Link>
               );
             })}
+            {projectLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {link.name}
+              </Link>
+            ))}
             <a
               href="https://github.com/jasimvkarim/mydebugtools/issues/new"
               target="_blank"

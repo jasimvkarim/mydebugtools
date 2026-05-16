@@ -10,18 +10,20 @@ describe('Navigation', () => {
   it('renders navigation links', () => {
     render(<Navigation />);
 
-    ['Tools', 'API Tester', 'AI Debug', 'Docs', 'Roadmap'].forEach((name) => {
+    ['API Tester', 'All Tools', 'Docs'].forEach((name) => {
       expect(screen.getByRole('link', { name: new RegExp(`^${name}$`, 'i') })).toBeInTheDocument();
     });
+    expect(screen.getByRole('button', { name: /^Project$/i })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /^AI Debug$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /^Roadmap$/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /^CLI$/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: /^Releases$/i })).not.toBeInTheDocument();
   });
 
   it('marks only the current page for assistive technology', () => {
     render(<Navigation />);
 
     expect(screen.getByRole('link', { name: /API Tester/i })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByRole('link', { name: /^Tools$/i })).not.toHaveAttribute('aria-current');
+    expect(screen.getByRole('link', { name: /^All Tools$/i })).not.toHaveAttribute('aria-current');
   });
 
   it('renders logo link', () => {
