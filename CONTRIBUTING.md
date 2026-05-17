@@ -1,6 +1,6 @@
-# Contributing to debugtools
+# Contributing to DEBUGTOOLS
 
-Thanks for helping improve debugtools. The best contributions are small, reproducible, and tied to a real debugging workflow.
+Thanks for helping improve DEBUGTOOLS. The best contributions are small, reproducible, and tied to a real debugging workflow.
 
 ## Start with an Issue
 
@@ -58,7 +58,7 @@ Before opening a pull request, run the smallest relevant test suite, then `npx t
 ## Pull Request Expectations
 
 - Keep the patch scoped to one tool, route, parser, workflow, or docs update.
-- Preserve the `debugtools` name and canonical links:
+- Preserve the `DEBUGTOOLS` public brand and canonical links:
   - https://debugtools.org
   - https://github.com/jasimvkarim/mydebugtools
   - https://buymeacoffee.com/jasimvk

@@ -7,8 +7,8 @@ import Providers from "./providers";
 import Script from "next/script";
 
 const SITE_URL = 'https://debugtools.org';
-const SITE_NAME = 'debugtools';
-const SITE_DESCRIPTION = 'A local-first open-source workbench for API testing, JSON formatting, JWT decoding, encoding, hashing, diffing, URL inspection, HTTP status lookup, optional OpenAI BYOK debugging, and everyday developer operations.';
+const SITE_NAME = 'DEBUGTOOLS';
+const SITE_DESCRIPTION = 'Open-source AI debugging toolkit for logs, stack traces, crashes, API failures, HAR files, build errors, and production issues.';
 const CORE_TOOLS = [
   {
     name: 'API Tester',
@@ -58,7 +58,7 @@ const CORE_TOOLS = [
 ] as const;
 
 export const viewport: Viewport = {
-  themeColor: '#FF6C37',
+  themeColor: '#24292f',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -66,12 +66,12 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'debugtools - Local-first open-source developer workbench',
+    default: 'DEBUGTOOLS - Open-source AI debugging toolkit for developers',
     template: '%s',
   },
   description: SITE_DESCRIPTION,
   metadataBase: new URL(SITE_URL),
-  keywords: "debugtools, developer tools, api tester, json formatter, jwt decoder, code diff, ai debug assistant, local-first tools, open source developer tools, debugging, formatting",
+  keywords: "DEBUGTOOLS, debugtools, open-source AI debugging toolkit, stack trace explainer, log analyzer, API tester, HAR analyzer, crash report analyzer, build error debugger, JSON formatter, JWT decoder, local-first developer tools",
   applicationName: SITE_NAME,
   authors: [{ name: 'Jasim VK', url: 'https://x.com/jasimvk' }],
   creator: 'Jasim VK',
@@ -101,14 +101,14 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: 'debugtools - Local-first open-source developer workbench',
+    title: 'DEBUGTOOLS - Open-source AI debugging toolkit for developers',
     description: SITE_DESCRIPTION,
     images: [
       {
         url: `${SITE_URL}/og-image.svg`,
         width: 1200,
         height: 630,
-        alt: `${SITE_NAME} - Local-first open-source developer workbench`,
+        alt: `${SITE_NAME} - Open-source AI debugging toolkit for developers`,
         type: 'image/svg+xml',
       },
     ],
@@ -117,7 +117,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@jasimvk',
     creator: '@jasimvk',
-    title: 'debugtools - Local-first open-source developer workbench',
+    title: 'DEBUGTOOLS - Open-source AI debugging toolkit for developers',
     description: SITE_DESCRIPTION,
     images: [`${SITE_URL}/og-image.svg`],
   },
@@ -166,8 +166,8 @@ export default function RootLayout({
       {
         '@type': 'ItemList',
         '@id': `${SITE_URL}/#core-tools`,
-        name: 'Core debugtools developer tools',
-        description: 'A concise index of debugtools utilities for API, data, encoding, hashing, diff, URL, HTTP, and optional OpenAI BYOK debugging work.',
+        name: 'Core DEBUGTOOLS developer tools',
+        description: 'A concise index of local-first utilities for API, data, encoding, hashing, diff, URL, HTTP, and optional OpenAI BYOK debugging work.',
         itemListElement: CORE_TOOLS.map((tool, index) => ({
           '@type': 'ListItem',
           position: index + 1,

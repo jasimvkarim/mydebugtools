@@ -109,6 +109,10 @@ export default function AdSlot({
     };
   }, [adManager, slotId]);
 
+  if (process.env.NODE_ENV !== 'production' || !adClient) {
+    return null;
+  }
+
   // Don't render anything on server side
   if (!isClient) {
     return <div style={{ ...style, minHeight: '90px', backgroundColor: '#f5f5f5' }} />;

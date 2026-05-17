@@ -327,7 +327,11 @@ export default function HTMLEditorPage() {
   /* ─── Tiptap Editor ────────────────────────────────────────────────── */
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({ heading: { levels: [1, 2, 3, 4, 5, 6] } }),
+      StarterKit.configure({
+        heading: { levels: [1, 2, 3, 4, 5, 6] },
+        link: false,
+        underline: false,
+      }),
       Underline,
       TextStyle,
       Color,
@@ -559,10 +563,10 @@ export default function HTMLEditorPage() {
       )}
 
       {/* ═══ TOP TOOLBAR ════════════════════════════════════════════════════ */}
-      <div className="bg-white border-b border-gray-200 px-4 py-2">
-        <div className="flex items-center justify-between gap-3">
+      <div className="bg-white border-b border-gray-200 px-3 py-2 sm:px-4">
+        <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
           {/* Left: File actions */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto scrollbar-hide">
             <button onClick={() => setShowTemplates(true)} className="toolbar-btn" title="Templates"><DocumentPlusIcon className="h-4 w-4" /><span className="hidden sm:inline">New</span></button>
             <button onClick={handleOpen} className="toolbar-btn" title="Open File"><FolderOpenIcon className="h-4 w-4" /><span className="hidden sm:inline">Open</span></button>
             <button onClick={handleSave} className="toolbar-btn" title="Save HTML (⌘S)"><ArrowDownTrayIcon className="h-4 w-4" /><span className="hidden sm:inline">Save</span></button>
@@ -573,7 +577,7 @@ export default function HTMLEditorPage() {
           </div>
 
           {/* Center: Mode switcher */}
-          <div className="flex items-center bg-gray-100 rounded-lg p-1 gap-0.5">
+          <div className="order-3 flex w-full items-center overflow-x-auto rounded-lg bg-gray-100 p-1 scrollbar-hide sm:order-none sm:w-auto sm:gap-0.5">
             {([
               { key: "preview" as const, label: "Live Preview", icon: "👁️" },
               { key: "split" as const, label: "Split", icon: "⚡" },
@@ -606,7 +610,7 @@ export default function HTMLEditorPage() {
           </div>
 
           {/* Right: View actions */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex shrink-0 items-center gap-1.5">
             <button onClick={() => setShowReference(!showReference)} className={`toolbar-btn ${showReference ? "!bg-[#FF6C37] !text-white !shadow-sm" : ""}`} title="HTML & CSS Reference">
               <InformationCircleIcon className="h-4 w-4" /><span className="hidden sm:inline">Reference</span>
             </button>
@@ -618,7 +622,7 @@ export default function HTMLEditorPage() {
       </div>
 
       {/* ═══ FORMATTING & UTILITIES TOOLBAR ═════════════════════════════════ */}
-      <div className="bg-white border-b border-gray-200 px-4 py-1.5 flex flex-col">
+      <div className="bg-white border-b border-gray-200 px-3 py-1.5 flex flex-col sm:px-4">
           <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-hide">
             {(mode === "preview" || mode === "split") && editor && (
               <>
@@ -1107,13 +1111,13 @@ export default function HTMLEditorPage() {
       </div>
 
       {/* ═══ STATUS BAR ═════════════════════════════════════════════════════ */}
-      <div className="bg-gray-50 border-t border-gray-200 px-4 py-1.5 flex items-center justify-between text-xs text-gray-500">
-        <div className="flex items-center gap-4">
+      <div className="bg-gray-50 border-t border-gray-200 px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 text-xs text-gray-500 sm:px-4">
+        <div className="flex flex-wrap items-center gap-3">
           <span>{wordCount.words} words</span>
           <span>{wordCount.chars} characters</span>
           <span>{new Blob([htmlSource]).size < 1024 ? new Blob([htmlSource]).size + " B" : (new Blob([htmlSource]).size / 1024).toFixed(1) + " KB"}</span>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3">
           <span className="capitalize">{mode} mode</span>
           <span className="text-[#FF6C37] font-medium">Tiptap Editor</span>
         </div>

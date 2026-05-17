@@ -1,11 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ClockIcon, ClipboardIcon } from '@heroicons/react/24/outline';
 import { formatTimestamp } from '@/app/tools/lib/simple-tools';
 
 export default function TimestampConverterPage() {
-  const [input, setInput] = useState(() => Math.floor(Date.now() / 1000).toString());
+  const [input, setInput] = useState('1704067200');
   const result = useMemo(() => formatTimestamp(input), [input]);
   const rows = result
     ? [
@@ -20,6 +20,10 @@ export default function TimestampConverterPage() {
   const copyValue = async (value: string) => {
     await navigator.clipboard.writeText(value);
   };
+
+  useEffect(() => {
+    setInput(Math.floor(Date.now() / 1000).toString());
+  }, []);
 
   return (
     <div className="mx-auto max-w-4xl space-y-5">

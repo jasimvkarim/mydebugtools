@@ -79,6 +79,30 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://debugtools.org/tools/error-tracker/</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://debugtools.org/tools/http-profiler/</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://debugtools.org/tools/log-trace/</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://debugtools.org/tools/stack-trace/</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://debugtools.org/tools/css/</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>

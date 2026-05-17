@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  SwatchIcon, 
-  ArrowPathIcon, 
+import {
+  SwatchIcon,
+  ArrowPathIcon,
   DocumentDuplicateIcon,
   QuestionMarkCircleIcon,
   ChevronDownIcon,
@@ -50,12 +50,12 @@ const colorUtils = {
       b: parseInt(result[3], 16)
     } : null;
   },
-  
+
   rgbToHsl: (r: number, g: number, b: number): { h: number, s: number, l: number } => {
     r /= 255;
     g /= 255;
     b /= 255;
-    
+
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
     let h = 0, s, l = (max + min) / 2;
@@ -65,13 +65,13 @@ const colorUtils = {
     } else {
       const d = max - min;
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      
+
       switch (max) {
         case r: h = (g - b) / d + (g < b ? 6 : 0); break;
         case g: h = (b - r) / d + 2; break;
         case b: h = (r - g) / d + 4; break;
       }
-      
+
       h /= 6;
     }
 
@@ -81,17 +81,17 @@ const colorUtils = {
       l: Math.round(l * 100)
     };
   },
-  
+
   rgbToCmyk: (r: number, g: number, b: number): { c: number, m: number, y: number, k: number } => {
     r = r / 255;
     g = g / 255;
     b = b / 255;
-    
+
     const k = 1 - Math.max(r, g, b);
     const c = k === 1 ? 0 : (1 - r - k) / (1 - k);
     const m = k === 1 ? 0 : (1 - g - k) / (1 - k);
     const y = k === 1 ? 0 : (1 - b - k) / (1 - k);
-    
+
     return {
       c: Math.round(c * 100),
       m: Math.round(m * 100),
@@ -99,19 +99,19 @@ const colorUtils = {
       k: Math.round(k * 100)
     };
   },
-  
+
   rgbToHsv: (r: number, g: number, b: number): { h: number, s: number, v: number } => {
     r = r / 255;
     g = g / 255;
     b = b / 255;
-    
+
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
     let h = 0, s, v = max;
-    
+
     const d = max - min;
     s = max === 0 ? 0 : d / max;
-    
+
     if (max === min) {
       h = 0; // achromatic
     } else {
@@ -137,22 +137,22 @@ const colorUtils = {
     }
     return `rgb(${r}, ${g}, ${b})`;
   },
-  
+
   formatHsl: (h: number, s: number, l: number, a?: number): string => {
     if (a !== undefined && a < 100) {
       return `hsla(${h}, ${s}%, ${l}%, ${(a / 100).toFixed(2)})`;
     }
     return `hsl(${h}, ${s}%, ${l}%)`;
   },
-  
+
   formatCmyk: (c: number, m: number, y: number, k: number): string => {
     return `cmyk(${c}%, ${m}%, ${y}%, ${k}%)`;
   },
-  
+
   formatHsv: (h: number, s: number, v: number): string => {
     return `hsv(${h}, ${s}%, ${v}%)`;
   },
-  
+
   hexToRgba: (hex: string, alpha: number): string => {
     const rgb = colorUtils.hexToRgb(hex);
     if (!rgb) return hex;
@@ -192,12 +192,12 @@ function ColorPickerContent() {
   const getColorFormats = (hexColor: string, opacity: number) => {
     const rgb = colorUtils.hexToRgb(hexColor);
     if (!rgb) return null;
-    
+
     const { r, g, b } = rgb;
     const hsl = colorUtils.rgbToHsl(r, g, b);
     const cmyk = colorUtils.rgbToCmyk(r, g, b);
     const hsv = colorUtils.rgbToHsv(r, g, b);
-    
+
     return {
       hex: hexColor,
       rgb: colorUtils.formatRgb(r, g, b, opacity),
@@ -265,12 +265,12 @@ function ColorPickerContent() {
         e.preventDefault();
         copyToClipboard(color);
       }
-      
+
       if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
         e.preventDefault();
         resetColor();
       }
-      
+
       if ((e.ctrlKey || e.metaKey) && e.key === 'h') {
         e.preventDefault();
         setShowHelp(!showHelp);
@@ -286,12 +286,12 @@ function ColorPickerContent() {
 
   return (
     <div className="container mx-auto p-4">
-      <StructuredData 
+      <StructuredData
         title="Color Picker | debugtools"
         description="Online color picker tool with RGB, HEX, HSL, CMYK, and HSV color formats."
         toolType="WebApplication"
       />
-      
+
       {/* Notification */}
       {notification && (
         <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
@@ -303,6 +303,8 @@ function ColorPickerContent() {
         </div>
       )}
 
+      <h1 className="sr-only">Color Picker</h1>
+
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -311,7 +313,7 @@ function ColorPickerContent() {
               Color Picker
             </CardTitle>
             <div className="flex gap-2">
-              <button 
+              <button
                 onClick={() => setShowHelp(!showHelp)}
                 className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
                 title="Show help"
@@ -373,14 +375,14 @@ function ColorPickerContent() {
                       style={{ backgroundColor: 'transparent' }}
                     />
                   </div>
-                  <button 
+                  <button
                     onClick={() => copyToClipboard(color)}
                     className="p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
                     title="Copy color"
                   >
                     <DocumentDuplicateIcon className="h-5 w-5" />
                   </button>
-                  <button 
+                  <button
                     onClick={resetColor}
                     className="p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
                     title="Reset color"
@@ -454,7 +456,7 @@ function ColorPickerContent() {
                       readOnly
                       className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md font-mono bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                     />
-                    <button 
+                    <button
                       onClick={() => copyToClipboard(color)}
                       className="p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
                       title="Copy color value"
@@ -581,7 +583,7 @@ function ColorPickerContent() {
                 <h3 className="text-sm font-medium mb-2">Color Preview</h3>
                 <div className="relative w-full h-32 rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden">
                   {/* Checkered background pattern for transparency */}
-                  <div 
+                  <div
                     className="absolute inset-0"
                     style={{
                       backgroundImage: `
@@ -595,9 +597,9 @@ function ColorPickerContent() {
                     }}
                   />
                   {/* Color overlay with opacity */}
-                  <div 
+                  <div
                     className="absolute inset-0"
-                    style={{ 
+                    style={{
                       backgroundColor: color,
                       opacity: opacity / 100
                     }}
@@ -632,7 +634,7 @@ function ColorPickerContent() {
             <h3 className="text-sm font-medium mb-2">Color Palettes</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {colorPalettes.map((palette) => (
-                <div 
+                <div
                   key={palette.name}
                   className="p-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 cursor-pointer transition-colors"
                   onClick={() => handlePaletteSelect(palette.name)}
@@ -665,4 +667,4 @@ export default function ColorPickerPage() {
       <ColorPickerContent />
     </SuspenseBoundary>
   );
-} 
+}

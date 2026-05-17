@@ -234,7 +234,11 @@ export default function Base64Tools() {
   };
 
   const switchMode = () => {
-    setConversionMode(prev => prev === 'encode' ? 'decode' : 'encode');
+    setConversionMode(prev => {
+      const nextMode = prev === 'encode' ? 'decode' : 'encode';
+      setFileType(nextMode === 'decode' ? 'text' : 'image');
+      return nextMode;
+    });
     clearAll();
   };
 

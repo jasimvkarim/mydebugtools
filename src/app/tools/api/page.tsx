@@ -2774,10 +2774,10 @@ print(response.json())`,
 
         {/* Tabs for Request Configuration - Postman Style */}
         <div className="border-b border-[#e5e8ee] bg-white">
-          <div className="flex px-4">
+          <div className="flex overflow-x-auto px-3 scrollbar-hide sm:px-4">
             <button
               onClick={() => setActiveTab('params')}
-              className={`px-4 py-2.5 text-[13px] font-medium transition-colors relative ${
+              className={`shrink-0 px-3 py-2.5 text-[13px] font-medium transition-colors relative sm:px-4 ${
                 activeTab === 'params'
                   ? 'border-b-2 border-[#6366f1] text-[#111827]'
                   : 'text-[#687182] hover:text-[#111827]'
@@ -2787,7 +2787,7 @@ print(response.json())`,
             </button>
             <button
               onClick={() => setActiveTab('authorization')}
-              className={`px-4 py-2.5 text-[13px] font-medium transition-colors relative ${
+              className={`shrink-0 px-3 py-2.5 text-[13px] font-medium transition-colors relative sm:px-4 ${
                 activeTab === 'authorization'
                   ? 'border-b-2 border-[#6366f1] text-[#111827]'
                   : 'text-[#687182] hover:text-[#111827]'
@@ -2797,7 +2797,7 @@ print(response.json())`,
             </button>
             <button
               onClick={() => setActiveTab('headers')}
-              className={`px-4 py-2.5 text-[13px] font-medium transition-colors relative ${
+              className={`shrink-0 px-3 py-2.5 text-[13px] font-medium transition-colors relative sm:px-4 ${
                 activeTab === 'headers'
                   ? 'border-b-2 border-[#6366f1] text-[#111827]'
                   : 'text-[#687182] hover:text-[#111827]'
@@ -2807,7 +2807,7 @@ print(response.json())`,
             </button>
             <button
               onClick={() => methodSupportsBody(method) && setActiveTab('body')}
-              className={`px-4 py-2.5 text-[13px] font-medium transition-colors relative ${
+              className={`shrink-0 px-3 py-2.5 text-[13px] font-medium transition-colors relative sm:px-4 ${
                 activeTab === 'body' && methodSupportsBody(method)
                   ? 'border-b-2 border-[#6366f1] text-[#111827]'
                   : !methodSupportsBody(method)

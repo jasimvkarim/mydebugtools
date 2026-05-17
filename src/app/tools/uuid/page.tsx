@@ -1,15 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ClipboardIcon, PlusIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { generateUuidBatch } from '@/app/tools/lib/simple-tools';
 
 export default function UuidGeneratorPage() {
   const [count, setCount] = useState(5);
-  const [uuids, setUuids] = useState<string[]>(() => generateUuidBatch(5));
+  const [uuids, setUuids] = useState<string[]>([]);
   const [copied, setCopied] = useState(false);
 
   const generate = () => setUuids(generateUuidBatch(count));
+
+  useEffect(() => {
+    setUuids(generateUuidBatch(5));
+  }, []);
 
   const copyAll = async () => {
     await navigator.clipboard.writeText(uuids.join('\n'));

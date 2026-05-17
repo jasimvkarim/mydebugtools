@@ -39,7 +39,7 @@ export default function UrlToolPage() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl rounded-md border border-[#d0d7de] bg-white">
+    <div className="mx-auto max-w-6xl overflow-hidden rounded-md border border-[#d0d7de] bg-white">
       <div className="border-b border-[#d0d7de] px-5 py-4">
         <p className="font-mono text-xs text-[#57606a]">tools / url</p>
         <h1 className="mt-2 text-3xl font-semibold text-[#24292f]">URL Encoder and Decoder</h1>
@@ -48,18 +48,18 @@ export default function UrlToolPage() {
         </p>
       </div>
 
-      <div className="grid gap-5 p-5 lg:grid-cols-2">
-        <section>
+      <div className="grid min-w-0 gap-5 p-5 lg:grid-cols-2">
+        <section className="min-w-0">
           <label htmlFor="url-input" className="text-sm font-semibold text-[#24292f]">Input</label>
           <textarea
             id="url-input"
             value={input}
             onChange={(event) => setInput(event.target.value)}
-            className="mt-2 min-h-[260px] w-full rounded-md border border-[#d0d7de] bg-white p-4 font-mono text-sm"
+            className="mt-2 min-h-[260px] w-full max-w-full rounded-md border border-[#d0d7de] bg-white p-4 font-mono text-sm"
           />
         </section>
 
-        <section className="space-y-3">
+        <section className="min-w-0 space-y-3">
           {[
             ['Encoded', encoded],
             ['Decoded', decoded],
@@ -87,7 +87,7 @@ export default function UrlToolPage() {
                 {Object.entries(parsed).map(([key, value]) => (
                   <div key={key} className="grid gap-1 sm:grid-cols-[110px_1fr]">
                     <dt className="font-semibold text-[#57606a]">{key}</dt>
-                    <dd className="font-mono text-xs text-[#24292f]">{Array.isArray(value) ? JSON.stringify(value) : value}</dd>
+                    <dd className="min-w-0 break-all font-mono text-xs text-[#24292f]">{Array.isArray(value) ? JSON.stringify(value) : value}</dd>
                   </div>
                 ))}
               </dl>
@@ -100,4 +100,3 @@ export default function UrlToolPage() {
     </div>
   );
 }
-

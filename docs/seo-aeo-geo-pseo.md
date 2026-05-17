@@ -1,10 +1,10 @@
 # SEO, AEO, GEO, and PSEO Notes
 
-debugtools uses `https://debugtools.org` as the canonical domain and keeps the public brand lowercase as `debugtools`.
+DEBUGTOOLS uses `https://debugtools.org` as the canonical domain and keeps the public brand uppercase as `DEBUGTOOLS`.
 
 ## Search Metadata
 
-- Global metadata describes debugtools as a local-first open-source developer workbench.
+- Global metadata describes DEBUGTOOLS as an open-source AI debugging toolkit for developers.
 - Tool pages use distinct titles, descriptions, canonical URLs, Open Graph data, and Twitter card data through the existing tool metadata helper.
 - Core tools are described consistently: API Tester, JSON Formatter, JWT Decoder, Base64 Encoder and Decoder, Hash Generator, Code Diff Tool, URL Encoder and Decoder, HTTP Status Codes, and AI Debug Assistant.
 

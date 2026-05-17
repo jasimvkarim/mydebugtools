@@ -12,6 +12,7 @@ describe('tool registry IA', () => {
       'JSON Tools',
       'Crash Beautifier',
       'AI Debug Assistant',
+      'Stack Trace Explainer',
       'Code Diff',
     ]);
   });

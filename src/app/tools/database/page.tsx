@@ -162,9 +162,9 @@ const DatabaseQueryTool = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto py-10 px-4 flex gap-6">
+    <div className="mx-auto flex max-w-6xl min-w-0 flex-col gap-4 py-4 lg:flex-row">
       {/* Query History Sidebar */}
-      <aside className="w-64 bg-gray-100 rounded-lg p-4 shadow-md h-fit">
+      <aside className="w-full shrink-0 rounded-md border border-[#d0d7de] bg-white p-4 lg:w-64">
         <h2 className="font-bold mb-2">Query History</h2>
         <ul className="space-y-2">
           {history.length === 0 && <li className="text-gray-400 text-sm">No history yet.</li>}
@@ -176,15 +176,15 @@ const DatabaseQueryTool = () => {
           ))}
         </ul>
       </aside>
-      <div className="flex-1">
-        <h1 className="text-3xl font-bold mb-4">SQLite Database Query Tool</h1>
-        <div className="mb-4 flex items-center gap-2">
+      <div className="min-w-0 flex-1 rounded-md border border-[#d0d7de] bg-white p-4">
+        <h1 className="mb-4 text-2xl font-semibold text-[#24292f]">SQLite Database Query</h1>
+        <div className="mb-4 flex min-w-0 items-center gap-2">
           <input
             type="file"
             accept=".sqlite,.db"
             ref={fileInputRef}
             onChange={handleFileUpload}
-            className="mb-2"
+            className="mb-2 max-w-full text-sm"
           />
         </div>
         {/* Sample Queries */}
@@ -204,7 +204,7 @@ const DatabaseQueryTool = () => {
               value={structureSearch}
               onChange={e => setStructureSearch(e.target.value)}
             />
-            <ul className="space-y-1">
+            <ul className="space-y-2">
               {dbStructure
                 .filter(table =>
                   table.name.toLowerCase().includes(structureSearch.toLowerCase()) ||
@@ -212,7 +212,7 @@ const DatabaseQueryTool = () => {
                 )
                 .map(table => (
                   <li key={table.name}>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <button className="text-blue-700 underline font-medium" onClick={() => handleTablePreview(table.name)}>
                         {table.name}
                       </button>
@@ -230,7 +230,7 @@ const DatabaseQueryTool = () => {
                         Generate COUNT
                       </button>
                     </div>
-                    <div className="ml-4 text-xs text-gray-700">Columns: {table.columns.join(', ')}</div>
+                    <div className="ml-0 break-words text-xs text-gray-700 sm:ml-4">Columns: {table.columns.join(', ')}</div>
                   </li>
                 ))}
             </ul>
@@ -279,7 +279,7 @@ const DatabaseQueryTool = () => {
             options={{ fontSize: 14, minimap: { enabled: false } }}
           />
         </div>
-        <div className="flex gap-2 mb-4">
+        <div className="mb-4 flex flex-wrap gap-2">
           <button
             className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
             onClick={handleQuery}
@@ -296,10 +296,8 @@ const DatabaseQueryTool = () => {
           </button>
         </div>
         {error && <div className="text-red-600 mb-4">{error}</div>}
-        {/* Tabs for Results/Visualization */}
-        <div className="mb-2 flex gap-2">
+        <div className="mb-2 flex flex-wrap gap-2">
           <button className={`px-3 py-1 rounded ${activeTab === 'results' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => setActiveTab('results')}>Results</button>
-          <button className={`px-3 py-1 rounded ${activeTab === 'visualize' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`} onClick={() => setActiveTab('visualize')} disabled={!columns.length || !results.length}>Visualize</button>
         </div>
         {activeTab === 'results' && columns.length > 0 && (
           <div className="overflow-x-auto">
@@ -322,10 +320,6 @@ const DatabaseQueryTool = () => {
               </tbody>
             </table>
           </div>
-        )}
-        {/* Visualization Tab (to be implemented next) */}
-        {activeTab === 'visualize' && (
-          <div className="mt-4">[Visualization coming soon]</div>
         )}
         {!db && <div className="text-gray-500 mt-4">Upload a SQLite database file to get started.</div>}
         {/* Help/Info Section */}

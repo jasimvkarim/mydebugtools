@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  DocumentTextIcon, 
-  ArrowPathIcon, 
+import {
+  DocumentTextIcon,
+  ArrowPathIcon,
   DocumentDuplicateIcon,
   QuestionMarkCircleIcon,
   ChevronDownIcon,
@@ -107,22 +107,22 @@ export default function MarkdownPreviewPage() {
         // Save functionality will be added
         showNotification('Markdown saved', 'success');
       }
-      
+
       if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
         e.preventDefault();
         resetMarkdown();
       }
-      
+
       if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
         e.preventDefault();
         copyToClipboard();
       }
-      
+
       if ((e.ctrlKey || e.metaKey) && e.key === 'h') {
         e.preventDefault();
         setShowHelp(!showHelp);
       }
-      
+
       if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
         e.preventDefault();
         setPreviewMode(prev => {
@@ -158,7 +158,7 @@ export default function MarkdownPreviewPage() {
               Markdown Preview
             </CardTitle>
             <div className="flex gap-2">
-              <button 
+              <button
                 onClick={() => setShowHelp(!showHelp)}
                 className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
                 title="Show help"
@@ -206,33 +206,33 @@ export default function MarkdownPreviewPage() {
 
           {/* Toolbar */}
           <div className="flex flex-wrap gap-2 mb-4">
-            <button 
+            <button
               onClick={() => setPreviewMode('split')}
               className={`flex items-center gap-1 px-3 py-1 rounded ${
-                previewMode === 'split' 
-                  ? 'bg-blue-500 text-white' 
+                previewMode === 'split'
+                  ? 'bg-blue-500 text-white'
                   : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
               }`}
             >
               <EyeIcon className="h-4 w-4" />
               Split
             </button>
-            <button 
+            <button
               onClick={() => setPreviewMode('preview')}
               className={`flex items-center gap-1 px-3 py-1 rounded ${
-                previewMode === 'preview' 
-                  ? 'bg-blue-500 text-white' 
+                previewMode === 'preview'
+                  ? 'bg-blue-500 text-white'
                   : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
               }`}
             >
               <EyeIcon className="h-4 w-4" />
               Preview
             </button>
-            <button 
+            <button
               onClick={() => setPreviewMode('edit')}
               className={`flex items-center gap-1 px-3 py-1 rounded ${
-                previewMode === 'edit' 
-                  ? 'bg-blue-500 text-white' 
+                previewMode === 'edit'
+                  ? 'bg-blue-500 text-white'
                   : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
               }`}
             >
@@ -240,14 +240,14 @@ export default function MarkdownPreviewPage() {
               Edit
             </button>
             <div className="flex-1" />
-            <button 
+            <button
               onClick={copyToClipboard}
               className="flex items-center gap-1 px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
             >
               <DocumentDuplicateIcon className="h-4 w-4" />
               Copy
             </button>
-            <button 
+            <button
               onClick={resetMarkdown}
               className="flex items-center gap-1 px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
             >
@@ -276,7 +276,7 @@ export default function MarkdownPreviewPage() {
             {(previewMode === 'split' || previewMode === 'preview') && (
               <div>
                 <label className="block text-sm font-medium mb-1">Preview</label>
-                <div className="w-full h-[500px] p-4 border rounded-md overflow-auto prose dark:prose-invert max-w-none">
+                <div className="w-full h-[500px] p-4 border rounded-md overflow-auto prose dark:prose-invert max-w-none [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_.katex-display]:py-2 [&_.katex-display]:text-[0.95em] [&_.katex]:max-w-full">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm, remarkMath]}
                     rehypePlugins={[rehypeKatex, rehypePrism]}
@@ -291,4 +291,4 @@ export default function MarkdownPreviewPage() {
       </Card>
     </div>
   );
-} 
+}

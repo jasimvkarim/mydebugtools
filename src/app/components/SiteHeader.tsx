@@ -7,15 +7,17 @@ import { usePathname } from 'next/navigation';
 import {
   Bars3Icon,
   BeakerIcon,
+  BoltIcon,
   ChevronDownIcon,
   CommandLineIcon,
   DocumentTextIcon,
   InformationCircleIcon,
+  PencilSquareIcon,
   SparklesIcon,
   WrenchIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { Braces, Coffee, Github, Hash, KeyRound, Terminal } from 'lucide-react';
+import { Braces, Coffee, Github, GitPullRequest, Hash, KeyRound, Terminal } from 'lucide-react';
 
 type IconComponent = ComponentType<{ className?: string }>;
 
@@ -33,6 +35,8 @@ const primaryNav: Array<{
 const toolNav: Array<{ name: string; href: string; icon: IconComponent }> = [
   { name: 'API', href: '/tools/api', icon: BeakerIcon },
   { name: 'AI Debug', href: '/tools/ai', icon: SparklesIcon },
+  { name: 'Stack', href: '/tools/stack-trace', icon: BoltIcon },
+  { name: 'Logs', href: '/tools/log-trace', icon: DocumentTextIcon },
   { name: 'JSON', href: '/tools/json', icon: Braces },
   { name: 'JWT', href: '/tools/jwt', icon: KeyRound },
   { name: 'Hash', href: '/tools/hash', icon: Hash },
@@ -45,8 +49,11 @@ const projectLinks = [
   { name: 'Roadmap', href: '/roadmap' },
   { name: 'Releases', href: '/releases' },
   { name: 'Changelog', href: '/changelog' },
-  { name: 'Contribute', href: '/contributing' },
-  { name: 'New issue', href: 'https://github.com/jasimvkarim/mydebugtools/issues/new' },
+];
+
+const directProjectActions = [
+  { name: 'Report issue', href: 'https://github.com/jasimvkarim/mydebugtools/issues/new', icon: PencilSquareIcon },
+  { name: 'Contribute', href: '/contributing', icon: GitPullRequest },
 ];
 
 interface SiteHeaderProps {
@@ -91,7 +98,7 @@ export default function SiteHeader({
                 <Terminal className="h-4 w-4" />
               </span>
               <span className="min-w-0">
-                <span className="block truncate text-[15px] font-semibold leading-5 tracking-tight">debugtools</span>
+                <span className="block truncate text-[15px] font-semibold leading-5 tracking-tight">DEBUGTOOLS</span>
                 <span className="hidden font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-[#6e7781] xl:block">
                   local-first oss
                 </span>
@@ -122,6 +129,31 @@ export default function SiteHeader({
           </div>
 
           <div className="flex items-center gap-2">
+            <div className="hidden items-center gap-2 xl:flex">
+              {directProjectActions.map((item) => {
+                const Icon = item.icon;
+                const isExternal = item.href.startsWith('http');
+                const className = "inline-flex items-center gap-1.5 rounded-md border border-[#d0d7de] bg-white px-3 py-1.5 text-sm font-semibold text-[#24292f] transition-colors hover:bg-[#f6f8fa] hover:text-[#24292f]";
+
+                return isExternal ? (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={className}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    {item.name}
+                  </a>
+                ) : (
+                  <Link key={item.href} href={item.href} className={className}>
+                    <Icon className="h-3.5 w-3.5" />
+                    {item.name}
+                  </Link>
+                );
+              })}
+            </div>
             <div className="relative hidden lg:block">
               <button
                 type="button"
@@ -245,6 +277,35 @@ export default function SiteHeader({
                 {link.name}
               </Link>
             ))}
+            {directProjectActions.map((item) => {
+              const Icon = item.icon;
+              const isExternal = item.href.startsWith('http');
+              const className = "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#57606a] hover:bg-[#f6f8fa] hover:text-[#24292f]";
+
+              return isExternal ? (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={className}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.name}
+                </a>
+              ) : (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={className}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.name}
+                </Link>
+              );
+            })}
             <a
               href="https://github.com/jasimvkarim/mydebugtools"
               target="_blank"
