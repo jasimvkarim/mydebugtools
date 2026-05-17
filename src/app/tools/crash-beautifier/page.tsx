@@ -86,6 +86,15 @@ function CrashBeautifier() {
     URL.revokeObjectURL(url);
   };
 
+  const loadSample = () => {
+    setInput(`TypeError: Cannot read property 'map' of undefined
+    at UserList.render (src/screens/UserList.tsx:42:18)
+    at finishClassComponent (node_modules/react-reconciler/cjs/react-reconciler.development.js:17160:31)
+    at updateClassComponent (node_modules/react-reconciler/cjs/react-reconciler.development.js:17110:24)`);
+    setSelectedType('react-native');
+    setAutoDetect(false);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <StructuredData
@@ -94,11 +103,18 @@ function CrashBeautifier() {
         toolType="WebApplication"
       />
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Crash Beautifier</h1>
-        <p className="text-lg text-gray-600">
-          Format and beautify crash logs from various platforms
-        </p>
+      <div className="mb-4 flex flex-col justify-between gap-3 rounded-md border border-[#d0d7de] bg-white px-5 py-4 sm:flex-row sm:items-end">
+        <div>
+          <p className="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-[#6e7781]">tools/crash</p>
+          <h1 className="mt-2 text-[#24292f]">Crash Beautifier</h1>
+        </div>
+        <button
+          type="button"
+          onClick={loadSample}
+          className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa]"
+        >
+          Sample
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -146,6 +162,7 @@ function CrashBeautifier() {
             <div className="flex space-x-2">
               <button
                 onClick={handleCopy}
+                disabled={parsedLines.length === 0}
                 className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 {copied ? (
@@ -157,6 +174,7 @@ function CrashBeautifier() {
               </button>
               <button
                 onClick={handleDownload}
+                disabled={parsedLines.length === 0}
                 className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 <ArrowDownTrayIcon className="h-4 w-4 mr-1.5" />
@@ -184,9 +202,8 @@ function CrashBeautifier() {
         </div>
       </div>
 
-      {/* Help Section */}
-      <div className="mt-8 bg-blue-50 rounded-lg p-6">
-        <h2 className="text-lg font-medium text-blue-900 mb-4">Supported Crash Log Types</h2>
+      <div className="mt-4 rounded-md border border-[#d0d7de] bg-white p-4">
+        <h2 className="text-[#24292f]">Supported inputs</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {CRASH_TYPES.map(type => (
             <div key={type.id} className="bg-white p-4 rounded-lg shadow-sm">

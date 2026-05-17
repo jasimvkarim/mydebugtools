@@ -75,6 +75,10 @@ function StartupProfiling() {
         }
       });
 
+      if (metrics.length === 0) {
+        return null;
+      }
+
       return {
         totalDuration,
         metrics,
@@ -135,6 +139,14 @@ ${profileData.metrics.map(m => `${m.name}: ${m.duration}ms (${m.phase})`).join('
     URL.revokeObjectURL(url);
   };
 
+  const loadSample = () => {
+    setInput(`[Performance] Native Bridge Init: 120ms
+[Performance] JavaScript Init: 350ms
+[Performance] First Render: 250ms
+[Performance] API Bootstrap: 180ms
+[Performance] Layout Commit: 90ms`);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <StructuredData
@@ -143,11 +155,18 @@ ${profileData.metrics.map(m => `${m.name}: ${m.duration}ms (${m.phase})`).join('
         toolType="WebApplication"
       />
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">React Native Startup Profiling</h1>
-        <p className="text-lg text-gray-600">
-          Analyze your React Native app's startup performance metrics
-        </p>
+      <div className="mb-4 flex flex-col justify-between gap-3 rounded-md border border-[#d0d7de] bg-white px-5 py-4 sm:flex-row sm:items-end">
+        <div>
+          <p className="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-[#6e7781]">tools/startup</p>
+          <h1 className="mt-2 text-[#24292f]">Startup Profiling</h1>
+        </div>
+        <button
+          type="button"
+          onClick={loadSample}
+          className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa]"
+        >
+          Sample
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -259,30 +278,8 @@ ${profileData.metrics.map(m => `${m.name}: ${m.duration}ms (${m.phase})`).join('
         </div>
       </div>
 
-      {/* Help Section */}
-      <div className="mt-8 bg-blue-50 rounded-lg p-6">
-        <h2 className="text-lg font-medium text-blue-900 mb-4">How to Get Performance Logs</h2>
-        <div className="prose prose-blue">
-          <ol className="list-decimal list-inside space-y-2 text-gray-700">
-            <li>Enable performance monitoring in your React Native app:
-              <pre className="bg-blue-100 p-2 rounded mt-1 text-sm">
-                {`import { PerformanceObserver } from 'react-native';
-
-const observer = new PerformanceObserver((list) => {
-  const entries = list.getEntries();
-  entries.forEach(entry => {
-    console.log(\`[Performance] \${entry.name}: \${entry.duration}ms\`);
-  });
-});
-
-observer.observe({ entryTypes: ['measure'] });`}
-              </pre>
-            </li>
-            <li>Run your app in development mode</li>
-            <li>Copy the performance logs from your console</li>
-            <li>Paste them here for analysis</li>
-          </ol>
-        </div>
+      <div className="mt-4 rounded-md border border-[#d0d7de] bg-white px-4 py-3 text-sm text-[#57606a]">
+        Accepts performance markers like <code>[Performance] JavaScript Init: 350ms</code>.
       </div>
     </div>
   );

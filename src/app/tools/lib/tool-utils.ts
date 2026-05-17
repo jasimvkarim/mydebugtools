@@ -58,14 +58,27 @@ export function runRegexTest(pattern: string, testString: string, selectedFlags:
   return { match, matches, groups };
 }
 
+export function parseSizeToBytes(rawSize: string, rawUnit = ''): number {
+  const size = Number.parseFloat(rawSize);
+  if (!Number.isFinite(size)) return 0;
+
+  const unit = rawUnit.trim().toLowerCase();
+  if (unit === 'gb' || unit === 'gib') return size * 1024 * 1024 * 1024;
+  if (unit === 'mb' || unit === 'mib') return size * 1024 * 1024;
+  if (unit === 'kb' || unit === 'kib') return size * 1024;
+  if (unit === 'b' || unit === 'bytes') return size;
+
+  return size;
+}
+
 function parseBuildData(build: string): Map<string, number> {
   const files = new Map<string, number>();
 
   build.split('\n').forEach((line) => {
-    const match = line.match(/(.+?)\s+(\d+\.?\d*)/);
+    const match = line.trim().match(/^(.+?)\s+(\d+(?:\.\d+)?)\s*(b|bytes|kb|kib|mb|mib|gb|gib)?(?:\s|$)/i);
     if (match) {
-      const [, path, size] = match;
-      files.set(path, parseFloat(size));
+      const [, path, size, unit = ''] = match;
+      files.set(path, parseSizeToBytes(size, unit));
     }
   });
 

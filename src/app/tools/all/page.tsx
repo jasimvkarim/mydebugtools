@@ -19,13 +19,14 @@ function ToolRow({
   return (
     <Link
       href={tool.path}
-      className="group flex items-center gap-3 rounded-md border border-[#d0d7de] bg-white px-3 py-3 transition-colors hover:border-[#0969da] hover:bg-[#f6f8fa]"
+      className="group flex min-h-[92px] items-start gap-3 rounded-md border border-[#d0d7de] bg-white px-3 py-3 transition hover:-translate-y-0.5 hover:border-[#0969da] hover:bg-[#fbfcfe] hover:shadow-[0_12px_28px_rgba(27,31,36,0.08)]"
     >
-      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-[#d0d7de] bg-[#f6f8fa] text-[#57606a]">
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-[#d0d7de] bg-[#f6f8fa] text-[#57606a] group-hover:border-[#0969da] group-hover:text-[#0969da]">
         <Icon className="h-4 w-4" />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm font-semibold text-[#24292f]">{tool.name}</span>
+        <span className="mt-1 line-clamp-2 block text-xs leading-5 text-[#57606a]">{tool.description}</span>
         <span className="block truncate font-mono text-xs text-[#6e7781]">{tool.path.replace(/^\//, '')}</span>
       </span>
       <span className="hidden rounded-full border border-[#d0d7de] px-2 py-0.5 text-[11px] font-semibold text-[#6e7781] sm:inline">

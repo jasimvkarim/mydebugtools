@@ -193,7 +193,7 @@ export default function Base64Tools() {
 
   const copyToClipboard = async () => {
     try {
-      const textToCopy = conversionMode === 'encode' ? output : cleanBase64(input);
+      const textToCopy = output;
       await navigator.clipboard.writeText(textToCopy);
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);

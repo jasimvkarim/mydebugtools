@@ -1,6 +1,7 @@
 import {
   buildDiffFromText,
   decodeJwtSegment,
+  parseSizeToBytes,
   runRegexTest,
 } from '../tool-utils';
 
@@ -28,6 +29,12 @@ describe('tool utilities', () => {
   });
 
   describe('buildDiffFromText', () => {
+    it('parses common size units as bytes', () => {
+      expect(parseSizeToBytes('1', 'KB')).toBe(1024);
+      expect(parseSizeToBytes('1.5', 'MB')).toBe(1572864);
+      expect(parseSizeToBytes('512', 'B')).toBe(512);
+    });
+
     it('compares supplied old and new build text directly', () => {
       const diff = buildDiffFromText('a.js 1024\nzero.js 0', 'a.js 2048\nb.js 512\nzero.js 0');
 
@@ -40,6 +47,13 @@ describe('tool utilities', () => {
           expect.objectContaining({ type: 'added', path: 'b.js', newSize: 512 }),
         ])
       );
+    });
+
+    it('compares build text with explicit size units', () => {
+      const diff = buildDiffFromText('a.js 1 KB', 'a.js 2 KB\nb.js 1 MB');
+
+      expect(diff.totalAdded).toBe(1048576);
+      expect(diff.totalModified).toBe(1024);
     });
   });
 });

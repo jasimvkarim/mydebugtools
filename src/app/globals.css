@@ -21,12 +21,12 @@
 }
 
 :root {
-  --background: #fafafa;
+  --background: #eef2f6;
   --foreground: #171717;
-  --font-sans: "Inter Variable", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: "Roboto Mono Variable", "Roboto Mono", Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", Consolas, "Liberation Mono", "Courier New", monospace;
-  --primary: #FF6C37;
-  --primary-hover: #ff5722;
+  --font-sans: Menlo, "Roboto Mono Variable", "Roboto Mono", Monaco, "Cascadia Mono", "Segoe UI Mono", Consolas, "Liberation Mono", monospace;
+  --font-mono: Menlo, "Roboto Mono Variable", "Roboto Mono", Monaco, "Cascadia Mono", "Segoe UI Mono", Consolas, "Liberation Mono", "Courier New", monospace;
+  --primary: #24292f;
+  --primary-hover: #32383f;
   --border: #e5e7eb;
   --card-bg: #ffffff;
 }
@@ -63,11 +63,11 @@
 
   /* Consistent button styles */
   .btn-primary {
-    @apply px-4 py-2 bg-[#FF6C37] hover:bg-[#ff5722] text-white font-medium rounded-lg transition-colors;
+    @apply px-4 py-2 bg-[#24292f] hover:bg-[#32383f] text-white font-medium rounded-md transition-colors;
   }
 
   .btn-secondary {
-    @apply px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-lg border border-gray-300 transition-colors;
+    @apply px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-md border border-gray-300 transition-colors;
   }
 
   /* Consistent input styles */
@@ -77,7 +77,7 @@
   input[type="url"],
   textarea,
   select {
-    @apply border-gray-300 rounded-md focus:ring-2 focus:ring-[#FF6C37] focus:border-transparent;
+    @apply border-gray-300 rounded-md focus:ring-2 focus:ring-[#0969da]/20 focus:border-[#0969da];
   }
 
   /* Consistent card styles */
@@ -208,19 +208,88 @@ body {
   box-shadow: none !important;
 }
 
-.oss-tools-surface [class*="bg-[#FF6C37]"],
-.oss-tools-surface [class*="bg-orange-600"],
-.oss-tools-surface [class*="bg-blue-600"],
-.oss-tools-surface [class*="bg-purple-600"] {
-  background-color: #1f883d !important;
+.oss-tools-surface {
+  font-size: 14px;
+}
+
+.oss-tools-surface > div,
+.oss-tools-surface > section {
+  filter: drop-shadow(0 18px 40px rgb(27 31 36 / 0.05));
+}
+
+.oss-tools-surface section,
+.oss-tools-surface .card,
+.oss-tools-surface [class*="border"][class*="bg-white"] {
+  border-color: #c8d1dc !important;
+}
+
+  .oss-tools-surface h1 {
+    font-size: 24px !important;
+    line-height: 1.25 !important;
+    font-weight: 650 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .oss-tools-surface h2 {
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    font-weight: 650 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .oss-tools-surface h3 {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    font-weight: 650 !important;
+    letter-spacing: 0 !important;
+  }
+
+  .oss-tools-surface .container {
+    max-width: 1600px !important;
+    padding: 0 !important;
+  }
+
+.oss-tools-surface textarea,
+.oss-tools-surface input,
+.oss-tools-surface select {
+  border-color: #d0d7de !important;
+  color: #24292f !important;
+  outline: none !important;
+  background-color: #ffffff !important;
+}
+
+  .oss-tools-surface textarea:focus,
+  .oss-tools-surface input:focus,
+  .oss-tools-surface select:focus {
+    border-color: #0969da !important;
+    box-shadow: 0 0 0 2px rgb(9 105 218 / 0.15) !important;
+  }
+
+.oss-tools-surface button {
+  border-radius: 6px !important;
+}
+
+.oss-tools-surface button:not(:disabled) {
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, transform 140ms ease, box-shadow 140ms ease !important;
+}
+
+.oss-tools-surface button:not(:disabled):hover {
+  box-shadow: 0 1px 2px rgb(27 31 36 / 0.08) !important;
+}
+
+  .oss-tools-surface [class*="bg-[#FF6C37]"],
+  .oss-tools-surface [class*="bg-orange-600"],
+  .oss-tools-surface [class*="bg-blue-600"],
+  .oss-tools-surface [class*="bg-purple-600"] {
+  background-color: #24292f !important;
   color: #ffffff !important;
 }
 
 .oss-tools-surface [class*="hover:bg-[#ff5722]"]:hover,
-.oss-tools-surface [class*="hover:bg-orange-700"]:hover,
-.oss-tools-surface [class*="hover:bg-blue-700"]:hover,
-.oss-tools-surface [class*="hover:bg-purple-700"]:hover {
-  background-color: #1a7f37 !important;
+  .oss-tools-surface [class*="hover:bg-orange-700"]:hover,
+  .oss-tools-surface [class*="hover:bg-blue-700"]:hover,
+  .oss-tools-surface [class*="hover:bg-purple-700"]:hover {
+  background-color: #32383f !important;
   color: #ffffff !important;
 }
 
@@ -249,4 +318,9 @@ body {
 
 .oss-tools-surface [class*="hover:scale"] {
   transform: none !important;
+}
+
+.oss-tools-surface .bg-gray-900,
+.oss-tools-surface [class*="bg-gray-900"] {
+  background-color: #101418 !important;
 }

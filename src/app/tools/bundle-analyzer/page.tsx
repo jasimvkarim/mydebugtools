@@ -10,6 +10,7 @@ import {
 } from '@heroicons/react/24/outline';
 import PageWrapper from '@/components/PageWrapper';
 import StructuredData from '@/components/StructuredData';
+import { parseSizeToBytes } from '@/app/tools/lib/tool-utils';
 
 interface BundleModule {
   name: string;
@@ -36,10 +37,10 @@ function BundleAnalyzer() {
 
       lines.forEach(line => {
         // Match webpack-bundle-analyzer format
-        const match = line.match(/(.+?)\s+(\d+\.?\d*)\s+([\d.]+)%/);
+        const match = line.trim().match(/^(.+?)\s+(\d+(?:\.\d+)?)\s*(b|bytes|kb|kib|mb|mib|gb|gib)?\s+([\d.]+)%/i);
         if (match) {
-          const [_, name, size, percentage] = match;
-          const moduleSize = parseFloat(size);
+          const [_, name, size, unit = '', percentage] = match;
+          const moduleSize = parseSizeToBytes(size, unit);
           totalSize += moduleSize;
 
           let type: BundleModule['type'] = 'other';
@@ -103,6 +104,16 @@ ${bundleData.modules.map(m =>
     URL.revokeObjectURL(url);
   };
 
+  const loadSample = () => {
+    const sample = `node_modules/react/index.js 42.1 KB 18.2%
+src/app/tools/api/page.tsx 88.4 KB 38.2%
+src/app/tools/json/page.tsx 7.3 KB 3.1%
+public/fonts/roboto-mono-latin-variable.woff2 64 KB 27.7%
+src/app/globals.css 18.5 KB 8.0%`;
+    setInput(sample);
+    setBundleData(parseBundleData(sample));
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <StructuredData
@@ -111,11 +122,18 @@ ${bundleData.modules.map(m =>
         toolType="WebApplication"
       />
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Bundle Size Analyzer</h1>
-        <p className="text-lg text-gray-600">
-          Analyze and optimize your app bundle size
-        </p>
+      <div className="mb-4 flex flex-col justify-between gap-3 rounded-md border border-[#d0d7de] bg-white px-5 py-4 sm:flex-row sm:items-end">
+        <div>
+          <p className="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-[#6e7781]">tools/bundle</p>
+          <h1 className="mt-2 text-[#24292f]">Bundle Size Analyzer</h1>
+        </div>
+        <button
+          type="button"
+          onClick={loadSample}
+          className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa]"
+        >
+          Sample
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -134,8 +152,8 @@ ${bundleData.modules.map(m =>
               const data = parseBundleData(e.target.value);
               setBundleData(data);
             }}
-            placeholder="node_modules/react/index.js 123.45 15.6%
-src/components/App.js 45.67 5.8%
+            placeholder="node_modules/react/index.js 123.45 KB 15.6%
+src/components/App.js 45.67 KB 5.8%
 ..."
             className="w-full h-[400px] font-mono text-sm p-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
@@ -229,32 +247,8 @@ src/components/App.js 45.67 5.8%
         </div>
       </div>
 
-      {/* Help Section */}
-      <div className="mt-8 bg-blue-50 rounded-lg p-6">
-        <h2 className="text-lg font-medium text-blue-900 mb-4">How to Get Bundle Analysis Data</h2>
-        <div className="prose prose-blue">
-          <ol className="list-decimal list-inside space-y-2 text-gray-700">
-            <li>Install webpack-bundle-analyzer:
-              <pre className="bg-blue-100 p-2 rounded mt-1 text-sm">
-                npm install --save-dev webpack-bundle-analyzer
-              </pre>
-            </li>
-            <li>Add to your webpack config:
-              <pre className="bg-blue-100 p-2 rounded mt-1 text-sm">
-                {`const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-
-module.exports = {
-  plugins: [
-    new BundleAnalyzerPlugin()
-  ]
-}`}
-              </pre>
-            </li>
-            <li>Run your build command</li>
-            <li>Copy the analysis output</li>
-            <li>Paste it here for detailed analysis</li>
-          </ol>
-        </div>
+      <div className="mt-4 rounded-md border border-[#d0d7de] bg-white px-4 py-3 text-sm text-[#57606a]">
+        Accepts lines like <code>src/app/page.tsx 42 KB 12.5%</code>.
       </div>
     </div>
   );

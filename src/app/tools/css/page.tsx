@@ -357,25 +357,22 @@ ${css}
   }, [css]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100">
-      {/* Enhanced Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-700 text-white">
-        <div className="mx-auto px-4 py-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-3 flex items-center justify-center">
-              <SwatchIcon className="h-12 w-12 mr-3 text-purple-200" />
-              CSS Toolkit Pro
-            </h1>
-            <p className="text-purple-100 text-lg md:text-xl max-w-3xl mx-auto">
-              Professional CSS processing with validation, optimization, and export capabilities
-            </p>
+    <div className="min-h-screen">
+      <div className="rounded-md border border-[#d0d7de] bg-white">
+        <div className="px-5 py-4">
+          <div className="flex flex-col justify-between gap-3 md:flex-row md:items-end">
+            <div>
+              <p className="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-[#6e7781]">tools/css</p>
+              <h1 className="mt-2 flex items-center gap-2 text-[#24292f]">
+                <SwatchIcon className="h-5 w-5 text-[#0969da]" />
+                CSS Tools
+              </h1>
+            </div>
           </div>
           
-          {/* Statistics Bar */}
           {cssStats && (
-            <div className="mt-6 flex justify-center">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3">
-                <div className="flex items-center gap-6 text-sm flex-wrap justify-center">
+            <div className="mt-4 rounded-md border border-[#d0d7de] bg-[#f6f8fa] px-4 py-3">
+                <div className="flex flex-wrap items-center gap-5 text-xs text-[#57606a]">
                   <div className="flex items-center gap-2">
                     <PaintBrushIcon className="h-4 w-4" />
                     <span><strong>{cssStats.selectors}</strong> selectors</span>
@@ -397,13 +394,12 @@ ${css}
                     <span><strong>{cssStats.colors.length}</strong> colors</span>
                   </div>
                 </div>
-              </div>
             </div>
           )}
         </div>
       </div>
 
-      <div className="mx-auto p-4">
+      <div className="mx-auto pt-4">
         {/* Notification */}
         {notification && (
           <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 flex items-center gap-2 ${

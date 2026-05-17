@@ -71,6 +71,19 @@ ${diffData.changes.map(c => {
     URL.revokeObjectURL(url);
   };
 
+  const loadSample = () => {
+    const oldSample = `app.js 140 KB
+vendor.js 420 KB
+styles.css 24 KB`;
+    const newSample = `app.js 156 KB
+vendor.js 390 KB
+styles.css 24 KB
+analytics.js 18 KB`;
+    setOldBuild(oldSample);
+    setNewBuild(newSample);
+    calculateDiff(oldSample, newSample);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <StructuredData
@@ -79,11 +92,18 @@ ${diffData.changes.map(c => {
         toolType="WebApplication"
       />
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Build Diff Viewer</h1>
-        <p className="text-lg text-gray-600">
-          Compare and analyze differences between builds
-        </p>
+      <div className="mb-4 flex flex-col justify-between gap-3 rounded-md border border-[#d0d7de] bg-white px-5 py-4 sm:flex-row sm:items-end">
+        <div>
+          <p className="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-[#6e7781]">tools/build-diff</p>
+          <h1 className="mt-2 text-[#24292f]">Build Diff Viewer</h1>
+        </div>
+        <button
+          type="button"
+          onClick={loadSample}
+          className="rounded-md border border-[#d0d7de] bg-white px-3 py-2 text-sm font-semibold text-[#24292f] hover:bg-[#f6f8fa]"
+        >
+          Sample
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -103,8 +123,8 @@ ${diffData.changes.map(c => {
                 setOldBuild(nextOldBuild);
                 calculateDiff(nextOldBuild, newBuild);
               }}
-              placeholder="src/index.js 123.45
-src/components/App.js 45.67
+              placeholder="src/index.js 123.45 KB
+src/components/App.js 45.67 KB
 ..."
               className="w-full h-[200px] font-mono text-sm p-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
@@ -124,8 +144,8 @@ src/components/App.js 45.67
                 setNewBuild(nextNewBuild);
                 calculateDiff(oldBuild, nextNewBuild);
               }}
-              placeholder="src/index.js 123.45
-src/components/App.js 45.67
+              placeholder="src/index.js 132.11 KB
+src/components/App.js 41.20 KB
 ..."
               className="w-full h-[200px] font-mono text-sm p-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
@@ -223,25 +243,8 @@ src/components/App.js 45.67
         </div>
       </div>
 
-      {/* Help Section */}
-      <div className="mt-8 bg-blue-50 rounded-lg p-6">
-        <h2 className="text-lg font-medium text-blue-900 mb-4">How to Get Build Analysis Data</h2>
-        <div className="prose prose-blue">
-          <ol className="list-decimal list-inside space-y-2 text-gray-700">
-            <li>Run your build command with size analysis:
-              <pre className="bg-blue-100 p-2 rounded mt-1 text-sm">
-                webpack --profile --json {'>'} stats.json
-              </pre>
-            </li>
-            <li>Use webpack-bundle-analyzer to generate the analysis:
-              <pre className="bg-blue-100 p-2 rounded mt-1 text-sm">
-                webpack-bundle-analyzer stats.json
-              </pre>
-            </li>
-            <li>Copy the file sizes from the analysis</li>
-            <li>Paste them here to compare builds</li>
-          </ol>
-        </div>
+      <div className="mt-4 rounded-md border border-[#d0d7de] bg-white px-4 py-3 text-sm text-[#57606a]">
+        Accepts one file per line, for example <code>app.js 156 KB</code>.
       </div>
     </div>
   );
