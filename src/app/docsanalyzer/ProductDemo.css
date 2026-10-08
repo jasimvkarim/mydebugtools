@@ -1,0 +1,6 @@
+.product-demo { width: min(100%, 960px); margin: 48px auto; text-align: center; }
+.product-demo h2 { font: inherit; font-size: clamp(24px, 3vw, 36px); margin: 0 0 12px; }
+.product-demo p { color: #606064; margin: 0 0 20px; line-height: 1.6; }
+.product-demo video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #f6f5f1; border: 1px solid #d7d5cf; }
+.product-demo .product-demo-note { font-size: 12px; margin-top: 12px; }
+@media(max-width: 600px) { .product-demo { margin: 28px auto; } }

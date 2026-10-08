@@ -1,0 +1,67 @@
+1
+00:00:00,000 --> 00:00:02,624
+A bank statement is a picture of your money.
+
+2
+00:00:02,949 --> 00:00:07,314
+But a picture is not an answer. Meet DocsAnalyzer.
+
+3
+00:00:07,639 --> 00:00:10,670
+Turn statements into transactions you can explore.
+
+4
+00:00:10,948 --> 00:00:12,980
+Start with a PDF or spreadsheet.
+
+5
+00:00:13,363 --> 00:00:16,904
+Here, we are using the built-in sample, not a real customer's
+
+6
+00:00:16,904 --> 00:00:21,014
+account. Move from rows on a page to a searchable table.
+
+7
+00:00:21,397 --> 00:00:24,555
+Find a payment. Group transactions by payee.
+
+8
+00:00:24,880 --> 00:00:27,353
+See money coming in and money going out.
+
+9
+00:00:27,411 --> 00:00:31,521
+Then check the structure: opening balance, plus credits, minus
+
+10
+00:00:31,521 --> 00:00:34,041
+debits, equals closing balance.
+
+11
+00:00:34,551 --> 00:00:36,757
+A mismatch deserves a closer look.
+
+12
+00:00:37,199 --> 00:00:42,063
+DocsAnalyzer's site describes two ways to work: in the browser,
+
+13
+00:00:42,063 --> 00:00:44,315
+or with an offline desktop app.
+
+14
+00:00:44,757 --> 00:00:47,531
+Check the privacy details for the mode you choose.
+
+15
+00:00:47,915 --> 00:00:51,606
+Less hunting through pages. More room to understand the numbers.
+
+16
+00:00:51,931 --> 00:00:54,996
+Try the sample at DocsAnalyzer dot com.
+
+17
+00:00:55,321 --> 00:00:57,260
+From statement to understanding.
