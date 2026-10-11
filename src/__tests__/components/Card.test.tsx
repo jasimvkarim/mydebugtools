@@ -13,38 +13,38 @@ import {
 describe('Card Component', () => {
   it('renders Card with default styles', () => {
     render(<Card>Test Content</Card>);
-    const card = screen.getByText('Test Content').parentElement;
-    expect(card).toHaveClass('rounded-lg border bg-card text-card-foreground shadow-sm');
+    const card = screen.getByText('Test Content').closest('div');
+    expect(card).toHaveClass('rounded-lg', 'border', 'bg-card', 'text-card-foreground', 'shadow-sm');
   });
 
   it('renders CardHeader with default styles', () => {
     render(<CardHeader>Header Content</CardHeader>);
-    const header = screen.getByText('Header Content').parentElement;
-    expect(header).toHaveClass('flex flex-col space-y-1.5 p-6');
+    const header = screen.getByText('Header Content').closest('div');
+    expect(header).toHaveClass('flex', 'flex-col', 'space-y-1.5', 'p-6');
   });
 
   it('renders CardTitle with default styles', () => {
     render(<CardTitle>Title Content</CardTitle>);
     const title = screen.getByText('Title Content');
-    expect(title).toHaveClass('text-2xl font-semibold leading-none tracking-tight');
+    expect(title).toHaveClass('text-2xl', 'font-semibold', 'leading-none', 'tracking-tight');
   });
 
   it('renders CardDescription with default styles', () => {
     render(<CardDescription>Description Content</CardDescription>);
     const description = screen.getByText('Description Content');
-    expect(description).toHaveClass('text-sm text-muted-foreground');
+    expect(description).toHaveClass('text-sm', 'text-muted-foreground');
   });
 
   it('renders CardContent with default styles', () => {
     render(<CardContent>Content</CardContent>);
-    const content = screen.getByText('Content').parentElement;
-    expect(content).toHaveClass('p-6 pt-0');
+    const content = screen.getByText('Content').closest('div');
+    expect(content).toHaveClass('p-6', 'pt-0');
   });
 
   it('renders CardFooter with default styles', () => {
     render(<CardFooter>Footer Content</CardFooter>);
-    const footer = screen.getByText('Footer Content').parentElement;
-    expect(footer).toHaveClass('flex items-center p-6 pt-0');
+    const footer = screen.getByText('Footer Content').closest('div');
+    expect(footer).toHaveClass('flex', 'items-center', 'p-6', 'pt-0');
   });
 
   it('renders a complete Card with all subcomponents', () => {
@@ -67,7 +67,7 @@ describe('Card Component', () => {
 
   it('applies custom className to Card', () => {
     render(<Card className="custom-class">Test Content</Card>);
-    const card = screen.getByText('Test Content').parentElement;
+    const card = screen.getByText('Test Content').closest('div');
     expect(card).toHaveClass('custom-class');
   });
-}); 
+});
