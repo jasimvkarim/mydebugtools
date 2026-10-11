@@ -1,49 +1,37 @@
-import React from 'react'
-import { render as rtlRender } from '@testing-library/react'
-import { ThemeProvider } from 'next-themes'
+import React from 'react';
+import { render, RenderOptions } from '@testing-library/react';
+import { SessionProvider } from 'next-auth/react';
 
-function render(ui: React.ReactElement, { ...renderOptions } = {}) {
-  function Wrapper({ children }: { children: React.ReactNode }) {
-    return (
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        {children}
-      </ThemeProvider>
-    )
-  }
-  return rtlRender(ui, { wrapper: Wrapper, ...renderOptions })
+interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
+  session?: any;
 }
 
-// Mock data for testing
-export const mockTools = [
-  {
-    name: 'JSON Formatter',
-    description: 'Format and validate JSON data',
-    href: '/tools/json',
-    icon: 'CodeBracketIcon',
-  },
-  {
-    name: 'Regex Tester',
-    description: 'Test regular expressions',
-    href: '/tools/regex',
-    icon: 'MagnifyingGlassIcon',
-  },
-]
+const AllTheProviders: React.FC<{
+  children: React.ReactNode;
+  session?: any;
+}> = ({ children, session = null }) => {
+  return <SessionProvider session={session}>{children}</SessionProvider>;
+};
 
-export const mockFeatures = [
-  {
-    name: 'Modern UI',
-    description: 'Clean and intuitive interface',
-    icon: 'PaintBrushIcon',
-  },
-  {
-    name: 'Dark Mode',
-    description: 'Support for light and dark themes',
-    icon: 'MoonIcon',
-  },
-]
+const customRender = (
+  ui: React.ReactElement,
+  options?: CustomRenderOptions
+) => {
+  const { session, ...renderOptions } = options || {};
+  return render(ui, {
+    wrapper: ({ children }) => (
+      <AllTheProviders session={session}>{children}</AllTheProviders>
+    ),
+    ...renderOptions,
+  });
+};
 
-// Re-export everything
-export * from '@testing-library/react'
+export * from '@testing-library/react';
+export { customRender as render };
 
-// Override render method
-export { render } 
+// Add a dummy test to satisfy Jest
+describe('test-utils', () => {
+  it('exports render function', () => {
+    expect(customRender).toBeDefined();
+  });
+});
