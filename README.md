@@ -152,3 +152,5 @@ The near-term roadmap is:
 10. Contribution guide
 
 Full roadmap: https://debugtools.org/roadmap.
+
+scope guard verified 2026-10-11.
