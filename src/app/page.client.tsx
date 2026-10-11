@@ -517,38 +517,20 @@ export default function Home() {
             <h3 className="text-white font-semibold mb-4">Legal</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
                 <Link href="/terms-of-service" className="text-gray-400 hover:text-white transition-colors">
-                  Terms of Service
+                  Terms
                 </Link>
               </li>
               <li>
-                <Link href="/cookie-policy" className="text-gray-400 hover:text-white transition-colors">
-                  Cookie Policy
+                <Link href="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">
+                  Privacy
                 </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <a href="https://github.com/jasimvkarim/mydebugtools/blob/main/LICENSE" className="text-gray-400 hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
-                  License
-                </a>
               </li>
             </ul>
           </div>
         </div>
-        <div className="border-t border-gray-800 pt-8">
-          <p className="mb-2">Built by <a href="https://x.com/jasimvk" className="text-blue-400 hover:text-blue-300" target="_blank" rel="noopener noreferrer">Jasim</a></p>
-          <p>© {new Date().getFullYear()} debugtools • <a href="https://github.com/jasimvkarim/mydebugtools" className="text-blue-400 hover:text-blue-300" target="_blank" rel="noopener noreferrer">Open Source</a></p>
-        </div>
+        <p className="text-sm text-gray-500">Built with mydebugtools</p>
       </footer>
     </div>
   );
-} 
+}
