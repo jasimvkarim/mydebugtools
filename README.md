@@ -154,3 +154,4 @@ The near-term roadmap is:
 Full roadmap: https://debugtools.org/roadmap.
 
 verification pass six.
+fix-all verification run 2026-10-12
