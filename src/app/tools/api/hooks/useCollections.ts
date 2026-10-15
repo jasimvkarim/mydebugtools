@@ -40,6 +40,7 @@ export interface SavedRequest {
   contentType: ContentType;
   authConfig: AuthConfig;
   description?: string;
+  folder?: string;
   createdAt: number;
   updatedAt: number;
 }
@@ -437,6 +438,32 @@ export function useCollections(privateMode = false) {
   };
 
   // Load collections on mount and when session changes
+  // Update an existing saved request in place (local; cloud rows are not patched)
+  const updateRequest = async (collectionId: string, requestId: string, updates: Partial<SavedRequest>) => {
+    setCollections(prevCollections => {
+      const updatedCollections = prevCollections.map(c =>
+        c.id === collectionId
+          ? { ...c, updatedAt: Date.now(), requests: c.requests.map(r => r.id === requestId ? { ...r, ...updates, id: r.id, updatedAt: Date.now() } : r) }
+          : c
+      );
+      saveLocalCollections(updatedCollections);
+      return updatedCollections;
+    });
+  };
+
+  // Rename or clear a folder across a collection's requests (newName '' clears the folder)
+  const setFolderName = (collectionId: string, oldName: string, newName: string) => {
+    setCollections(prevCollections => {
+      const updatedCollections = prevCollections.map(c =>
+        c.id === collectionId
+          ? { ...c, requests: c.requests.map(r => r.folder === oldName ? { ...r, folder: newName || undefined } : r) }
+          : c
+      );
+      saveLocalCollections(updatedCollections);
+      return updatedCollections;
+    });
+  };
+
   useEffect(() => {
     loadCollections();
   }, [session?.user, privateMode]);
@@ -451,5 +478,7 @@ export function useCollections(privateMode = false) {
     saveRequest,
     deleteRequest,
     renameCollection,
+    updateRequest,
+    setFolderName,
   };
 }

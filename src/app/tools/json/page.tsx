@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import TableView, { findTables } from './components/TableView';
+import { replaceCell, TableSource } from './components/table-utils';
 import { 
   ClipboardIcon, 
   ArrowDownTrayIcon, 
@@ -267,7 +269,7 @@ export default function JSONTools() {
   const [searchTerm, setSearchTerm] = useState('');
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<'tree' | 'text'>('text');
+  const [activeTab, setActiveTab] = useState<'tree' | 'text' | 'table'>('text');
   const [isPretty, setIsPretty] = useState(true);
   const [loadingUrl, setLoadingUrl] = useState(false);
   const [selectedPath, setSelectedPath] = useState<string>('');
@@ -275,6 +277,17 @@ export default function JSONTools() {
   const [jsonStats, setJsonStats] = useState({ lines: 0, chars: 0, size: '0 B' });
   const [isValid, setIsValid] = useState(true);
   const [showStatsModal, setShowStatsModal] = useState(false);
+  const [tableUndo, setTableUndo] = useState<{before: string; after: string} | null>(null);
+  const tables = useMemo(() => {
+    try {
+      return findTables(JSON.parse(jsonInput));
+    } catch {
+      return [];
+    }
+  }, [jsonInput]);
+  useEffect(() => {
+    if (activeTab === 'table' && tables.length === 0) setActiveTab('text');
+  }, [activeTab, tables.length]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const urlInputRef = useRef<HTMLInputElement>(null);
@@ -865,7 +878,7 @@ export default function JSONTools() {
         <div className="grid gap-3 border-b border-[#d0d7de] bg-[#f6f8fa] px-4 py-3 lg:grid-cols-[1fr_auto] lg:items-center">
           <div className="flex flex-wrap items-center gap-2">
             <div className="inline-flex overflow-hidden rounded-md border border-[#d0d7de] bg-white">
-              {(['text', 'tree'] as const).map((tab) => (
+              {(['text', 'tree', ...(tables.length > 0 ? ['table'] : [])] as ('text' | 'tree' | 'table')[]).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -932,6 +945,16 @@ export default function JSONTools() {
             style={{ tabSize: 2 }}
           />
         )}
+
+        {activeTab === 'table' && tables.length > 0 && <TableView tables={tables}
+          canUndo={!!tableUndo && tableUndo.after === jsonInput}
+          onUndo={() => { if (tableUndo && tableUndo.after === jsonInput) { setJsonInput(tableUndo.before); parseJsonInput(tableUndo.before); setTableUndo(null); } }}
+          onEdit={(table: TableSource, index: number, column: string, value: any) => {
+            const next = replaceCell(JSON.parse(jsonInput), table.keys, index, column, value);
+            const text = JSON.stringify(next, null, isPretty ? 2 : undefined);
+            setTableUndo({before: jsonInput, after: text});
+            setJsonInput(text); parseJsonInput(text);
+          }} />}
 
         {activeTab === 'tree' && parsedJson && (
           <div>

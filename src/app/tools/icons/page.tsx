@@ -121,7 +121,7 @@ function IconFinderContent() {
           <h1 className="text-2xl font-bold text-gray-900">Icon Finder</h1>
           <p className="text-sm text-gray-600">Curated developer icons that keep builds fast.</p>
         </div>
-        <p className="text-sm text-gray-500">{filteredIcons.length} icons</p>
+        <p className="text-sm text-gray-500">{filteredIcons.length} {filteredIcons.length === 1 ? 'icon' : 'icons'}</p>
       </div>
 
       <div className="grid gap-3 rounded-lg border border-gray-200 bg-white p-4 md:grid-cols-[1fr_auto_auto]">

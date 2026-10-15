@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { DiffEditor } from '@monaco-editor/react';
+import { useState, useEffect, useRef } from 'react';
+import Editor, { DiffEditor } from '@monaco-editor/react';
+import './editor.css';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ArrowsRightLeftIcon,
@@ -64,7 +65,6 @@ const wordWrapOptions = [
 // Export format options
 const exportFormats = [
   { value: 'html', label: 'HTML Report', icon: '🌐' },
-  { value: 'pdf', label: 'PDF Document', icon: '📄' },
   { value: 'json', label: 'JSON Data', icon: '📊' },
   { value: 'markdown', label: 'Markdown', icon: '📝' },
   { value: 'txt', label: 'Plain Text', icon: '📄' }
@@ -86,6 +86,19 @@ const keyboardShortcuts = [
   { key: 'Ctrl+M / Cmd+M', description: 'Toggle view mode' },
   { key: 'Ctrl+H / Cmd+H', description: 'Show/hide help' }
 ];
+
+
+function CodeInput({value, onChange, label, language, theme, fontSize, showLineNumbers, wordWrap}: {value: string; onChange: (value: string) => void; label: string; language: string; theme: string; fontSize: number; showLineNumbers: boolean; wordWrap: 'on' | 'off' | 'wordWrapColumn' | 'bounded'}) {
+  return <div className="code-input" id={label.startsWith('Original') ? 'original-editor' : 'modified-editor'}>
+    <Editor height="100%" language={language} value={value} theme={theme}
+      onChange={value => onChange(value || '')}
+      loading={<div className="editor-loading">Opening editor...</div>}
+      options={{ariaLabel: label, fontSize, fontFamily:"Consolas, 'Liberation Mono', monospace", lineHeight:24,
+        minimap:{enabled:false}, lineNumbers:showLineNumbers ? 'on' : 'off', folding:true, glyphMargin:false, scrollBeyondLastLine:false,
+        automaticLayout:true, wordWrap, tabSize:2, insertSpaces:true, padding:{top:14,bottom:14},
+        renderLineHighlight:'all', smoothScrolling:true, scrollbar:{verticalScrollbarSize:10,horizontalScrollbarSize:10}}}/>
+  </div>;
+}
 
 export default function CodeDiffPage() {
   const [originalCode, setOriginalCode] = useState('');
@@ -165,35 +178,26 @@ export default function CodeDiffPage() {
     setTheme(isDarkMode ? 'vs-dark' : 'vs');
   }, [isDarkMode]);
 
-  // Calculate diff statistics
-  const calculateDiffStats = () => {
-    if (!originalCode || !modifiedCode) {
-      setDiffStats(null);
-      return;
+  // Count the same aligned line changes that Monaco renders, not line indices.
+  const updateDiffStats = (editor: any) => {
+    const lineChanges = editor.getLineChanges();
+    if (!lineChanges) return;
+    const models = editor.getModel();
+    const originalEmpty = models?.original.getValue() === '';
+    const modifiedEmpty = models?.modified.getValue() === '';
+    let additions = 0, deletions = 0, changes = 0;
+    for (const change of lineChanges) {
+      const removed = originalEmpty || change.originalEndLineNumber === 0 ? 0 : change.originalEndLineNumber - change.originalStartLineNumber + 1;
+      const added = modifiedEmpty || change.modifiedEndLineNumber === 0 ? 0 : change.modifiedEndLineNumber - change.modifiedStartLineNumber + 1;
+      changes += Math.min(removed, added);
+      additions += Math.max(0, added - removed);
+      deletions += Math.max(0, removed - added);
     }
-
-    const originalLines = originalCode.split('\n');
-    const modifiedLines = modifiedCode.split('\n');
-
-    let additions = 0;
-    let deletions = 0;
-    let changes = 0;
-
-    const maxLines = Math.max(originalLines.length, modifiedLines.length);
-
-    for (let i = 0; i < maxLines; i++) {
-      const originalLine = originalLines[i] || '';
-      const modifiedLine = modifiedLines[i] || '';
-
-      if (originalLine !== modifiedLine) {
-        if (!originalLine) additions++;
-        else if (!modifiedLine) deletions++;
-        else changes++;
-      }
-    }
-
-    setDiffStats({ additions, deletions, changes });
+    setDiffStats({additions, deletions, changes});
   };
+  const diffInstance = useRef<any>(null);
+  const diffSubscription = useRef<{dispose: () => void} | null>(null);
+  useEffect(() => () => { diffSubscription.current?.dispose(); diffInstance.current?.setModel(null); }, []);
 
   // Toggle view mode
   const toggleViewMode = () => {
@@ -355,11 +359,6 @@ ${modifiedCode}
 
 
 
-  // Calculate diff stats when code changes
-  useEffect(() => {
-    calculateDiffStats();
-  }, [originalCode, modifiedCode]);
-
   // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -394,8 +393,11 @@ ${modifiedCode}
   }, [originalCode, modifiedCode, renderSideBySide]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <h1 className="sr-only">Code Diff</h1>
+    <div className="diff-workspace min-h-screen">
+      <header className="diff-title"><div><CodeBracketIcon className="h-4 w-4 text-blue-400"/><h1>Code Diff</h1><span className="diff-tab">Workspace</span></div><span className="diff-local">debugtools / code-diff</span></header>
+      <div className="editor-layout">
+        <aside className="diff-explorer" aria-label="Files"><div className="explorer-heading">EXPLORER</div><div className="explorer-folder">⌄ COMPARISON</div><a href="#original-editor"><span>{language === 'javascript' ? 'JS' : language === 'typescript' ? 'TS' : '◇'}</span> original</a><a href="#modified-editor"><span>{language === 'javascript' ? 'JS' : language === 'typescript' ? 'TS' : '◇'}</span> modified</a><a href="#changes-editor"><span>±</span> changes</a></aside>
+        <div className="editor-main">
       {/* Enhanced Header */}
       <div >
         <div >
@@ -403,7 +405,7 @@ ${modifiedCode}
 
           {/* Statistics Bar */}
           {diffStats && (
-            <div className="mt-6 flex justify-center">
+            <div className="diff-stats">
               <div className="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3">
                 <div className="flex items-center gap-6 text-sm">
                   <div className="flex items-center gap-2">
@@ -425,10 +427,10 @@ ${modifiedCode}
         </div>
       </div>
 
-      <div className="mx-auto p-4">
+      <div className="diff-body">
         {/* Notification */}
         {notification && (
-          <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 flex items-center gap-2 ${
+          <div className={`pointer-events-none fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 flex items-center gap-2 ${
             notification?.type === 'success' ? 'bg-green-500 text-white' :
             notification?.type === 'error' ? 'bg-red-500 text-white' :
             'bg-blue-500 text-white'
@@ -537,7 +539,7 @@ ${modifiedCode}
 
 
           {/* Enhanced Action buttons */}
-          <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mb-4">
+          <div className="diff-toolbar">
             <div className="flex flex-wrap gap-2 justify-center">
               <button
                 onClick={swapCode}
@@ -572,12 +574,12 @@ ${modifiedCode}
           </div>
 
           {/* ChatGPT-style Code Input */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+          <div className="diff-inputs grid grid-cols-1 md:grid-cols-2">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className={`text-sm font-medium ${
                   isDarkMode ? 'text-gray-200' : 'text-gray-700'
-                }`}>Original Code</label>
+                }`}><span className="file-badge">{language === 'javascript' ? 'JS' : language === 'typescript' ? 'TS' : language === 'plaintext' ? 'TXT' : language.slice(0,2).toUpperCase()}</span> original <span className="file-tab-dot" aria-hidden="true">●</span></label>
                 <div className="flex gap-1">
                   <button
                     onClick={() => copyToClipboard(originalCode, 'original')}
@@ -604,22 +606,13 @@ ${modifiedCode}
                   </label>
                 </div>
               </div>
-              <textarea
-                className={`w-full h-48 p-3 rounded-lg border font-mono text-sm resize-none transition-colors ${
-                  isDarkMode
-                    ? 'bg-gray-800 border-gray-600 text-gray-200 placeholder-gray-500'
-                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-                value={originalCode}
-                onChange={(e) => setOriginalCode(e.target.value)}
-                placeholder="Paste your original code here..."
-              />
+              <CodeInput value={originalCode} onChange={setOriginalCode} label="Original code" language={language} theme={theme} fontSize={fontSize} showLineNumbers={showLineNumbers} wordWrap={wordWrap} />
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className={`text-sm font-medium ${
                   isDarkMode ? 'text-gray-200' : 'text-gray-700'
-                }`}>Modified Code</label>
+                }`}><span className="file-badge">{language === 'javascript' ? 'JS' : language === 'typescript' ? 'TS' : language === 'plaintext' ? 'TXT' : language.slice(0,2).toUpperCase()}</span> modified <span className="file-tab-dot" aria-hidden="true">●</span></label>
                 <div className="flex gap-1">
                   <button
                     onClick={() => copyToClipboard(modifiedCode, 'modified')}
@@ -646,21 +639,12 @@ ${modifiedCode}
                   </label>
                 </div>
               </div>
-              <textarea
-                className={`w-full h-48 p-3 rounded-lg border font-mono text-sm resize-none transition-colors ${
-                  isDarkMode
-                    ? 'bg-gray-800 border-gray-600 text-gray-200 placeholder-gray-500'
-                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-                value={modifiedCode}
-                onChange={(e) => setModifiedCode(e.target.value)}
-                placeholder="Paste your modified code here..."
-              />
+              <CodeInput value={modifiedCode} onChange={setModifiedCode} label="Modified code" language={language} theme={theme} fontSize={fontSize} showLineNumbers={showLineNumbers} wordWrap={wordWrap} />
             </div>
           </div>
 
           {/* Settings toggle */}
-          <div className="mb-4">
+          <div className="diff-settings-toggle">
             <button
               onClick={() => setShowSettings(!showSettings)}
               className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
@@ -672,7 +656,7 @@ ${modifiedCode}
 
           {/* Enhanced Settings */}
           {showSettings && (
-            <div className="mb-4 p-4 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-lg border border-gray-200">
+            <div className="diff-settings mb-4 p-4">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <AdjustmentsHorizontalIcon className="h-5 w-5 text-blue-500" />
                 Comparison Settings
@@ -779,23 +763,24 @@ ${modifiedCode}
             </div>
           )}
 
-          {/* ChatGPT-style Diff Editor */}
-          <div className={`h-[500px] border-t transition-colors duration-300 ${
+          <div id="changes-editor" className="diff-result-label">Changes <span>{ignoreCaseChanges ? 'Case-normalized comparison (originals unchanged)' : 'Syntax-highlighted comparison'}</span></div>
+          <div className={`diff-result h-[500px] border-t transition-colors duration-300 ${
             isDarkMode ? 'border-gray-700' : 'border-gray-200'
           }`}>
-            {isLoading ? (
-              <div className="h-full flex items-center justify-center">
-                <div className={`animate-spin rounded-full h-8 w-8 border-2 border-t-transparent ${
-                  isDarkMode ? 'border-gray-400' : 'border-gray-600'
-                }`}></div>
-              </div>
-            ) : (
               <DiffEditor
                 height="100%"
+                keepCurrentOriginalModel={true}
+                keepCurrentModifiedModel={true}
                 language={language}
-                original={originalCode}
-                modified={modifiedCode}
-                theme={isDarkMode ? 'vs-dark' : 'vs'}
+                original={ignoreCaseChanges ? originalCode.toLowerCase() : originalCode}
+                modified={ignoreCaseChanges ? modifiedCode.toLowerCase() : modifiedCode}
+                onMount={editor => {
+                  diffInstance.current = editor;
+                  diffSubscription.current?.dispose();
+                  diffSubscription.current = editor.onDidUpdateDiff(() => updateDiffStats(editor));
+                  updateDiffStats(editor);
+                }}
+                theme={theme}
                 options={{
                   readOnly: true,
                   renderSideBySide,
@@ -805,7 +790,7 @@ ${modifiedCode}
                   fontSize,
                   scrollBeyondLastLine: false,
                   automaticLayout: true,
-                  diffWordWrap: 'on',
+                  diffWordWrap: wordWrap === 'off' ? 'off' : 'on',
                   ignoreTrimWhitespace: ignoreWhitespace,
                   renderIndicators: true,
                   renderWhitespace: 'selection',
@@ -821,8 +806,10 @@ ${modifiedCode}
                   cursorBlinking: 'smooth'
                 }}
               />
-            )}
           </div>
+        </div>
+      </div>
+        <footer className="editor-status"><span>✓ Local comparison</span><span>{originalCode.split('\n').length} / {modifiedCode.split('\n').length} lines</span><span className="status-right">{languageOptions.find(l => l.value === language)?.label} · UTF-8 · {renderSideBySide ? 'Split diff' : 'Inline diff'}</span></footer>
         </div>
       </div>
     </div>

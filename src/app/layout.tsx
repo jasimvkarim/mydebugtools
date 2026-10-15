@@ -5,6 +5,7 @@ import AnalyticsProvider from "./components/AnalyticsProvider";
 import AuthProvider from "./components/AuthProvider";
 import Providers from "./providers";
 import Script from "next/script";
+import Workspace from "./components/workspace/Workspace";
 
 const SITE_URL = 'https://debugtools.org';
 const SITE_NAME = 'DEBUGTOOLS';
@@ -182,6 +183,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased bg-white text-gray-900 min-h-screen flex flex-col">
+        <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem('debugtools:theme');document.documentElement.dataset.theme=(t==='dark'?'dark':'light')}catch(e){document.documentElement.dataset.theme='light'}try{if(self!==top){document.documentElement.classList.add('dt-embed');(window.adsbygoogle=window.adsbygoogle||[]).pauseAdRequests=1;${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ? `window['ga-disable-${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}']=true;` : ''}}}catch(e){}` }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
@@ -200,7 +202,7 @@ export default function RootLayout({
         <AuthProvider>
           <AnalyticsProvider>
             <Providers>
-              {children}
+              <Workspace>{children}</Workspace>
             </Providers>
           </AnalyticsProvider>
         </AuthProvider>

@@ -20,27 +20,19 @@ export default function Base64Tools() {
   const [isPdf, setIsPdf] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [conversionMode, setConversionMode] = useState<'encode' | 'decode'>('encode');
-  const [fileType, setFileType] = useState<'image' | 'pdf' | 'text'>('image');
+  const [fileType, setFileType] = useState<'image' | 'pdf' | 'text'>('text');
   const [copySuccess, setCopySuccess] = useState(false);
   const [decodedText, setDecodedText] = useState('');
+  const [textInput, setTextInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const cleanBase64 = (input: string): string => {
-    try {
-      let cleaned = input.trim();
-      if (cleaned.includes(',')) {
-        cleaned = cleaned.split(',')[1];
-      }
-      cleaned = cleaned.replace(/[\s\r\n\t]/g, '');
-      cleaned = cleaned.replace(/[^A-Za-z0-9+/=]/g, '');
-      const padding = cleaned.length % 4;
-      if (padding) {
-        cleaned += '='.repeat(4 - padding);
-      }
-      return cleaned;
-    } catch (err) {
-      throw new Error('Failed to clean Base64 string');
+  const cleanBase64 = (value: string): string => {
+    let cleaned=value.trim().replace(/^data:[^,]*;base64,/i,'').replace(/\s/g,'');
+    if(!cleaned || !/^[A-Za-z0-9+/]*={0,2}$/.test(cleaned) || cleaned.length%4===1 || (cleaned.includes('=')&&cleaned.length%4!==0)) {
+      throw new Error('This is not valid Base64. Check the input, or switch to Encode for plain text.');
     }
+    if(cleaned.length%4) cleaned+='='.repeat(4-cleaned.length%4);
+    return cleaned;
   };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,7 +95,8 @@ export default function Base64Tools() {
       if (fileType === 'text') {
         // Decode to plain text
         try {
-          const decodedString = atob(cleanedInput);
+          const bytes = Uint8Array.from(atob(cleanedInput), c=>c.charCodeAt(0));
+          const decodedString = new TextDecoder('utf-8',{fatal:true}).decode(bytes);
           setDecodedText(decodedString);
           setOutput(decodedString);
           setIsImage(false);
@@ -198,7 +191,7 @@ export default function Base64Tools() {
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      setError('Could not copy. Select the output text and copy it manually.');
     }
   };
 
@@ -207,10 +200,10 @@ export default function Base64Tools() {
     
     const link = document.createElement('a');
     
-    if (conversionMode === 'encode') {
+    if (conversionMode === 'encode' || fileType === 'text') {
       const blob = new Blob([output], { type: 'text/plain' });
       link.href = URL.createObjectURL(blob);
-      link.download = 'base64-output.txt';
+      link.download = conversionMode === 'encode' ? 'base64-output.txt' : 'decoded-text.txt';
     } else {
       link.href = output;
       link.download = `converted-file.${isPdf ? 'pdf' : 'png'}`;
@@ -223,6 +216,7 @@ export default function Base64Tools() {
 
   const clearAll = () => {
     setInput('');
+    setTextInput('');
     setOutput('');
     setError('');
     setIsImage(false);
@@ -236,24 +230,24 @@ export default function Base64Tools() {
   const switchMode = () => {
     setConversionMode(prev => {
       const nextMode = prev === 'encode' ? 'decode' : 'encode';
-      setFileType(nextMode === 'decode' ? 'text' : 'image');
+      setFileType('text');
       return nextMode;
     });
     clearAll();
   };
 
   return (
-    <div className="h-full flex flex-col bg-white">
-      <div className="border-b border-gray-200 bg-white px-6 py-4">
-        <div className="flex items-center justify-between">
+    <div className="min-h-[620px] flex flex-col bg-white">
+      <div className="border-b border-gray-200 bg-white px-4 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-semibold text-gray-900">Base64 Converter</h1>
             <p className="text-sm text-gray-500 mt-1">
-              {conversionMode === 'encode' ? 'Convert files to Base64 encoded strings' : 'Decode Base64 strings to files'}
+              {conversionMode === 'encode' ? 'Paste text to encode it instantly, or choose a file.' : 'Paste Base64 to get readable text or a file.'}
             </p>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={switchMode}
               className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
@@ -297,18 +291,35 @@ export default function Base64Tools() {
         </div>
       </div>
 
-      <div className="flex-1 flex overflow-hidden">
-        <div className="flex-1 flex flex-col border-r border-gray-200">
-          <div className="bg-gray-50 border-b border-gray-200 px-6 py-3">
-            <div className="flex items-center justify-between">
+      {error && <div role="alert" className="px-4 py-3 text-sm text-red-600 bg-red-50">{error}</div>}
+      <div className="px-4 py-2 flex flex-wrap gap-4 text-sm">
+        <button onClick={()=>{clearAll();setFileType('text');if(conversionMode==='encode'){setTextInput('Hello, world!');setOutput('SGVsbG8sIHdvcmxkIQ==')}else{setInput('SGVsbG8sIHdvcmxkIQ==')}}}>Try an example</button>
+        <button onClick={clearAll}>Clear input</button>
+        <span className="text-gray-500">Processed in your browser</span>
+      </div>
+      <div className="flex-1 flex flex-col md:flex-row min-w-0">
+        <div className="flex-1 min-w-0 flex flex-col md:border-r border-gray-200">
+          <div className="bg-gray-50 border-b border-gray-200 px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-sm font-medium text-gray-700">
-                {conversionMode === 'encode' ? 'Upload File' : 'Base64 Input'}
+                {conversionMode === 'encode' ? (fileType === 'text' ? 'Text input' : 'Upload file') : 'Base64 input'}
               </h2>
               
               {conversionMode === 'encode' && (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <button
-                    onClick={() => setFileType('image')}
+                    onClick={() => { clearAll(); setFileType('text'); }}
+                    className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
+                      fileType === 'text'
+                        ? 'bg-[#FF6C37] text-white'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    <DocumentIcon className="h-3.5 w-3.5" />
+                    Text
+                  </button>
+                  <button
+                    onClick={() => { clearAll(); setFileType('image'); }}
                     className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
                       fileType === 'image'
                         ? 'bg-[#FF6C37] text-white'
@@ -319,7 +330,7 @@ export default function Base64Tools() {
                     Image
                   </button>
                   <button
-                    onClick={() => setFileType('pdf')}
+                    onClick={() => { clearAll(); setFileType('pdf'); }}
                     className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
                       fileType === 'pdf'
                         ? 'bg-[#FF6C37] text-white'
@@ -333,9 +344,9 @@ export default function Base64Tools() {
               )}
               
               {conversionMode === 'decode' && (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <button
-                    onClick={() => setFileType('text')}
+                    onClick={() => { clearAll(); setFileType('text'); }}
                     className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
                       fileType === 'text'
                         ? 'bg-[#FF6C37] text-white'
@@ -346,7 +357,7 @@ export default function Base64Tools() {
                     Text
                   </button>
                   <button
-                    onClick={() => setFileType('image')}
+                    onClick={() => { clearAll(); setFileType('image'); }}
                     className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
                       fileType === 'image'
                         ? 'bg-[#FF6C37] text-white'
@@ -357,7 +368,7 @@ export default function Base64Tools() {
                     Image
                   </button>
                   <button
-                    onClick={() => setFileType('pdf')}
+                    onClick={() => { clearAll(); setFileType('pdf'); }}
                     className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded transition-colors ${
                       fileType === 'pdf'
                         ? 'bg-[#FF6C37] text-white'
@@ -378,8 +389,27 @@ export default function Base64Tools() {
             </div>
           </div>
           
-          <div className="flex-1 overflow-auto p-6">
-            {conversionMode === 'encode' ? (
+          <div className="flex-1 min-h-[260px] overflow-auto p-4">
+            {conversionMode === 'encode' && fileType === 'text' ? (
+              <textarea
+                aria-label="Text to encode"
+                value={textInput}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setTextInput(v);
+                  setError('');
+                  setIsImage(false);
+                  setIsPdf(false);
+                  try {
+                    setOutput(v ? btoa(unescape(encodeURIComponent(v))) : '');
+                  } catch {
+                    setError('Failed to encode text');
+                  }
+                }}
+                placeholder="Type or paste plain text here to encode it as Base64..."
+                className="w-full min-h-[220px] h-full p-4 font-mono text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#FF6C37] focus:border-[#FF6C37] resize-none"
+              />
+            ) : conversionMode === 'encode' ? (
               <div className="h-full flex items-center justify-center">
                 {input ? (
                   <div className="w-full h-full flex flex-col">
@@ -431,7 +461,7 @@ export default function Base64Tools() {
                     <input
                       ref={fileInputRef}
                       type="file"
-                      accept={fileType === 'image' ? 'image/*' : 'application/pdf'}
+                      accept={fileType === 'image' ? 'image/*' : fileType === 'text' ? 'text/*' : 'application/pdf'}
                       onChange={handleFileUpload}
                       className="hidden"
                     />
@@ -440,32 +470,28 @@ export default function Base64Tools() {
               </div>
             ) : (
               <textarea
+                aria-label="Base64 to decode"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Paste your Base64 encoded string here..."
-                className="w-full h-full p-4 font-mono text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#FF6C37] focus:border-[#FF6C37] resize-none"
+                className="w-full min-h-[220px] h-full p-4 font-mono text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#FF6C37] focus:border-[#FF6C37] resize-none"
               />
             )}
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col">
-          <div className="bg-gray-50 border-b border-gray-200 px-6 py-3">
-            <div className="flex items-center justify-between">
+        <div className="flex-1 min-w-0 flex flex-col">
+          <div className="bg-gray-50 border-b border-gray-200 px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-sm font-medium text-gray-700">
                 {conversionMode === 'encode' ? 'Base64 Output' : 'Decoded Preview'}
               </h2>
               
-              {error && (
-                <div className="flex items-center gap-1 text-xs text-red-600">
-                  <XCircleIcon className="h-4 w-4" />
-                  {error}
-                </div>
-              )}
+
             </div>
           </div>
           
-          <div className="flex-1 overflow-auto p-6">
+          <div className="flex-1 min-h-[260px] overflow-auto p-4">
             {isLoading ? (
               <div className="h-full flex items-center justify-center">
                 <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -477,18 +503,20 @@ export default function Base64Tools() {
               conversionMode === 'encode' ? (
                 <div className="h-full">
                   <textarea
+                    aria-label="Conversion output"
                     value={output}
                     readOnly
-                    className="w-full h-full p-4 font-mono text-xs bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#FF6C37] focus:border-[#FF6C37] resize-none"
+                    className="w-full min-h-[220px] h-full p-4 font-mono text-xs bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#FF6C37] focus:border-[#FF6C37] resize-none"
                   />
                 </div>
               ) : (
                 <div className="h-full">
                   {fileType === 'text' ? (
                     <textarea
+                      aria-label="Decoded text"
                       value={output}
                       readOnly
-                      className="w-full h-full p-4 font-mono text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#FF6C37] focus:border-[#FF6C37] resize-none"
+                      className="w-full min-h-[220px] h-full p-4 font-mono text-sm bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#FF6C37] focus:border-[#FF6C37] resize-none"
                     />
                   ) : (
                     <div className="h-full flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">

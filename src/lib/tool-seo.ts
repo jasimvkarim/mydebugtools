@@ -134,6 +134,12 @@ export const toolSeo = {
     path: '/tools/timestamp/',
     keywords: ['timestamp converter', 'unix timestamp', 'epoch converter', 'iso date converter', 'utc converter'],
   },
+  'prompt-generator': {
+    title: 'Prompt Generator | debugtools',
+    description: 'Compose structured prompts for any AI task, with coding, image, and video shortcuts and text or JSON output.',
+    path: '/tools/prompt-generator/',
+    keywords: ['prompt generator', 'coding prompt generator', 'ai image prompt', 'ai video prompt', 'llm prompt template'],
+  },
 } as const
 
 export type ToolSlug = keyof typeof toolSeo

@@ -17,6 +17,7 @@ const nextConfig = {
   },
   experimental: {
     esmExternals: true,
+    cpus: 1,
   },
   // Skip static generation and use client-side rendering instead
   // This avoids the useSearchParams Suspense boundary errors during build

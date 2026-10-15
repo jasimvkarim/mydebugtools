@@ -21,10 +21,12 @@ describe('tool registry IA', () => {
     const pillarNames = toolPillars.map((pillar) => pillar.name);
 
     expect(pillarNames).toEqual([
-      'API & Network',
-      'Inspect & Transform',
-      'Debug Runtime Issues',
-      'Frontend Workbench',
+      'APIs',
+      'AI',
+      'Data & Formats',
+      'Debugging',
+      'Build & Performance',
+      'Frontend',
       'Utilities',
     ]);
     expect(liveTools.every((tool) => pillarNames.includes(tool.pillar))).toBe(true);

@@ -35,7 +35,8 @@ import {
   AdjustmentsHorizontalIcon,
   EyeIcon,
   EyeSlashIcon,
-  FunnelIcon
+  FunnelIcon,
+  PencilSquareIcon
 } from '@heroicons/react/24/outline';
 import nextDynamic from 'next/dynamic';
 
@@ -112,6 +113,8 @@ interface RequestTab {
   response: any;
   responseMetrics: ResponseMetrics | null;
   hasUnsavedChanges: boolean;
+  savedCollectionId?: string;
+  savedRequestId?: string;
 }
 
 interface SavedRequest {
@@ -124,6 +127,7 @@ interface SavedRequest {
   contentType: ContentType;
   authConfig: AuthConfig;
   description?: string;
+  folder?: string;
   createdAt: number;
   updatedAt: number;
 }
@@ -359,6 +363,8 @@ function APITesterContent() {
     saveRequest: saveRequestAPI,
     deleteRequest: deleteRequestAPI,
     renameCollection: renameCollectionAPI,
+    updateRequest: updateRequestAPI,
+    setFolderName: setFolderNameAPI,
   } = useCollections(privateMode);
   
   const [showCollections, setShowCollections] = useState(false);
@@ -368,6 +374,8 @@ function APITesterContent() {
   const [saveRequestName, setSaveRequestName] = useState('');
   const [saveRequestDescription, setSaveRequestDescription] = useState('');
   const [selectedCollectionId, setSelectedCollectionId] = useState<string>('');
+  const [saveFolder, setSaveFolder] = useState('');
+  const [savedFlash, setSavedFlash] = useState(false);
   const [showNewCollectionDialog, setShowNewCollectionDialog] = useState(false);
   const [newCollectionName, setNewCollectionName] = useState('');
   const [newCollectionDescription, setNewCollectionDescription] = useState('');
@@ -575,6 +583,8 @@ function APITesterContent() {
       ...tabToDuplicate,
       id: Date.now().toString(),
       name: `${tabToDuplicate.name} (Copy)`,
+      savedCollectionId: undefined,
+      savedRequestId: undefined,
       response: null,
       responseMetrics: null,
       hasUnsavedChanges: false
@@ -619,10 +629,11 @@ function APITesterContent() {
   const createCollection = async () => {
     if (!newCollectionName.trim()) return;
     
-    await createCollectionAPI(
+    const collection = await createCollectionAPI(
       newCollectionName.trim(),
       newCollectionDescription.trim()
     );
+    if (collection) setSelectedCollectionId(collection.id);
     
     setNewCollectionName('');
     setNewCollectionDescription('');
@@ -644,6 +655,7 @@ function APITesterContent() {
 
     const requestToSave = sanitizeSavedRequest({
       name: saveRequestName.trim(),
+      folder: saveFolder.trim() || undefined,
       method: currentTab.method,
       url: currentTab.url,
       headers: currentTab.headers,
@@ -653,7 +665,7 @@ function APITesterContent() {
       description: saveRequestDescription.trim(),
     });
     
-    await saveRequestAPI(selectedCollectionId, privateMode ? requestToSave : {
+    const savedRequest = await saveRequestAPI(selectedCollectionId, privateMode ? requestToSave : {
       ...requestToSave,
       headers: currentTab.headers,
       authConfig: currentTab.authConfig
@@ -663,12 +675,57 @@ function APITesterContent() {
     setSaveRequestName('');
     setSaveRequestDescription('');
     setShowSaveDialog(false);
+    setSaveFolder('');
     
     // Mark tab as saved
-    updateCurrentTab({ hasUnsavedChanges: false });
+    updateCurrentTab({
+      name: savedRequest.name,
+      savedCollectionId: selectedCollectionId,
+      savedRequestId: savedRequest.id,
+      hasUnsavedChanges: false,
+    });
   };
 
-  const loadRequestFromCollection = (request: SavedRequest) => {
+  const updateSavedRequestInPlace = async () => {
+    const tab = tabs[activeTabIndex];
+    if (!tab?.savedCollectionId || !tab?.savedRequestId) return;
+    const requestToUpdate = {
+      name: tab.name,
+      method: tab.method,
+      url: tab.url,
+      headers: tab.headers,
+      body: tab.body,
+      contentType: tab.contentType,
+      authConfig: tab.authConfig,
+    };
+    await updateRequestAPI(tab.savedCollectionId, tab.savedRequestId, privateMode ? sanitizeSavedRequest(requestToUpdate) : requestToUpdate);
+    updateCurrentTab({ hasUnsavedChanges: false });
+    setSavedFlash(true);
+    setTimeout(() => setSavedFlash(false), 2000);
+  };
+
+  const handleSaveClick = () => {
+    const tab = tabs[activeTabIndex];
+    const savedRequestExists = collections.some((collection) =>
+      collection.id === tab?.savedCollectionId && collection.requests.some((request) => request.id === tab?.savedRequestId)
+    );
+    if (savedRequestExists) {
+      updateSavedRequestInPlace();
+      return;
+    }
+    setSelectedCollectionId((current) => collections.some((collection) => collection.id === current) ? current : collections[0]?.id || '');
+    setSaveRequestName(tabs[activeTabIndex]?.name && tabs[activeTabIndex].name !== 'API ' + (activeTabIndex + 1) ? tabs[activeTabIndex].name : '');
+    setShowSaveDialog(true);
+  };
+
+  const handleSaveAsNewClick = () => {
+    const tab = tabs[activeTabIndex];
+    setSaveRequestName(tab?.name || '');
+    setSelectedCollectionId(tab?.savedCollectionId || collections[0]?.id || '');
+    setShowSaveDialog(true);
+  };
+
+  const loadRequestFromCollection = (collectionId: string, request: SavedRequest) => {
     // Create a new tab with the saved request data
     const newTab: RequestTab = {
       id: Date.now().toString(),
@@ -681,7 +738,9 @@ function APITesterContent() {
       authConfig: request.authConfig,
       response: null,
       responseMetrics: null,
-      hasUnsavedChanges: false
+      hasUnsavedChanges: false,
+      savedCollectionId: collectionId,
+      savedRequestId: request.id
     };
     
     setTabs([...tabs, newTab]);
@@ -1078,7 +1137,7 @@ function APITesterContent() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeTabIndex, tabs.length]);
+  }, [activeTabIndex, tabs]);
 
   // Token expiry countdown updater - updates every second
   useEffect(() => {
@@ -1284,10 +1343,27 @@ function APITesterContent() {
     setEnvironments([...environments, { name: `Environment ${environments.length + 1}`, variables: [] }]);
   };
 
+  const renameEnvironment = (oldName: string) => {
+    const newName = window.prompt('Rename environment', oldName)?.trim();
+    if (!newName || newName === oldName) return;
+    if (environments.some((env) => env.name === newName)) { window.alert('An environment with that name already exists.'); return; }
+    setEnvironments((current) => current.map((env) => env.name !== oldName ? env : { ...env, name: newName }));
+    if (activeEnvironment === oldName) setActiveEnvironment(newName);
+  };
+
+  const deleteEnvironment = (name: string) => {
+    if (environments.length <= 1) { window.alert('Keep at least one environment.'); return; }
+    if (!window.confirm(`Delete environment "${name}" and its variables?`)) return;
+    const remaining = environments.filter((env) => env.name !== name);
+    setEnvironments(remaining);
+    if (activeEnvironment === name) setActiveEnvironment(remaining[0]?.name || '');
+  };
+
   const addEnvironmentVariable = (envIndex: number) => {
-    const newEnvironments = [...environments];
-    newEnvironments[envIndex].variables.push({ key: '', value: '' });
-    setEnvironments(newEnvironments);
+    setEnvironments((current) => current.map((env, i) => i !== envIndex ? env : {
+      ...env,
+      variables: [...env.variables, { key: '', value: '' }],
+    }));
   };
 
   const setEnvironmentVariableValue = (key: string, value: string) => {
@@ -1318,9 +1394,10 @@ function APITesterContent() {
   };
 
   const removeEnvironmentVariable = (envIndex: number, varIndex: number) => {
-    const newEnvironments = [...environments];
-    newEnvironments[envIndex].variables = newEnvironments[envIndex].variables.filter((_, i) => i !== varIndex);
-    setEnvironments(newEnvironments);
+    setEnvironments((current) => current.map((env, i) => i !== envIndex ? env : {
+      ...env,
+      variables: env.variables.filter((_, j) => j !== varIndex),
+    }));
   };
 
   const addPreset = () => {
@@ -1771,7 +1848,7 @@ print(response.json())`,
     <div className="flex h-screen overflow-hidden bg-[#f5f6f8] text-[13px] leading-5 text-[#2b2f38]">
       {/* Left Sidebar - Collections (Postman-style) */}
       {showCollections && (
-      <div className="w-72 bg-white border-r border-gray-200 flex flex-col">
+      <div className="fixed inset-y-0 left-0 z-30 w-72 max-w-[calc(100%-3rem)] shrink-0 bg-white border-r border-gray-200 flex flex-col md:static md:z-auto md:max-w-none">
         {/* Sidebar Header */}
         <div className="flex items-center justify-between gap-3 px-3 py-3 border-b border-gray-200 bg-white">
           <h2 className="text-gray-900 font-semibold text-sm">Collections</h2>
@@ -1948,11 +2025,13 @@ print(response.json())`,
 
                   {expandedCollections.has(collection.id) && (
                     <div className="ml-6 mr-2">
-                      {collection.requests.map((request) => (
+                      {(() => {
+                        const renderRequestRow = (request: SavedRequest) => (
+
                         <div
                           key={request.id}
                           className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded cursor-pointer group"
-                          onClick={() => loadRequestFromCollection(request)}
+                          onClick={() => loadRequestFromCollection(collection.id, request)}
                         >
                           <DocumentTextIcon className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
                           <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
@@ -1975,7 +2054,41 @@ print(response.json())`,
                             <TrashIcon className="h-3 w-3" />
                           </button>
                         </div>
-                      ))}
+                      );
+                        const unfiledRequests = collection.requests.filter((r) => !r.folder);
+                        const folderNames: string[] = [];
+                        collection.requests.forEach((r) => { if (r.folder && !folderNames.includes(r.folder)) folderNames.push(r.folder); });
+                        return (
+                          <>
+                            {unfiledRequests.map(renderRequestRow)}
+                            {folderNames.map((folderName) => (
+                              <div key={folderName} className="mt-1">
+                                <div className="flex items-center gap-1.5 px-3 py-1 text-[11px] font-semibold text-gray-500 uppercase tracking-wide group">
+                                  <FolderIcon className="h-3 w-3 text-gray-400 flex-shrink-0" />
+                                  <span className="truncate flex-1">{folderName}</span>
+                                  <button
+                                    title="Rename folder"
+                                    onClick={(e) => { e.stopPropagation(); const next = window.prompt('Rename folder', folderName)?.trim(); if (next && next !== folderName) setFolderNameAPI(collection.id, folderName, next); }}
+                                    className="opacity-0 group-hover:opacity-100 p-0.5 text-gray-500 hover:text-gray-700 rounded"
+                                  >
+                                    <PencilSquareIcon className="h-3 w-3" />
+                                  </button>
+                                  <button
+                                    title="Remove folder (requests are kept)"
+                                    onClick={(e) => { e.stopPropagation(); if (window.confirm(`Remove folder "${folderName}"? Requests stay in the collection.`)) setFolderNameAPI(collection.id, folderName, ''); }}
+                                    className="opacity-0 group-hover:opacity-100 p-0.5 text-red-500 hover:text-red-600 rounded"
+                                  >
+                                    <XMarkIcon className="h-3 w-3" />
+                                  </button>
+                                </div>
+                                <div className="ml-3">
+                                  {collection.requests.filter((r) => r.folder === folderName).map(renderRequestRow)}
+                                </div>
+                              </div>
+                            ))}
+                          </>
+                        );
+                      })()}
                     </div>
                   )}
                 </div>
@@ -1988,7 +2101,7 @@ print(response.json())`,
       )}
 
       {/* Right Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="min-w-0 flex-1 flex flex-col overflow-hidden">
         {/* Top Navigation Bar */}
         <div className="bg-white/95 border-b border-[#d9dde3] px-4 py-2 flex flex-wrap items-center justify-between gap-3 shadow-[0_1px_0_rgba(27,31,36,0.03)] backdrop-blur">
           <div className="flex flex-wrap items-center gap-2">
@@ -2030,7 +2143,7 @@ print(response.json())`,
             </button>
             <div className="flex items-center overflow-hidden rounded-md border border-[#d0d7de] bg-white shadow-sm">
               <button
-                onClick={() => setShowSaveDialog(true)}
+                onClick={handleSaveClick}
                 aria-label="Save request"
                 className="inline-flex items-center gap-1.5 border-r border-[#d0d7de] px-3 py-1.5 text-[13px] font-semibold text-[#57606a] transition-colors hover:bg-[#f6f8fa] hover:text-[#24292f]"
                 title="Save request"
@@ -2038,6 +2151,16 @@ print(response.json())`,
                 <DocumentDuplicateIcon className="h-4 w-4" />
                 <span className="hidden xl:inline">Save</span>
               </button>
+              {tabs[activeTabIndex]?.savedRequestId && (
+                <button
+                  onClick={handleSaveAsNewClick}
+                  aria-label="Save as new request"
+                  className="inline-flex items-center gap-1.5 border-r border-[#d0d7de] px-3 py-1.5 text-[13px] font-semibold text-[#57606a] transition-colors hover:bg-[#f6f8fa] hover:text-[#24292f]"
+                  title="Save as new request"
+                >
+                  <DocumentDuplicateIcon className="h-4 w-4" />
+                </button>
+              )}
               <button
                 onClick={() => setShowVariables(true)}
                 aria-label="Environment variables"
@@ -2164,6 +2287,12 @@ print(response.json())`,
         </div>
       )}
 
+      {savedFlash && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white text-sm px-4 py-2 rounded shadow-lg">
+          Request updated in collection
+        </div>
+      )}
+
       {/* Save Request Dialog */}
       {showSaveDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -2209,10 +2338,33 @@ print(response.json())`,
                     </select>
                   </div>
 
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Folder (Optional)</label>
+                    <input
+                      type="text"
+                      value={saveFolder}
+                      onChange={(e) => setSaveFolder(e.target.value)}
+                      placeholder="e.g., Auth flows"
+                      list="save-folder-options"
+                      className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#FF6C37]"
+                    />
+                    <datalist id="save-folder-options">
+                      {[...new Set((collections.find((c) => c.id === selectedCollectionId)?.requests || []).map((r) => r.folder).filter(Boolean))].map((f) => (
+                        <option key={f} value={f} />
+                      ))}
+                    </datalist>
+                  </div>
+
                   {collections.length === 0 && (
-                    <p className="text-sm text-yellow-600 bg-yellow-50 p-3 rounded">
-                      No collections available. Create one first!
-                    </p>
+                    <div className="text-sm text-yellow-600 bg-yellow-50 p-3 rounded flex items-center justify-between gap-2">
+                      <span>No collections yet.</span>
+                      <button
+                        onClick={() => setShowNewCollectionDialog(true)}
+                        className="px-3 py-1 text-xs font-semibold bg-yellow-100 hover:bg-yellow-200 rounded"
+                      >
+                        Create collection
+                      </button>
+                    </div>
                   )}
                 </div>
 
@@ -2223,6 +2375,7 @@ print(response.json())`,
                       setSaveRequestName('');
                       setSaveRequestDescription('');
                   setSelectedCollectionId('');
+                      setSaveFolder('');
                 }}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded transition-colors"
               >
@@ -2558,7 +2711,7 @@ print(response.json())`,
       {/* Request Tabs */}
       {tabs.length > 1 && (
       <div className="bg-white border-b border-gray-300">
-        <div className="flex items-center overflow-x-auto">
+        <div className="flex items-center overflow-x-auto scrollbar-hide">
           <div className="flex flex-1 min-w-0">
             {tabs.map((tab, index) => (
               <div
@@ -3168,24 +3321,45 @@ print(response.json())`,
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30 px-4">
         <div className="w-full max-w-3xl rounded-lg border border-gray-200 bg-white shadow-2xl">
           <div className="p-4 border-b border-gray-200 bg-white rounded-t-lg">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-center gap-2">
                 <CodeBracketIcon className="h-5 w-5 text-gray-600" />
                 <h3 className="text-lg font-medium text-gray-900">Environment Variables</h3>
-                <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">
+                <span className="hidden text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded lg:block">
                   Use {'{{variable}}'} in URL, headers, or body
                 </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex min-w-0 items-center gap-2">
                 <select
                   value={activeEnvironment}
                   onChange={(e) => setActiveEnvironment(e.target.value)}
-                  className="px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF6C37]"
+                  className="min-w-0 flex-1 px-2 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF6C37] sm:max-w-48"
                 >
                   {environments.map((env) => (
                     <option key={env.name} value={env.name}>{env.name}</option>
                   ))}
                 </select>
+                <button
+                  onClick={addEnvironment}
+                  className="p-2 text-gray-500 hover:text-gray-700"
+                  title="New environment"
+                >
+                  <PlusIcon className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => renameEnvironment(activeEnvironment)}
+                  className="p-2 text-gray-500 hover:text-gray-700"
+                  title="Rename environment"
+                >
+                  <PencilSquareIcon className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => deleteEnvironment(activeEnvironment)}
+                  className="p-2 text-gray-500 hover:text-red-600"
+                  title="Delete environment"
+                >
+                  <TrashIcon className="h-5 w-5" />
+                </button>
                 <button
                   onClick={() => setShowVariables(false)}
                   className="p-2 text-gray-500 hover:text-gray-700"
@@ -3204,32 +3378,34 @@ print(response.json())`,
                     type="text"
                     value={variable.key}
                     onChange={(e) => {
-                      const newEnvironments = [...environments];
-                      const envIndex = newEnvironments.findIndex(env => env.name === activeEnvironment);
-                      newEnvironments[envIndex].variables[index].key = e.target.value;
-                      setEnvironments(newEnvironments);
+                      const v = e.target.value;
+                      setEnvironments((current) => current.map((env) => env.name !== activeEnvironment ? env : {
+                        ...env,
+                        variables: env.variables.map((variable, i) => i !== index ? variable : { ...variable, key: v }),
+                      }));
                     }}
                     placeholder="Variable name (e.g., api_url)"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FF6C37]"
+                    className="min-w-0 flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FF6C37]"
                   />
                   <input
                     type="text"
                     value={variable.value}
                     onChange={(e) => {
-                      const newEnvironments = [...environments];
-                      const envIndex = newEnvironments.findIndex(env => env.name === activeEnvironment);
-                      newEnvironments[envIndex].variables[index].value = e.target.value;
-                      setEnvironments(newEnvironments);
+                      const v = e.target.value;
+                      setEnvironments((current) => current.map((env) => env.name !== activeEnvironment ? env : {
+                        ...env,
+                        variables: env.variables.map((variable, i) => i !== index ? variable : { ...variable, value: v }),
+                      }));
                     }}
                     placeholder="Value (e.g., https://api.example.com)"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FF6C37]"
+                    className="min-w-0 flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FF6C37]"
                   />
                   <button
                     onClick={() => {
-                      const newEnvironments = [...environments];
-                      const envIndex = newEnvironments.findIndex(env => env.name === activeEnvironment);
-                      newEnvironments[envIndex].variables = newEnvironments[envIndex].variables.filter((_, i) => i !== index);
-                      setEnvironments(newEnvironments);
+                      setEnvironments((current) => current.map((env) => env.name !== activeEnvironment ? env : {
+                        ...env,
+                        variables: env.variables.filter((_, i) => i !== index),
+                      }));
                     }}
                     className="p-2 text-red-600 hover:bg-red-50 rounded"
                     title="Remove variable"
@@ -3247,10 +3423,10 @@ print(response.json())`,
               )}
               <button
                 onClick={() => {
-                  const newEnvironments = [...environments];
-                  const envIndex = newEnvironments.findIndex(env => env.name === activeEnvironment);
-                  newEnvironments[envIndex].variables.push({ key: '', value: '' });
-                  setEnvironments(newEnvironments);
+                  setEnvironments((current) => current.map((env) => env.name !== activeEnvironment ? env : {
+                    ...env,
+                    variables: [...env.variables, { key: '', value: '' }],
+                  }));
                 }}
                 className="w-full px-4 py-2 text-sm font-medium text-[#FF6C37] bg-orange-50 rounded-lg hover:bg-orange-100 border border-orange-200"
               >

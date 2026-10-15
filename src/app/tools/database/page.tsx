@@ -78,13 +78,13 @@ const DatabaseQueryTool = () => {
     if (!file) return;
     try {
       const buffer = await file.arrayBuffer();
-      const SQL = await initSqlJs({ locateFile: (file: string) => `https://sql.js.org/dist/${file}` });
+      const SQL = await initSqlJs({ locateFile: (file: string) => `/wasm/${file}` });
       const dbInstance = new SQL.Database(new Uint8Array(buffer));
       setDb(dbInstance);
       setError(null);
       setDbLoaded(true);
     } catch (err: any) {
-      setError('Failed to load database: This file is not a valid SQLite database. Please upload a valid .sqlite/.db file.');
+      setError('Failed to load database: ' + ((err && err.message) ? err.message : String(err)));
       setDbLoaded(false);
     }
   };

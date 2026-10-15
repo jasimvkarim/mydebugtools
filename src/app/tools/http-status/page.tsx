@@ -192,6 +192,12 @@ const statusCodes: StatusCodes = {
       likelyCause: 'Resource was intentionally removed and won\'t be available again.',
     },
     { 
+      code: 418, 
+      name: "I'm a Teapot", 
+      description: 'The server refuses to brew coffee because it is, permanently, a teapot. From the April Fools RFC 2324 (HTCPCP).',
+      likelyCause: 'An Easter egg, a joke endpoint, or a developer with a sense of humour.',
+    },
+    { 
       code: 429, 
       name: 'Too Many Requests', 
       description: 'The user has sent too many requests in a given amount of time.',

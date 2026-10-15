@@ -1009,7 +1009,7 @@ export default function HTMLEditorPage() {
           <div className={`flex flex-col ${mode === "split" ? "w-1/2 border-r border-gray-200" : "flex-1"} bg-gray-100`}>
             <div className="flex-1 overflow-auto p-4 md:p-10 flex justify-center items-start">
               <div 
-                className={`bg-white shadow-xl transition-all duration-300 min-h-[100%] border border-gray-200 ${previewMode === "email" ? "ring-4 ring-blue-100" : ""}`} 
+                className={`dt-paper bg-white shadow-xl transition-all duration-300 min-h-[100%] border border-gray-200 ${previewMode === "email" ? "ring-4 ring-blue-100" : ""}`} 
                 style={{ 
                   width: previewMode === "email" ? "600px" : deviceWidths[previewDevice], 
                   maxWidth: "100%",
