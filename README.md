@@ -154,3 +154,4 @@ The near-term roadmap is:
 Full roadmap: https://debugtools.org/roadmap.
 
 verification pass six.
+QA heartbeat - 2026-10-25
